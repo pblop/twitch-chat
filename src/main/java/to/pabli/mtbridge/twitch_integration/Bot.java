@@ -108,20 +108,20 @@ public class Bot extends ListenerAdapter {
 
   @Override
   public void onNotice(NoticeEvent event) {
-    MTBridge.addMessage(new LiteralText(event.getNotice()).formatted(Formatting.DARK_GRAY));
+    MTBridge.addNotification(event.getNotice());
   }
 
   @Override
   public void onKick(KickEvent event) {
     String message = event.getReason();
-    MTBridge.addMessage("KICK: " + message);
+    MTBridge.addNotification("KICK: " + message);
   }
 
   @Override
   public void onDisconnect(DisconnectEvent event) throws Exception {
     super.onDisconnect(event);
     Exception disconnectException = event.getDisconnectException();
-    MTBridge.addMessage("DISCONNECT: " + disconnectException.getMessage());
+    MTBridge.addNotification("DISCONNECT: " + disconnectException.getMessage());
   }
 
   Channel currentChannel;
@@ -130,7 +130,7 @@ public class Bot extends ListenerAdapter {
     super.onJoin(event);
     Channel channel = event.getChannel();
      if (currentChannel == null || !currentChannel.equals(channel)) {
-      MTBridge.addMessage("Connected");
+      MTBridge.addNotification("Connected to channel " + this.channel);
       currentChannel = channel;
     }
   }

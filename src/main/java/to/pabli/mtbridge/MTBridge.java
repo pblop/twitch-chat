@@ -39,12 +39,12 @@ public class MTBridge implements ModInitializer {
         .append(usernameText)
         .append(messageBodyText));
   }
-  public static void addMessage(String message) {
-    MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT, new LiteralText(message));
+  public static void addNotification(String message) {
+    MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT, new LiteralText(message).formatted(Formatting.DARK_GRAY));
   }
-  public static void addMessage(Text text) {
-    MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT, text);
-  }
+//  public static void addMessage(Text text) {
+//    MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT, text);
+//  }
 
   public static String formatTMISentTimestamp(String tmiSentTS) {
     Date date = new Date(Long.parseLong(tmiSentTS));

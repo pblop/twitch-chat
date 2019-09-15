@@ -36,7 +36,7 @@ public class ChatMixin {
         MinecraftClient.getInstance().inGameHud.getChatHud().addToMessageHistory(text);
         info.cancel();
       } else {
-        MTBridge.addMessage("Twitch integration is not enabled, to enable it do /twitch enable.");
+        MTBridge.addNotification("Twitch integration is not enabled, to enable it do /twitch enable.");
       }
     }
 	}

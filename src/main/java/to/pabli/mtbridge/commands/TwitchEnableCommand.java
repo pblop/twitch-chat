@@ -5,6 +5,7 @@ import io.github.cottonmc.clientcommands.ArgumentBuilders;
 import io.github.cottonmc.clientcommands.CottonClientCommandSource;
 import me.sargunvohra.mcmods.autoconfig1.AutoConfig;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
 import to.pabli.mtbridge.MTBridge;
 import to.pabli.mtbridge.config.ModConfig;
 import to.pabli.mtbridge.twitch_integration.Bot;
@@ -23,7 +24,7 @@ public class TwitchEnableCommand {
 
           MTBridge.bot = new Bot(config.username, config.oauthKey, config.channel);
           MTBridge.bot.start();
-          ctx.getSource().sendFeedback(new LiteralText("Connecting..."));
+          ctx.getSource().sendFeedback(new LiteralText("Connecting...").formatted(Formatting.DARK_GRAY));
           // Return a result. -1 is failure, 0 is a pass and 1 is success.
           return 1;
         });
