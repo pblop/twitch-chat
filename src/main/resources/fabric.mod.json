@@ -9,7 +9,7 @@
     "Pablo Pérez Rodríguez"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
+    "homepage": "https://pabli.net/",
     "sources": "https://github.com/PabloPerezRodriguez/minecraft-twitch-bridge"
   },
 
@@ -27,9 +27,10 @@
 
   "depends": {
     "fabricloader": ">=0.4.0",
-    "fabric": "*"
+    "fabric": "*",
+    "modmenu": "*"
   },
-  "suggests": {
-    "flamingo": "*"
+  "custom": {
+    "modmenu:clientsideOnly": true
   }
 }

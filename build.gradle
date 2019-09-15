@@ -42,11 +42,13 @@ dependencies {
     // not required, but we want to see our config screen
     modCompile "io.github.prospector.modmenu:ModMenu:${project.mod_menu_version}"
 
-    // we want to register client-side commands
+    // we want to register client-side commands. Include the library in our jar. I guess this is fine????
     modCompile "io.github.cottonmc:cotton-client-commands:${project.cotton_client_commands_version}-SNAPSHOT"
+    include "io.github.cottonmc:cotton-client-commands:${project.cotton_client_commands_version}-SNAPSHOT"
 
     // irc
     implementation 'org.pircbotx:pircbotx:2.1'
+    include 'org.pircbotx:pircbotx:2.1'
 }
 
 processResources {
