@@ -1,6 +1,6 @@
 {
-  "text.autoconfig.twitchchat.title": "Minecraft-Twitch Bridge",
-  "text.autoconfig.twitchchat.category.default": "Minecraft-Twitch Bridge config",
+  "text.autoconfig.twitchchat.title": "Twitch Chat Bridge",
+  "text.autoconfig.twitchchat.category.default": "Twitch Chat Bridge config",
   "text.autoconfig.twitchchat.option.channel": "Twitch channel",
   "text.autoconfig.twitchchat.option.username": "Username",
   "text.autoconfig.twitchchat.option.oauthKey": "Oauth Key",
