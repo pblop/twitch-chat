@@ -1,5 +1,5 @@
 {
-  "text.autoconfig.mtbridge.category.default": "Minecraft-Twitch Bridge config"
+  "text.autoconfig.mtbridge.category.default": "Minecraft-Twitch Bridge config",
   "text.autoconfig.mtbridge.option.channel": "Twitch channel",
   "text.autoconfig.mtbridge.option.username": "Username",
   "text.autoconfig.mtbridge.option.oauthKey": "Oauth Key",
