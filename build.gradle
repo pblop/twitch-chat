@@ -31,10 +31,11 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+    // Config
     modCompile "cloth-config:ClothConfig:${project.cloth_config_version}"
     modCompile "me.sargunvohra.mcmods:auto-config:${project.auto_config_version}"
 
-    // jar-in-jar
+    // Config jar-in-jar
     include "cloth-config:ClothConfig:${project.cloth_config_version}"
     include "me.sargunvohra.mcmods:auto-config:${project.auto_config_version}"
 

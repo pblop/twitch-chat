@@ -1,10 +1,8 @@
 package to.pabli.mtbridge.twitch_integration;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import java.awt.Color;
 import java.io.IOException;
-import java.util.Map.Entry;
 import javax.net.ssl.SSLSocketFactory;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
@@ -22,9 +20,7 @@ import org.pircbotx.hooks.events.MessageEvent;
 import org.pircbotx.hooks.events.NoticeEvent;
 import org.pircbotx.hooks.events.PingEvent;
 import org.pircbotx.hooks.events.UnknownEvent;
-import org.pircbotx.hooks.types.GenericMessageEvent;
 import to.pabli.mtbridge.MTBridge;
-import to.pabli.mtbridge.twitch_integration.colors.CalculateMinecraftColor;
 
 public class Bot extends ListenerAdapter {
   private final PircBotX ircBot;
@@ -44,8 +40,8 @@ public class Bot extends ListenerAdapter {
         .addCapHandler(new EnableCapHandler("twitch.tv/tags"))
         .addCapHandler(new EnableCapHandler("twitch.tv/commands"))
 
-        .addServer("irc.chat.twitch.tv", 6667)
-//        .setSocketFactory(SSLSocketFactory.getDefault())
+        .addServer("irc.chat.twitch.tv", 6697)
+        .setSocketFactory(SSLSocketFactory.getDefault())
         .setName(username)
         .setServerPassword(oauthKey)
         .addAutoJoinChannel("#" + channel)

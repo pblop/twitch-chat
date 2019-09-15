@@ -5,13 +5,6 @@ pluginManagement {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
         }
-//        maven {
-//            url = "https://minecraft.curseforge.com/api/maven"
-//        }
-//        maven {
-//            url = 'http://maven.sargunv.s3-website-us-west-2.amazonaws.com/'
-//        }
-
         gradlePluginPortal()
     }
 }
