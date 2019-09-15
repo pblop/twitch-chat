@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "to.pabli.mtbridge.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "client": [
+    "ChatMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

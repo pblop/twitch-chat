@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "mtbridge",
+  "version": "${version}",
+
+  "name": "Minecraft-Twitch Bridge",
+  "description": "",
+  "authors": [
+    "Pablo Pérez Rodríguez"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/PabloPerezRodriguez/minecraft-twitch-bridge"
+  },
+
+  "license": "MIT",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [ "to.pabli.mtbridge.MTBridge" ],
+    "modmenu": [ "to.pabli.mtbridge.config.ModMenuCompat" ],
+    "cotton-client-commands": [ "to.pabli.mtbridge.commands.TwitchBaseCommand" ]
+  },
+  "mixins": [
+    "mtbridge.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.4.0",
+    "fabric": "*"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}
