@@ -1,22 +1,22 @@
-package to.pabli.mtbridge.commands;
+package to.pabli.twitchchat.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.cottonmc.clientcommands.ArgumentBuilders;
 import io.github.cottonmc.clientcommands.CottonClientCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
-import to.pabli.mtbridge.MTBridge;
+import to.pabli.twitchchat.TwitchChatMod;
 
 public class TwitchDisableCommand {
   public static LiteralArgumentBuilder<CottonClientCommandSource> getArgumentBuilder() {
     return ArgumentBuilders.literal("disable")
         .executes(ctx -> {
-          if (MTBridge.bot == null || !MTBridge.bot.isConnected()) {
+          if (TwitchChatMod.bot == null || !TwitchChatMod.bot.isConnected()) {
             ctx.getSource().sendFeedback(new LiteralText("Twitch integration is already disabled!"));
             return 1;
           }
 
-          MTBridge.bot.stop();
+          TwitchChatMod.bot.stop();
           ctx.getSource().sendFeedback(new LiteralText("Twitch integration is now disabled!").formatted(
               Formatting.DARK_GRAY));
 

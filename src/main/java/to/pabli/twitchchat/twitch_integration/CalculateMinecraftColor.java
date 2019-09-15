@@ -1,4 +1,4 @@
-package to.pabli.mtbridge.twitch_integration;
+package to.pabli.twitchchat.twitch_integration;
 
 import java.awt.Color;
 import java.util.Arrays;

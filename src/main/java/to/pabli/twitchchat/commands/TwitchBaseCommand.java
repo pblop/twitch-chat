@@ -1,14 +1,11 @@
-package to.pabli.mtbridge.commands;
+package to.pabli.twitchchat.commands;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
-import static com.mojang.brigadier.arguments.StringArgumentType.string;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import io.github.cottonmc.clientcommands.ArgumentBuilders;
 import io.github.cottonmc.clientcommands.ClientCommandPlugin;
 import io.github.cottonmc.clientcommands.CottonClientCommandSource;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.LiteralText;
 
 public class TwitchBaseCommand implements ClientCommandPlugin {

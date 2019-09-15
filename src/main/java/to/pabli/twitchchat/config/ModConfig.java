@@ -1,15 +1,11 @@
-package to.pabli.mtbridge.config;
+package to.pabli.twitchchat.config;
 
-import java.util.Arrays;
-import java.util.List;
 import me.sargunvohra.mcmods.autoconfig1.ConfigData;
 import me.sargunvohra.mcmods.autoconfig1.annotation.Config;
-import me.sargunvohra.mcmods.autoconfig1.annotation.ConfigEntry;
-import me.sargunvohra.mcmods.autoconfig1.serializer.PartitioningSerializer;
 import me.sargunvohra.mcmods.autoconfig1.shadowed.blue.endless.jankson.Comment;
 
 @SuppressWarnings("unused")
-@Config(name = "mtbridge")
+@Config(name = "twitchchat")
 public class ModConfig implements ConfigData {
   @Comment("The channel name you want to connect to")
   public String channel = "";

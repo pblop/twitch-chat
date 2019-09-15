@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "to.pabli.mtbridge.mixin",
+  "package": "to.pabli.twitchchat.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
   ],

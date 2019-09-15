@@ -1,28 +1,28 @@
 {
   "schemaVersion": 1,
-  "id": "mtbridge",
+  "id": "twitchchat",
   "version": "${version}",
 
-  "name": "Minecraft-Twitch Bridge",
+  "name": "Twitch Chat Bridge",
   "description": "",
   "authors": [
     "Pablo Pérez Rodríguez"
   ],
   "contact": {
     "homepage": "https://pabli.to/",
-    "sources": "https://github.com/PabloPerezRodriguez/minecraft-twitch-bridge"
+    "sources": "https://github.com/PabloPerezRodriguez/twitch-chat"
   },
 
   "license": "MIT",
 
   "environment": "*",
   "entrypoints": {
-    "main": [ "to.pabli.mtbridge.MTBridge" ],
-    "modmenu": [ "to.pabli.mtbridge.config.ModMenuCompat" ],
-    "cotton-client-commands": [ "to.pabli.mtbridge.commands.TwitchBaseCommand" ]
+    "main": [ "to.pabli.twitchchat.TwitchChatMod" ],
+    "modmenu": [ "to.pabli.twitchchat.config.ModMenuCompat" ],
+    "cotton-client-commands": [ "to.pabli.twitchchat.commands.TwitchBaseCommand" ]
   },
   "mixins": [
-    "mtbridge.mixins.json"
+    "twitchchat.mixins.json"
   ],
 
   "depends": {

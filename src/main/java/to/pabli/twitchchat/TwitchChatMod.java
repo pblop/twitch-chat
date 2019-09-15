@@ -1,10 +1,7 @@
-package to.pabli.mtbridge;
+package to.pabli.twitchchat;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import me.sargunvohra.mcmods.autoconfig1.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
@@ -13,10 +10,10 @@ import net.minecraft.network.MessageType;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import to.pabli.mtbridge.config.ModConfig;
-import to.pabli.mtbridge.twitch_integration.Bot;
+import to.pabli.twitchchat.config.ModConfig;
+import to.pabli.twitchchat.twitch_integration.Bot;
 
-public class MTBridge implements ModInitializer {
+public class TwitchChatMod implements ModInitializer {
   public static Bot bot;
 
 	@Override

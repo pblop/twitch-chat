@@ -1,10 +1,9 @@
-package to.pabli.mtbridge.twitch_integration;
+package to.pabli.twitchchat.twitch_integration;
 
 import com.google.common.collect.ImmutableMap;
 import java.awt.Color;
 import java.io.IOException;
 import javax.net.ssl.SSLSocketFactory;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import org.pircbotx.Channel;
 import org.pircbotx.Configuration;
@@ -20,7 +19,7 @@ import org.pircbotx.hooks.events.MessageEvent;
 import org.pircbotx.hooks.events.NoticeEvent;
 import org.pircbotx.hooks.events.PingEvent;
 import org.pircbotx.hooks.events.UnknownEvent;
-import to.pabli.mtbridge.MTBridge;
+import to.pabli.twitchchat.TwitchChatMod;
 
 public class Bot extends ListenerAdapter {
   private final PircBotX ircBot;
@@ -90,8 +89,8 @@ public class Bot extends ListenerAdapter {
           Color userColor = Color.decode(colorTag);
           formattingColor = CalculateMinecraftColor.findNearestMinecraftColor(userColor);
         }
-        String formattedTime = MTBridge.formatTMISentTimestamp(v3Tags.get("tmi-sent-ts"));
-        MTBridge.addTwitchMessage(formattedTime, user.getNick(), message, formattingColor);
+        String formattedTime = TwitchChatMod.formatTMISentTimestamp(v3Tags.get("tmi-sent-ts"));
+        TwitchChatMod.addTwitchMessage(formattedTime, user.getNick(), message, formattingColor);
       } else {
         System.out.println();
       }
@@ -108,20 +107,20 @@ public class Bot extends ListenerAdapter {
 
   @Override
   public void onNotice(NoticeEvent event) {
-    MTBridge.addNotification(event.getNotice());
+    TwitchChatMod.addNotification(event.getNotice());
   }
 
   @Override
   public void onKick(KickEvent event) {
     String message = event.getReason();
-    MTBridge.addNotification("KICK: " + message);
+    TwitchChatMod.addNotification("KICK: " + message);
   }
 
   @Override
   public void onDisconnect(DisconnectEvent event) throws Exception {
     super.onDisconnect(event);
     Exception disconnectException = event.getDisconnectException();
-    MTBridge.addNotification("DISCONNECT: " + disconnectException.getMessage());
+    TwitchChatMod.addNotification("DISCONNECT: " + disconnectException.getMessage());
   }
 
   Channel currentChannel;
@@ -130,7 +129,7 @@ public class Bot extends ListenerAdapter {
     super.onJoin(event);
     Channel channel = event.getChannel();
      if (currentChannel == null || !currentChannel.equals(channel)) {
-      MTBridge.addNotification("Connected to channel " + this.channel);
+      TwitchChatMod.addNotification("Connected to channel " + this.channel);
       currentChannel = channel;
     }
   }

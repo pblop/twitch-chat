@@ -1,4 +1,4 @@
-package to.pabli.mtbridge.mixin;
+package to.pabli.twitchchat.mixin;
 
 import java.util.Date;
 import me.sargunvohra.mcmods.autoconfig1.AutoConfig;
@@ -9,9 +9,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import to.pabli.mtbridge.MTBridge;
-import to.pabli.mtbridge.config.ModConfig;
-import to.pabli.mtbridge.twitch_integration.CalculateMinecraftColor;
+import to.pabli.twitchchat.TwitchChatMod;
+import to.pabli.twitchchat.config.ModConfig;
+import to.pabli.twitchchat.twitch_integration.CalculateMinecraftColor;
 
 @Mixin(Screen.class)
 public class ChatMixin {
@@ -21,22 +21,22 @@ public class ChatMixin {
 
     // If the message is a twitch message
     if (text.startsWith(config.prefix)) {
-      if (MTBridge.bot != null && MTBridge.bot.isConnected()) {
+      if (TwitchChatMod.bot != null && TwitchChatMod.bot.isConnected()) {
         String textWithoutPrefix = text.replaceFirst(config.prefix, "");
-        MTBridge.bot.sendMessage(textWithoutPrefix); // Send the message to the Twitch IRC Chat
+        TwitchChatMod.bot.sendMessage(textWithoutPrefix); // Send the message to the Twitch IRC Chat
 
         Date currentTime = new Date();
-        String formattedTime = MTBridge.formatDateTwitch(currentTime);
+        String formattedTime = TwitchChatMod.formatDateTwitch(currentTime);
 
-        String username = MTBridge.bot.getUsername();
+        String username = TwitchChatMod.bot.getUsername();
         Formatting userColor = CalculateMinecraftColor.getDefaultUserColor(username);
 
         // Add the message to the Minecraft Chat
-        MTBridge.addTwitchMessage(formattedTime, username, textWithoutPrefix, userColor);
+        TwitchChatMod.addTwitchMessage(formattedTime, username, textWithoutPrefix, userColor);
         MinecraftClient.getInstance().inGameHud.getChatHud().addToMessageHistory(text);
         info.cancel();
       } else {
-        MTBridge.addNotification("Twitch integration is not enabled, to enable it do /twitch enable.");
+        TwitchChatMod.addNotification("Twitch integration is not enabled, to enable it do /twitch enable.");
       }
     }
 	}
