@@ -13,3 +13,5 @@ This mod requires [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmen
 5.  Go ingame and type /twitch enable.
 
 ### Also available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/twitch-chat)
+
+I've started school, so this project is going to be updated sparingly, but I'll try to answer every comment and resolve your issues.
