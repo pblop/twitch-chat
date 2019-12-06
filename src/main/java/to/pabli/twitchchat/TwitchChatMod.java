@@ -17,18 +17,18 @@ public class TwitchChatMod implements ModInitializer {
   public static Bot bot;
 
 	@Override
-	public void onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
+  public void onInitialize() {
+    // This code runs as soon as Minecraft is in a mod-load-ready state.
+    // However, some things (like resources) may still be uninitialized.
+    // Proceed with mild caution.
 
-		// InGameHud.addChatMessage
+    // InGameHud.addChatMessage
     AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
   }
 
-	public static void addTwitchMessage(String time, String username, String message, Formatting textColor) {
+  public static void addTwitchMessage(String time, String username, String message, Formatting textColor) {
     Text timestampText = new LiteralText("[" + time + "] ");
-	  Text usernameText = new LiteralText(username).formatted(textColor);
+    Text usernameText = new LiteralText(username).formatted(textColor);
     Text messageBodyText = new LiteralText(": " + message);
 
     MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT,

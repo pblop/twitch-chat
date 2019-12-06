@@ -28,8 +28,8 @@ public class Bot extends ListenerAdapter {
   private Thread botRunThread;
 
   public Bot(String username, String oauthKey, String channel) {
-    this.channel = channel;
-    this.username = username;
+    this.channel = channel.toLowerCase();
+    this.username = username.toLowerCase();
 
     Configuration config = new Configuration.Builder()
         .setAutoNickChange(false) //Twitch doesn't support multiple users
