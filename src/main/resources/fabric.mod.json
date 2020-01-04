@@ -28,7 +28,8 @@
   "depends": {
     "fabricloader": ">=0.4.0",
     "fabric": "*",
-    "modmenu": "*"
+    "modmenu": "*",
+    "minecraft": "1.15.x"
   },
   "custom": {
     "modmenu:clientsideOnly": true
