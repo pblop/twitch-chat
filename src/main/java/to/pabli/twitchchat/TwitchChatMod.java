@@ -4,11 +4,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.MessageType;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.world.PersistentState;
+import net.minecraft.world.PersistentStateManager;
+import to.pabli.twitchchat.config.ModConfig;
 import to.pabli.twitchchat.twitch_integration.Bot;
 
 public class TwitchChatMod implements ModInitializer {
@@ -16,10 +20,8 @@ public class TwitchChatMod implements ModInitializer {
 
 	@Override
   public void onInitialize() {
-    // This code runs as soon as Minecraft is in a mod-load-ready state.
-    // However, some things (like resources) may still be uninitialized.
-    // Proceed with mild caution.
-    }
+    ModConfig.getConfig().load();
+  }
 
   public static void addTwitchMessage(String time, String username, String message, Formatting textColor) {
     Text timestampText = new LiteralText("[" + time + "] ");

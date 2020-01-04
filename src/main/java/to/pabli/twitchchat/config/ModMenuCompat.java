@@ -22,30 +22,33 @@ public class ModMenuCompat implements ModMenuApi {
     return (prevScreen) -> {
       ConfigBuilder builder = ConfigBuilder.create();
       builder.setTitle("text.twitchchat.title");
+      builder.setSavingRunnable(() -> ModConfig.getConfig().save());
+
 
       ConfigEntryBuilder entryBuilder = ConfigEntryBuilder.create();
 
       ConfigCategory defaultCategory = builder.getOrCreateCategory("text.twitchchat.category.default");
       defaultCategory.addEntry(entryBuilder
-              .startStrField("text.twitchchat.default.channel", ModConfig.getConfig().getChannel())
-              .setSaveConsumer((s -> ModConfig.getConfig().setChannel(s)))
-              .setTooltip("The channel name you want to connect to")
-              .build());
+          .startStrField("text.twitchchat.default.channel", ModConfig.getConfig().getChannel())
+          .setSaveConsumer((s -> ModConfig.getConfig().setChannel(s)))
+          .setTooltip("The channel name you want to connect to")
+          .build());
       defaultCategory.addEntry(entryBuilder
-              .startStrField("text.twitchchat.default.username", ModConfig.getConfig().getUsername())
-              .setSaveConsumer((s -> ModConfig.getConfig().setUsername(s)))
-              .setTooltip("Your Twitch username")
-              .build());
+          .startStrField("text.twitchchat.default.username", ModConfig.getConfig().getUsername())
+          .setSaveConsumer((s -> ModConfig.getConfig().setUsername(s)))
+          .setTooltip("Your Twitch username")
+          .build());
       defaultCategory.addEntry(entryBuilder
-              .startStrField("text.twitchchat.default.oauthKey", ModConfig.getConfig().getOauthKey())
-              .setSaveConsumer((s -> ModConfig.getConfig().setOauthKey(s)))
-              .setTooltip("Your Twitch oauth key")
-              .build());
+          .startStrField("text.twitchchat.default.oauthKey", ModConfig.getConfig().getOauthKey())
+          .setSaveConsumer((s -> ModConfig.getConfig().setOauthKey(s)))
+          .setTooltip("Your Twitch oauth key")
+          .build());
       defaultCategory.addEntry(entryBuilder
-              .startStrField("text.twitchchat.default.prefix", ModConfig.getConfig().getPrefix())
-              .setSaveConsumer((s -> ModConfig.getConfig().setPrefix(s)))
-              .setTooltip("Put this at the start of your messages to send them to a Twitch channel")
-              .build());
+          .startStrField("text.twitchchat.default.prefix", ModConfig.getConfig().getPrefix())
+          .setSaveConsumer((s -> ModConfig.getConfig().setPrefix(s)))
+          .setTooltip("Put this at the start of your messages to send them to a Twitch channel")
+          .build());
+
       return builder.build();
     };
   }
