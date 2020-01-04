@@ -1,9 +1,8 @@
 {
-  "text.autoconfig.twitchchat.title": "Twitch Chat Bridge",
-  "text.autoconfig.twitchchat.category.default": "Twitch Chat Bridge config",
-  "text.autoconfig.twitchchat.option.channel": "Twitch channel",
-  "text.autoconfig.twitchchat.option.username": "Username",
-  "text.autoconfig.twitchchat.option.oauthKey": "Oauth Key",
-  "text.autoconfig.twitchchat.option.enabled": "Enable Twitch Integration",
-  "text.autoconfig.twitchchat.option.prefix": "Prefix"
+  "text.twitchchat.title": "Twitch Chat Bridge",
+  "text.twitchchat.category.default": "Twitch Chat Bridge config",
+  "text.twitchchat.default.channel": "Twitch channel",
+  "text.twitchchat.default.username": "Username",
+  "text.twitchchat.default.oauthKey": "Oauth Key",
+  "text.twitchchat.default.prefix": "Prefix"
 }

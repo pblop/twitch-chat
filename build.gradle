@@ -14,6 +14,7 @@ minecraft {
 }
 
 repositories {
+	jcenter()
     maven { url = 'https://minecraft.curseforge.com/api/maven' }
     maven { url = 'http://maven.sargunv.s3-website-us-west-2.amazonaws.com/' }
     maven {
@@ -32,15 +33,15 @@ dependencies {
 	modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     // Config
-    modCompile "cloth-config:ClothConfig:${project.cloth_config_version}"
-    modCompile "me.sargunvohra.mcmods:auto-config:${project.auto_config_version}"
+    modCompile "me.shedaniel.cloth:config-2:${project.cloth_config_version}"
+//    modCompile "me.sargunvohra.mcmods:auto-config:${project.auto_config_version}"
 
     // Config jar-in-jar
-    include "cloth-config:ClothConfig:${project.cloth_config_version}"
-    include "me.sargunvohra.mcmods:auto-config:${project.auto_config_version}"
+    include "me.shedaniel.cloth:config-2:${project.cloth_config_version}"
+//    include "me.sargunvohra.mcmods:auto-config:${project.auto_config_version}"
 
     // not required, but we want to see our config screen
-    modCompile "io.github.prospector.modmenu:ModMenu:${project.mod_menu_version}"
+    modCompile "io.github.prospector:modmenu:${project.mod_menu_version}"
 
     // we want to register client-side commands. Include the library in our jar. I guess this is fine????
     modCompile "io.github.cottonmc:cotton-client-commands:${project.cotton_client_commands_version}-SNAPSHOT"
