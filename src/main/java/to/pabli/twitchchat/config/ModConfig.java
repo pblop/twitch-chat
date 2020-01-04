@@ -3,13 +3,11 @@ package to.pabli.twitchchat.config;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import net.fabricmc.loader.api.FabricLoader;
-import org.apache.commons.io.IOUtils;
 
 public class ModConfig {
 
