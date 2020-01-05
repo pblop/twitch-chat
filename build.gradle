@@ -50,6 +50,10 @@ dependencies {
     // irc
     implementation 'org.pircbotx:pircbotx:2.1'
     include 'org.pircbotx:pircbotx:2.1'
+
+	// pircbotx needs this 🤷‍
+	include group: 'org.slf4j', name: 'slf4j-api', version: '1.7.13'
+	implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.13'
 }
 
 processResources {

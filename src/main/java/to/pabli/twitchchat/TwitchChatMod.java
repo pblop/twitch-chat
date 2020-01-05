@@ -4,14 +4,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.MessageType;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.world.PersistentState;
-import net.minecraft.world.PersistentStateManager;
 import to.pabli.twitchchat.config.ModConfig;
 import to.pabli.twitchchat.twitch_integration.Bot;
 
