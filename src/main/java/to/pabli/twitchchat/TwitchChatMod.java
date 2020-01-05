@@ -21,7 +21,7 @@ public class TwitchChatMod implements ModInitializer {
   }
 
   public static void addTwitchMessage(String time, String username, String message, Formatting textColor) {
-    Text timestampText = new LiteralText("[" + time + "] ");
+    Text timestampText = new LiteralText(time);
     Text usernameText = new LiteralText(username).formatted(textColor);
     Text messageBodyText = new LiteralText(": " + message);
 
@@ -39,7 +39,7 @@ public class TwitchChatMod implements ModInitializer {
     return formatDateTwitch(date);
   }
   public static String formatDateTwitch(Date date) {
-    SimpleDateFormat sf = new SimpleDateFormat("H:mm");
+    SimpleDateFormat sf = new SimpleDateFormat(ModConfig.getConfig().getDateFormat());
     return sf.format(date);
   }
 }

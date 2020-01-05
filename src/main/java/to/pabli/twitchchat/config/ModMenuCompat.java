@@ -48,6 +48,11 @@ public class ModMenuCompat implements ModMenuApi {
           .setSaveConsumer((s -> ModConfig.getConfig().setPrefix(s)))
           .setTooltip("Put this at the start of your messages to send them to a Twitch channel")
           .build());
+      defaultCategory.addEntry(entryBuilder
+          .startStrField("text.twitchchat.default.dateFormat", ModConfig.getConfig().getDateFormat())
+          .setSaveConsumer((s -> ModConfig.getConfig().setDateFormat(s)))
+          .setTooltip("Customize the timestamp format messages are going to follow")
+          .build());
 
       return builder.build();
     };

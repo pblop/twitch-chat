@@ -4,5 +4,6 @@
   "text.twitchchat.default.channel": "Twitch channel",
   "text.twitchchat.default.username": "Username",
   "text.twitchchat.default.oauthKey": "Oauth Key",
-  "text.twitchchat.default.prefix": "Prefix"
+  "text.twitchchat.default.prefix": "Prefix",
+  "text.twitchchat.default.dateFormat": "Timestamp format"
 }

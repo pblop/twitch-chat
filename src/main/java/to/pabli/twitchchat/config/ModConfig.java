@@ -19,6 +19,8 @@ public class ModConfig {
   private String oauthKey;
   private String prefix;
 
+  private String dateFormat;
+
   public ModConfig() {
     this.configFile = FabricLoader
         .getInstance()
@@ -29,7 +31,8 @@ public class ModConfig {
     this.channel = "";
     this.username = "";
     this.oauthKey = "";
-    this.prefix = "";
+    this.prefix = ":";
+    this.dateFormat = "[H:mm] ";
   }
 
   public static ModConfig getConfig() {
@@ -103,4 +106,11 @@ public class ModConfig {
     this.prefix = prefix;
   }
 
+  public String getDateFormat() {
+    return dateFormat;
+  }
+
+  public void setDateFormat(String dateFormat) {
+    this.dateFormat = dateFormat;
+  }
 }
