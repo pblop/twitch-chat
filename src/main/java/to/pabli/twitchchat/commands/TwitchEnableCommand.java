@@ -21,6 +21,11 @@ public class TwitchEnableCommand {
             return 1;
           }
 
+          if (config.getChannel().equals("") || config.getUsername().equals("") || config.getOauthKey().equals("")) {
+            ctx.getSource().sendFeedback(new LiteralText("Before doing that you have to set your config!"));
+            return -1;
+          }
+
           TwitchChatMod.bot = new Bot(config.getUsername(), config.getOauthKey(), config.getChannel());
           TwitchChatMod.bot.start();
           ctx.getSource().sendFeedback(new LiteralText("Connecting...").formatted(Formatting.DARK_GRAY));
