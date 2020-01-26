@@ -29,7 +29,7 @@
     "fabricloader": ">=0.4.0",
     "fabric": "*",
     "modmenu": "*"
-  },
+   },
   "custom": {
     "modmenu:clientsideOnly": true
   }

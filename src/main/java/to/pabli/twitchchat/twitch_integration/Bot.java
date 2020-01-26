@@ -11,14 +11,18 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.User;
 import org.pircbotx.cap.EnableCapHandler;
 import org.pircbotx.exception.IrcException;
+import org.pircbotx.hooks.Event;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.DisconnectEvent;
 import org.pircbotx.hooks.events.JoinEvent;
 import org.pircbotx.hooks.events.KickEvent;
+import org.pircbotx.hooks.events.ListenerExceptionEvent;
 import org.pircbotx.hooks.events.MessageEvent;
 import org.pircbotx.hooks.events.NoticeEvent;
 import org.pircbotx.hooks.events.PingEvent;
+import org.pircbotx.hooks.events.PrivateMessageEvent;
 import org.pircbotx.hooks.events.UnknownEvent;
+import org.pircbotx.hooks.types.GenericMessageEvent;
 import to.pabli.twitchchat.TwitchChatMod;
 
 public class Bot extends ListenerAdapter {
@@ -41,9 +45,9 @@ public class Bot extends ListenerAdapter {
 
         .addServer("irc.chat.twitch.tv", 6697)
         .setSocketFactory(SSLSocketFactory.getDefault())
-        .setName(username)
+        .setName(this.username)
         .setServerPassword(oauthKey)
-        .addAutoJoinChannel("#" + channel)
+        .addAutoJoinChannel("#" + this.channel)
 
         .addListener(this)
         .setAutoSplitMessage(false)
@@ -53,6 +57,7 @@ public class Bot extends ListenerAdapter {
   }
 
   public void start() {
+    System.out.println("TWITCH BOT STARTED");
     botRunThread = new Thread(() -> {
       try {
         ircBot.startBot();
@@ -76,7 +81,7 @@ public class Bot extends ListenerAdapter {
   @Override
   public void onMessage(MessageEvent event) throws Exception {
     String message = event.getMessage();
-    System.out.println(message);
+    System.out.println("TWITCH MESSAGE: " + message);
     User user = event.getUser();
     if (user != null) {
       ImmutableMap<String, String> v3Tags = event.getV3Tags();
@@ -101,17 +106,18 @@ public class Bot extends ListenerAdapter {
 
   @Override
   public void onUnknown(UnknownEvent event) throws Exception {
-    System.out.println(event.getLine());
-    System.out.println(event.toString());
+    System.out.println("UNKNOWN TWITCH EVENT: " + event.toString());
   }
 
   @Override
   public void onNotice(NoticeEvent event) {
+    System.out.println("TWITCH NOTICE: " + event.toString());
     TwitchChatMod.addNotification(event.getNotice());
   }
 
   @Override
   public void onKick(KickEvent event) {
+    System.out.println("TWITCH KICK: " + event.toString());
     String message = event.getReason();
     TwitchChatMod.addNotification("KICK: " + message);
   }
@@ -119,6 +125,7 @@ public class Bot extends ListenerAdapter {
   @Override
   public void onDisconnect(DisconnectEvent event) throws Exception {
     super.onDisconnect(event);
+    System.out.println("TWITCH DISCONNECT: " + event.toString());
     Exception disconnectException = event.getDisconnectException();
     TwitchChatMod.addNotification("DISCONNECT: " + disconnectException.getMessage());
   }
@@ -150,6 +157,3 @@ public class Bot extends ListenerAdapter {
     return username;
   }
 }
-//public class Bot {
-//
-//}

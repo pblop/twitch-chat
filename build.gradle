@@ -54,6 +54,10 @@ dependencies {
 	// pircbotx needs this 🤷‍
 	include group: 'org.slf4j', name: 'slf4j-api', version: '1.7.13'
 	implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.13'
+
+//	Uncomment this to get more log info from pircbotx.
+//	include group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.13'
+//	implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.13'
 }
 
 processResources {
