@@ -3,6 +3,7 @@ package to.pabli.twitchchat.twitch_integration;
 import com.google.common.collect.ImmutableMap;
 import java.awt.Color;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import javax.net.ssl.SSLSocketFactory;
 import net.minecraft.util.Formatting;
 import org.pircbotx.Channel;
@@ -38,6 +39,7 @@ public class Bot extends ListenerAdapter {
     Configuration config = new Configuration.Builder()
         .setAutoNickChange(false) //Twitch doesn't support multiple users
         .setOnJoinWhoEnabled(false) //Twitch doesn't support WHO command
+        .setEncoding(StandardCharsets.UTF_8) // Use UTF-8 on Windows.
         .setCapEnabled(true)
         .addCapHandler(new EnableCapHandler("twitch.tv/membership")) //Twitch by default doesn't send JOIN, PART, and NAMES unless you request it, see https://dev.twitch.tv/docs/irc/guide/#twitch-irc-capabilities
         .addCapHandler(new EnableCapHandler("twitch.tv/tags"))
