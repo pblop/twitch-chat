@@ -26,7 +26,7 @@ public class ModConfig {
         .getInstance()
         .getConfigDirectory()
         .toPath()
-        .resolve("config.json")
+        .resolve("twitchchat.json")
         .toFile();
     this.channel = "";
     this.username = "";
