@@ -4,12 +4,14 @@
   "version": "${version}",
 
   "name": "Twitch Chat Bridge",
-  "description": "",
+  "icon": "assets/twitchchat/icon.png",
+  "description": "Interconnect Minecraft chat with Twitch chat!",
   "authors": [
     "Pablo Pérez Rodríguez"
   ],
   "contact": {
-    "homepage": "https://pabli.to/",
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/twitch-chat",
+    "issues": "https://github.com/PabloPerezRodriguez/twitch-chat/issues",
     "sources": "https://github.com/PabloPerezRodriguez/twitch-chat"
   },
 
