@@ -9,10 +9,10 @@ import to.pabli.twitchchat.TwitchChatMod;
 import to.pabli.twitchchat.config.ModConfig;
 import to.pabli.twitchchat.config.ModMenuCompat;
 
-public class TwitchChannelCommand {
+public class TwitchWatchCommand {
   public static LiteralArgumentBuilder<CottonClientCommandSource> getArgumentBuilder() {
-    return ArgumentBuilders.literal("channel")
-        // The command to be executed if the command "twitch" is entered with the argument "channel"
+    return ArgumentBuilders.literal("watch")
+        // The command to be executed if the command "twitch" is entered with the argument "watch"
         // It requires channel_name as an argument.
         // It will switch channels in the config to the channel name provided and
         // if the bot is connected to some channel, it will switch channels on the fly.
