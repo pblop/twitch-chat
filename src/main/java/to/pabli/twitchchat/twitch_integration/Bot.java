@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import java.awt.Color;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.net.ssl.SSLSocketFactory;
 import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.time.StopWatch;
@@ -31,7 +33,7 @@ public class Bot extends ListenerAdapter {
   private final PircBotX ircBot;
   private final String username;
   private String channel;
-  private Thread botRunThread;
+  private ExecutorService myExecutor;
 
   public Bot(String username, String oauthKey, String channel) {
     this.channel = channel.toLowerCase();
@@ -59,25 +61,24 @@ public class Bot extends ListenerAdapter {
         .setAutoSplitMessage(false)
         .buildConfiguration();
 
-    ircBot = new PircBotX(config);
+    this.ircBot = new PircBotX(config);
+    this.myExecutor = Executors.newCachedThreadPool();
   }
 
   public void start() {
     System.out.println("TWITCH BOT STARTED");
-    botRunThread = new Thread(() -> {
+    myExecutor.execute(() -> {
       try {
         ircBot.startBot();
       } catch (IOException | IrcException e) {
         e.printStackTrace();
       }
     });
-    botRunThread.start();
   }
 
   public void stop() {
     ircBot.stopBotReconnect();
     ircBot.close();
-//    botRunThread.interrupt();
   }
 
   public boolean isConnected() {
@@ -169,9 +170,11 @@ public class Bot extends ListenerAdapter {
     String oldChannel = this.channel;
     this.channel = channel.toLowerCase();
     if (ircBot.isConnected()) {
-      ircBot.sendRaw().rawLine("PART #" + oldChannel); // Leave the channel
-      ircBot.sendIRC().joinChannel("#" + this.channel); // Join the new channel
-      ircBot.sendCAP().request("twitch.tv/membership", "twitch.tv/tags", "twitch.tv/commands"); // Ask for capabilities
+      myExecutor.execute(() -> {
+        ircBot.sendRaw().rawLine("PART #" + oldChannel); // Leave the channel
+        ircBot.sendIRC().joinChannel("#" + this.channel); // Join the new channel
+        ircBot.sendCAP().request("twitch.tv/membership", "twitch.tv/tags", "twitch.tv/commands"); // Ask for capabilities
+      });
     }
   }
 }
