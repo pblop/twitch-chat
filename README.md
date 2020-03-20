@@ -10,7 +10,9 @@ This mod requires [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmen
 2.  Open the mod menu.
 3.  Open this mod's configuration inside that menu.
 4.  Fill in the config textboxes.
-5.  Go ingame and type /twitch enable.
+5.  Go ingame and type /twitch watch \<channel\> (channel should be the name of the Twitch channel you want to join).
+You can use this command as many times as you want. 
+6.  Type /twitch enable.
 
 ### Also available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/twitch-chat)
 
