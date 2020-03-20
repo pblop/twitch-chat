@@ -29,11 +29,6 @@ public class ModMenuCompat implements ModMenuApi {
 
       ConfigCategory defaultCategory = builder.getOrCreateCategory("text.twitchchat.category.default");
       defaultCategory.addEntry(entryBuilder
-          .startStrField("text.twitchchat.default.channel", ModConfig.getConfig().getChannel())
-          .setSaveConsumer((s -> ModConfig.getConfig().setChannel(s)))
-          .setTooltip("The channel name you want to connect to")
-          .build());
-      defaultCategory.addEntry(entryBuilder
           .startStrField("text.twitchchat.default.username", ModConfig.getConfig().getUsername())
           .setSaveConsumer((s -> ModConfig.getConfig().setUsername(s)))
           .setTooltip("Your Twitch username")

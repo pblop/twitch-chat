@@ -10,6 +10,8 @@ import to.pabli.twitchchat.TwitchChatMod;
 public class TwitchDisableCommand {
   public static LiteralArgumentBuilder<CottonClientCommandSource> getArgumentBuilder() {
     return ArgumentBuilders.literal("disable")
+        // The command to be executed if the command "twitch" is entered with the argument "disable"
+        // It shuts down the irc bot.
         .executes(ctx -> {
           if (TwitchChatMod.bot == null || !TwitchChatMod.bot.isConnected()) {
             ctx.getSource().sendFeedback(new LiteralText("Twitch integration is already disabled!"));

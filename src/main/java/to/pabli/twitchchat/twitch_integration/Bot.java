@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import javax.net.ssl.SSLSocketFactory;
 import net.minecraft.util.Formatting;
+import org.apache.commons.lang3.time.StopWatch;
 import org.pircbotx.Channel;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
@@ -29,14 +30,14 @@ import to.pabli.twitchchat.TwitchChatMod;
 public class Bot extends ListenerAdapter {
   private final PircBotX ircBot;
   private final String username;
-  public String channel;
+  private String channel;
   private Thread botRunThread;
 
   public Bot(String username, String oauthKey, String channel) {
     this.channel = channel.toLowerCase();
     this.username = username.toLowerCase();
 
-    Configuration config = new Configuration.Builder()
+    Configuration.Builder builder = new Configuration.Builder()
         .setAutoNickChange(false) //Twitch doesn't support multiple users
         .setOnJoinWhoEnabled(false) //Twitch doesn't support WHO command
         .setEncoding(StandardCharsets.UTF_8) // Use UTF-8 on Windows.
@@ -48,10 +49,13 @@ public class Bot extends ListenerAdapter {
         .addServer("irc.chat.twitch.tv", 6697)
         .setSocketFactory(SSLSocketFactory.getDefault())
         .setName(this.username)
-        .setServerPassword(oauthKey)
-        .addAutoJoinChannel("#" + this.channel)
+        .setServerPassword(oauthKey);
 
-        .addListener(this)
+    if (!channel.equals("")) {
+       builder.addAutoJoinChannel("#" + this.channel);
+    }
+
+    Configuration config = builder.addListener(this)
         .setAutoSplitMessage(false)
         .buildConfiguration();
 
@@ -157,5 +161,17 @@ public class Bot extends ListenerAdapter {
 
   public String getUsername() {
     return username;
+  }
+
+
+
+  public void joinChannel(String channel) {
+    String oldChannel = this.channel;
+    this.channel = channel.toLowerCase();
+    if (ircBot.isConnected()) {
+      ircBot.sendRaw().rawLine("PART #" + oldChannel); // Leave the channel
+      ircBot.sendIRC().joinChannel("#" + this.channel); // Join the new channel
+      ircBot.sendCAP().request("twitch.tv/membership", "twitch.tv/tags", "twitch.tv/commands"); // Ask for capabilities
+    }
   }
 }

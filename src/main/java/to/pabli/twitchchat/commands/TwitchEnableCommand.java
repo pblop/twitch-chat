@@ -13,6 +13,7 @@ public class TwitchEnableCommand {
   public static LiteralArgumentBuilder<CottonClientCommandSource> getArgumentBuilder() {
     return ArgumentBuilders.literal("enable")
         // The command to be executed if the command "twitch" is entered with the argument "enable"
+        // It starts up the irc bot.
         .executes(ctx -> {
           ModConfig config = ModConfig.getConfig();
 
@@ -21,9 +22,13 @@ public class TwitchEnableCommand {
             return 1;
           }
 
-          if (config.getChannel().equals("") || config.getUsername().equals("") || config.getOauthKey().equals("")) {
+          if (config.getUsername().equals("") || config.getOauthKey().equals("")) {
             ctx.getSource().sendFeedback(new LiteralText("Before doing that you have to set your config!"));
             return -1;
+          }
+
+          if (config.getChannel().equals("")) {
+            ctx.getSource().sendFeedback(new LiteralText("You won't connect to a channel because you haven't selected any. You can select a channel with /twitch channel [channel]"));
           }
 
           TwitchChatMod.bot = new Bot(config.getUsername(), config.getOauthKey(), config.getChannel());

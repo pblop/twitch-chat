@@ -16,6 +16,7 @@ public class TwitchBaseCommand implements ClientCommandPlugin {
         .then(TwitchEnableCommand.getArgumentBuilder())
         // The command to be executed if the command "twitch" is entered with the argument "disable"
         .then(TwitchDisableCommand.getArgumentBuilder())
+        .then(TwitchChannelCommand.getArgumentBuilder())
         .executes(source -> {
           source.getSource().sendFeedback(new LiteralText("Welcome to the Minecraft-Twitch Bridge mod!"));
           source.getSource().sendFeedback(new LiteralText("To enable it just do /twitch enable when you're done setting up the config."));
