@@ -7,6 +7,7 @@ import io.github.cottonmc.clientcommands.ArgumentBuilders;
 import io.github.cottonmc.clientcommands.ClientCommandPlugin;
 import io.github.cottonmc.clientcommands.CottonClientCommandSource;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 
 public class TwitchBaseCommand implements ClientCommandPlugin {
   @Override
@@ -18,8 +19,8 @@ public class TwitchBaseCommand implements ClientCommandPlugin {
         .then(TwitchDisableCommand.getArgumentBuilder())
         .then(TwitchWatchCommand.getArgumentBuilder())
         .executes(source -> {
-          source.getSource().sendFeedback(new LiteralText("Welcome to the Minecraft-Twitch Bridge mod!"));
-          source.getSource().sendFeedback(new LiteralText("To enable it just do /twitch enable when you're done setting up the config."));
+          source.getSource().sendFeedback(new TranslatableText("text.twitchchat.command.base.noargs1"));
+          source.getSource().sendFeedback(new TranslatableText("text.twitchchat.command.base.noargs2"));
           return 1;
         })
     );

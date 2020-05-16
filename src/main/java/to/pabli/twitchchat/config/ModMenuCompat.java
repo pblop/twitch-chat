@@ -9,6 +9,7 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class ModMenuCompat implements ModMenuApi {
@@ -31,22 +32,22 @@ public class ModMenuCompat implements ModMenuApi {
       defaultCategory.addEntry(entryBuilder
           .startStrField("text.twitchchat.default.username", ModConfig.getConfig().getUsername())
           .setSaveConsumer((s -> ModConfig.getConfig().setUsername(s)))
-          .setTooltip("Your Twitch username")
+          .setTooltip(new TranslatableText("text.twitchchat.default.username.tooltip").asString())
           .build());
       defaultCategory.addEntry(entryBuilder
           .startStrField("text.twitchchat.default.oauthKey", ModConfig.getConfig().getOauthKey())
           .setSaveConsumer((s -> ModConfig.getConfig().setOauthKey(s)))
-          .setTooltip("Your Twitch oauth key")
+          .setTooltip(new TranslatableText("text.twitchchat.default.oauthKey.tooltip").asString())
           .build());
       defaultCategory.addEntry(entryBuilder
           .startStrField("text.twitchchat.default.prefix", ModConfig.getConfig().getPrefix())
           .setSaveConsumer((s -> ModConfig.getConfig().setPrefix(s)))
-          .setTooltip("Put this at the start of your messages to send them to a Twitch channel")
+          .setTooltip(new TranslatableText("text.twitchchat.default.prefix.tooltip").asString())
           .build());
       defaultCategory.addEntry(entryBuilder
           .startStrField("text.twitchchat.default.dateFormat", ModConfig.getConfig().getDateFormat())
           .setSaveConsumer((s -> ModConfig.getConfig().setDateFormat(s)))
-          .setTooltip("Customize the timestamp format messages are going to follow")
+          .setTooltip(new TranslatableText("text.twitchchat.default.dateFormat.tooltip").asString())
           .build());
 
       return builder.build();

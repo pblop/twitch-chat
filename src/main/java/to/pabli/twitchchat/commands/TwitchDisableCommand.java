@@ -4,6 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.cottonmc.clientcommands.ArgumentBuilders;
 import io.github.cottonmc.clientcommands.CottonClientCommandSource;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import to.pabli.twitchchat.TwitchChatMod;
 
@@ -14,12 +15,12 @@ public class TwitchDisableCommand {
         // It shuts down the irc bot.
         .executes(ctx -> {
           if (TwitchChatMod.bot == null || !TwitchChatMod.bot.isConnected()) {
-            ctx.getSource().sendFeedback(new LiteralText("Twitch integration is already disabled!"));
+            ctx.getSource().sendFeedback(new TranslatableText("text.twitchchat.command.disable.already_disabled"));
             return 1;
           }
 
           TwitchChatMod.bot.stop();
-          ctx.getSource().sendFeedback(new LiteralText("Twitch integration is now disabled!").formatted(
+          ctx.getSource().sendFeedback(new TranslatableText("text.twitchchat.command.disable.disabled").formatted(
               Formatting.DARK_GRAY));
 
           // Return a result. -1 is failure, 0 is a pass and 1 is success.

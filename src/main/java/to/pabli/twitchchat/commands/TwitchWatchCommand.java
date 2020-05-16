@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.cottonmc.clientcommands.ArgumentBuilders;
 import io.github.cottonmc.clientcommands.CottonClientCommandSource;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import to.pabli.twitchchat.TwitchChatMod;
 import to.pabli.twitchchat.config.ModConfig;
 import to.pabli.twitchchat.config.ModMenuCompat;
@@ -23,10 +24,10 @@ public class TwitchWatchCommand {
               ModConfig.getConfig().setChannel(channelName);
               // Also switch channels if the bot has been initialized
               if (TwitchChatMod.bot != null) {
-                ctx.getSource().sendFeedback(new LiteralText("Switching channels to '" + channelName + "'."));
+                ctx.getSource().sendFeedback(new TranslatableText("text.twitchchat.watch.switching", channelName));
                 TwitchChatMod.bot.joinChannel(channelName);
               } else {
-                ctx.getSource().sendFeedback(new LiteralText("The mod will connect to '" + channelName + "' as soon as you enable it."));
+                ctx.getSource().sendFeedback(new TranslatableText("text.twitchchat.watch.connect_on_enable", channelName));
               }
               ModConfig.getConfig().save();
               return 1;

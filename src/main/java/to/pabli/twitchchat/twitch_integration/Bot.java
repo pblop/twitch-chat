@@ -7,6 +7,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.net.ssl.SSLSocketFactory;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.time.StopWatch;
 import org.pircbotx.Channel;
@@ -119,14 +121,14 @@ public class Bot extends ListenerAdapter {
   @Override
   public void onNotice(NoticeEvent event) {
     System.out.println("TWITCH NOTICE: " + event.toString());
-    TwitchChatMod.addNotification(event.getNotice());
+    TwitchChatMod.addNotification(new LiteralText(event.getNotice()));
   }
 
   @Override
   public void onKick(KickEvent event) {
     System.out.println("TWITCH KICK: " + event.toString());
     String message = event.getReason();
-    TwitchChatMod.addNotification("KICK: " + message);
+    TwitchChatMod.addNotification(new TranslatableText("text.twitchchat.bot.kicked", message));
   }
 
   @Override
@@ -134,7 +136,6 @@ public class Bot extends ListenerAdapter {
     super.onDisconnect(event);
     System.out.println("TWITCH DISCONNECT: " + event.toString());
     Exception disconnectException = event.getDisconnectException();
-    TwitchChatMod.addNotification("DISCONNECT: " + disconnectException.getMessage());
   }
 
   Channel currentChannel;
@@ -143,7 +144,7 @@ public class Bot extends ListenerAdapter {
     super.onJoin(event);
     Channel channel = event.getChannel();
      if (currentChannel == null || !currentChannel.equals(channel)) {
-      TwitchChatMod.addNotification("Connected to channel " + this.channel);
+      TwitchChatMod.addNotification(new TranslatableText("text.twitchchat.bot.connected", this.channel));
       currentChannel = channel;
     }
   }

@@ -3,7 +3,29 @@
   "text.twitchchat.category.default": "Twitch Chat Bridge config",
   "text.twitchchat.default.channel": "Twitch channel",
   "text.twitchchat.default.username": "Username",
+  "text.twitchchat.default.username.tooltip": "Your Twitch username",
   "text.twitchchat.default.oauthKey": "Oauth Key",
+  "text.twitchchat.default.oauthKey.tooltip": "Your Twitch oauth key",
   "text.twitchchat.default.prefix": "Prefix",
-  "text.twitchchat.default.dateFormat": "Timestamp format"
+  "text.twitchchat.default.prefix.tooltip": "Put this at the start of your messages to send them to a Twitch channel",
+  "text.twitchchat.default.dateFormat": "Timestamp format",
+  "text.twitchchat.default.dateFormat.tooltip": "Customize the timestamp format messages are going to follow",
+
+  "text.twitchchat.command.base.noargs1": "Welcome to the Minecraft-Twitch Bridge mod!",
+  "text.twitchchat.command.base.noargs2": "To enable it just do /twitch enable when you're done setting up the config.",
+
+  "text.twitchchat.command.disable.already_disabled": "Twitch integration is already disabled!",
+  "text.twitchchat.command.disable.disabled": "Twitch integration is now disabled!",
+
+  "text.twitchchat.command.enable.already_enabled": "Twitch integration is already enabled!",
+  "text.twitchchat.command.enable.set_config": "Before doing that you have to set your config!",
+  "text.twitchchat.command.enable.select_channel": "You won't connect to a channel because you haven't selected any. You can select a channel with /twitch watch [channel]",
+  "text.twitchchat.command.enable.connecting": "Connecting...",
+
+  "text.twitchchat.watch.switching": "Switching channels to '%d'.",
+  "text.twitchchat.watch.connect_on_enable": "The mod will connect to '%d' as soon as you enable it.",
+
+  "text.twitchchat.chat.integration_disabled": "Twitch integration is not enabled, to enable it do /twitch enable.",
+  "text.twitchchat.bot.connected": "Connected to channel '%d'",
+  "text.twitchchat.bot.kicked": "Kicked because: '%d'"
 }

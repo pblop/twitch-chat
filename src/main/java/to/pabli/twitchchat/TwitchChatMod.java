@@ -30,8 +30,8 @@ public class TwitchChatMod implements ModInitializer {
         .append(usernameText)
         .append(messageBodyText));
   }
-  public static void addNotification(String message) {
-    MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT, new LiteralText(message).formatted(Formatting.DARK_GRAY));
+  public static void addNotification(Text message) {
+    MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT, message.formatted(Formatting.DARK_GRAY));
   }
 
   public static String formatTMISentTimestamp(String tmiSentTS) {
