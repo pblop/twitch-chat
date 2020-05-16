@@ -28,7 +28,7 @@ public class TwitchEnableCommand {
           }
 
           if (config.getChannel().equals("")) {
-            ctx.getSource().sendFeedback(new LiteralText("You won't connect to a channel because you haven't selected any. You can select a channel with /twitch channel [channel]"));
+            ctx.getSource().sendFeedback(new LiteralText("You won't connect to a channel because you haven't selected any. You can select a channel with /twitch watch [channel]"));
           }
 
           TwitchChatMod.bot = new Bot(config.getUsername(), config.getOauthKey(), config.getChannel());
