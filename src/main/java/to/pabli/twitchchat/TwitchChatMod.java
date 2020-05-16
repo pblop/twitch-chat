@@ -3,8 +3,10 @@ package to.pabli.twitchchat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import java.util.HashMap;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.Glyph;
 import net.minecraft.network.MessageType;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -14,6 +16,11 @@ import to.pabli.twitchchat.twitch_integration.Bot;
 
 public class TwitchChatMod implements ModInitializer {
   public static Bot bot;
+
+  public static HashMap<String, Character> twitchEmotes = new HashMap<>();
+  static {
+    twitchEmotes.put("Kappa", 'w');
+  }
 
 	@Override
   public void onInitialize() {

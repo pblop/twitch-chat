@@ -14,7 +14,7 @@ import to.pabli.twitchchat.config.ModConfig;
 import to.pabli.twitchchat.twitch_integration.CalculateMinecraftColor;
 
 @Mixin(Screen.class)
-public class ChatMixin {
+public class ChatInputMixin {
 	@Inject(at = @At("HEAD"), method = "sendMessage(Ljava/lang/String;Z)V", cancellable = true)
 	private void sendMessage(String text, boolean showInHistory, CallbackInfo info) {
     ModConfig config = ModConfig.getConfig();
