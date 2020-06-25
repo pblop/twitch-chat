@@ -2,11 +2,14 @@ package to.pabli.twitchchat;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.MessageType;
+import net.minecraft.text.BaseText;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import to.pabli.twitchchat.config.ModConfig;
@@ -21,17 +24,17 @@ public class TwitchChatMod implements ModInitializer {
   }
 
   public static void addTwitchMessage(String time, String username, String message, Formatting textColor) {
-    Text timestampText = new LiteralText(time);
-    Text usernameText = new LiteralText(username).formatted(textColor);
-    Text messageBodyText = new LiteralText(": " + message);
+    MutableText timestampText = new LiteralText(time);
+    MutableText usernameText = new LiteralText(username).formatted(textColor);
+    MutableText messageBodyText = new LiteralText(": " + message);
 
     MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT,
         timestampText
         .append(usernameText)
-        .append(messageBodyText));
+        .append(messageBodyText), UUID.randomUUID());
   }
-  public static void addNotification(Text message) {
-    MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT, message.formatted(Formatting.DARK_GRAY));
+  public static void addNotification(MutableText message) {
+    MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT, message.formatted(Formatting.DARK_GRAY), UUID.randomUUID());
   }
 
   public static String formatTMISentTimestamp(String tmiSentTS) {
