@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.2.6-SNAPSHOT'
+	id 'fabric-loom' version '0.4-SNAPSHOT' // Last updated on 2020-06-25
 	id 'maven-publish'
 }
 
@@ -44,8 +44,8 @@ dependencies {
     modCompile "io.github.prospector:modmenu:${project.mod_menu_version}"
 
     // we want to register client-side commands. Include the library in our jar. I guess this is fine????
-    modCompile "io.github.cottonmc:cotton-client-commands:${project.cotton_client_commands_version}-SNAPSHOT"
-    include "io.github.cottonmc:cotton-client-commands:${project.cotton_client_commands_version}-SNAPSHOT"
+    modCompile "io.github.cottonmc:cotton-client-commands:${project.cotton_client_commands_version}"
+    include "io.github.cottonmc:cotton-client-commands:${project.cotton_client_commands_version}"
 
     // irc
     implementation 'org.pircbotx:pircbotx:2.1'
