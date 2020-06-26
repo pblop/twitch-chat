@@ -1,0 +1,31 @@
+{
+  "text.twitchchat.title": "Puente de chat de Twitch",
+  "text.twitchchat.category.default": "Configuración del puente de chat de Twitch",
+  "text.twitchchat.default.channel": "Canal de Twitch",
+  "text.twitchchat.default.username": "Nombre de usuario",
+  "text.twitchchat.default.username.tooltip": "Tu nombre de usuario de Twitch",
+  "text.twitchchat.default.oauthKey": "Token OAuth",
+  "text.twitchchat.default.oauthKey.tooltip": "Tu token OAuth de Twitch",
+  "text.twitchchat.default.prefix": "Prefijo",
+  "text.twitchchat.default.prefix.tooltip": "Pon esto al comienzo de tus mensajes para enviarlos a un canal de Twitch",
+  "text.twitchchat.default.dateFormat": "Formato de marca de tiempo",
+  "text.twitchchat.default.dateFormat.tooltip": "Personaliza el formato de la marca de tiempo que van a seguir los mensajes",
+
+  "text.twitchchat.command.base.noargs1": "¡Bienvenido al mod de puente de chat entre Minecraft y Twitch!",
+  "text.twitchchat.command.base.noargs2": "Para inicializarlo simplemente escribe /twitch enable cuando hayas terminado de configurar los ajustes.",
+
+  "text.twitchchat.command.disable.already_disabled": "¡La integración de Twitch ya está desactivada!",
+  "text.twitchchat.command.disable.disabled": "¡La integración de Twitch se ha desactivado!",
+
+  "text.twitchchat.command.enable.already_enabled": "¡La integración de Twitch ya está activada!",
+  "text.twitchchat.command.enable.set_config": "¡Antes de hacer eso tienes que ajustar tu configuración!",
+  "text.twitchchat.command.enable.select_channel": "No te vas a conectar a un canal porque no has seleccionado ninguno. Puedes seleccionar un canal con el comando /twitch watch [canal]",
+  "text.twitchchat.command.enable.connecting": "Conectando...",
+
+  "text.twitchchat.watch.switching": "Cambiando canales a '%d'.",
+  "text.twitchchat.watch.connect_on_enable": "El mod se conectará a '%d' según lo actives.",
+
+  "text.twitchchat.chat.integration_disabled": "La integración de twitchj no está activada, para activarla escribe /twitch enable.",
+  "text.twitchchat.bot.connected": "Conectado al canal '%d'",
+  "text.twitchchat.bot.kicked": "Expulsado del canal actual por: '%d'"
+}

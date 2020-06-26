@@ -9,7 +9,7 @@
   "text.twitchchat.default.prefix": "Prefix",
   "text.twitchchat.default.prefix.tooltip": "Put this at the start of your messages to send them to a Twitch channel",
   "text.twitchchat.default.dateFormat": "Timestamp format",
-  "text.twitchchat.default.dateFormat.tooltip": "Customize the timestamp format messages are going to follow",
+  "text.twitchchat.default.dateFormat.tooltip": "Customise the timestamp format messages are going to follow",
 
   "text.twitchchat.command.base.noargs1": "Welcome to the Minecraft-Twitch Bridge mod!",
   "text.twitchchat.command.base.noargs2": "To enable it just do /twitch enable when you're done setting up the config.",
