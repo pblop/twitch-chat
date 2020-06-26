@@ -11,6 +11,12 @@ import net.fabricmc.loader.api.FabricLoader;
 
 public class ModConfig {
 
+  public static final String DEFAULT_CHANNEL = "";
+  public static final String DEFAULT_USERNAME = "";
+  public static final String DEFAULT_OAUTH_KEY = "";
+  public static final String DEFAULT_PREFIX = ":";
+  public static final String DEFAULT_DATE_FORMAT = "[H:mm] ";
+
   private static ModConfig SINGLE_INSTANCE = null;
   private File configFile;
 
@@ -28,11 +34,11 @@ public class ModConfig {
         .toPath()
         .resolve("twitchchat.json")
         .toFile();
-    this.channel = "";
-    this.username = "";
-    this.oauthKey = "";
-    this.prefix = ":";
-    this.dateFormat = "[H:mm] ";
+    this.channel = DEFAULT_CHANNEL;
+    this.username = DEFAULT_USERNAME;
+    this.oauthKey = DEFAULT_OAUTH_KEY;
+    this.prefix = DEFAULT_PREFIX;
+    this.dateFormat = DEFAULT_DATE_FORMAT;
   }
 
   public static ModConfig getConfig() {

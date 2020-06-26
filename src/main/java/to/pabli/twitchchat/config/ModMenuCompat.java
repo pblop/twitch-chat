@@ -29,21 +29,25 @@ public class ModMenuCompat implements ModMenuApi {
               .startStrField(new TranslatableText("text.twitchchat.default.username"), ModConfig.getConfig().getUsername())
               .setSaveConsumer((s -> ModConfig.getConfig().setUsername(s)))
               .setTooltip(new TranslatableText("text.twitchchat.default.username.tooltip"))
+              .setDefaultValue(ModConfig.DEFAULT_USERNAME)
               .build());
       defaultCategory.addEntry(entryBuilder
               .startStrField(new TranslatableText("text.twitchchat.default.oauthKey"), ModConfig.getConfig().getOauthKey())
               .setSaveConsumer((s -> ModConfig.getConfig().setOauthKey(s)))
               .setTooltip(new TranslatableText("text.twitchchat.default.oauthKey.tooltip"))
+              .setDefaultValue(ModConfig.DEFAULT_OAUTH_KEY)
               .build());
       defaultCategory.addEntry(entryBuilder
               .startStrField(new TranslatableText("text.twitchchat.default.prefix"), ModConfig.getConfig().getPrefix())
               .setSaveConsumer((s -> ModConfig.getConfig().setPrefix(s)))
               .setTooltip(new TranslatableText("text.twitchchat.default.prefix.tooltip"))
+              .setDefaultValue(ModConfig.DEFAULT_PREFIX)
               .build());
       defaultCategory.addEntry(entryBuilder
               .startStrField(new TranslatableText("text.twitchchat.default.dateFormat"), ModConfig.getConfig().getDateFormat())
               .setSaveConsumer((s -> ModConfig.getConfig().setDateFormat(s)))
               .setTooltip(new TranslatableText("text.twitchchat.default.dateFormat.tooltip"))
+              .setDefaultValue(ModConfig.DEFAULT_DATE_FORMAT)
               .build());
 
       return builder.build();
