@@ -6,6 +6,10 @@ There are more mods that do this, but none are available for Fabric... so I made
 This mod requires [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu) and 
 [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api) to work.
 
+**NOTE: Even though the mod is on beta, it's fully functional! It's on beta to symbolise I'm not finished adding features.
+If you encounter any bug or issue or have any suggestion, please add it as an issue
+[here](https://github.com/PabloPerezRodriguez/twitch-chat/issues/new).**
+
 ### Usage:
 1.  Get a Twitch oauth key here https://twitchapps.com/tmi/ and write it down somewhere.
 2.  Open the mod menu.
@@ -14,11 +18,6 @@ This mod requires [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmen
 5.  Go ingame and type /twitch watch \<channel\> (channel should be the name of the Twitch channel you want to join).
 You can use this command as many times as you want. 
 6.  Type /twitch enable.
-
-### Also available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/twitch-chat)
-
-I've started school, so this project is going to be updated sparingly, but I'll try to answer every comment and resolve
-your issues.
 
 ### Translations
 If you find the mod is not available on a language you know I would really appreciate it if you could create a pull
@@ -44,3 +43,9 @@ If you have any questions don't hesitate to email, tweet or DM me, you can find 
 Just don't personally send me bugs, ideas or feature/help requests, those go in
 [GitHub issues](https://github.com/PabloPerezRodriguez/twitch-chat/issues) or
 [CurseForge](https://www.curseforge.com/minecraft/mc-mods/twitch-chat).
+
+
+### Also available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/twitch-chat).
+### [Here](https://www.curseforge.com/minecraft/mc-mods/twitch-chat/screenshots) you can see in-game images.
+I've started school, so this project is going to be updated sparingly, but I'll try to answer every comment and resolve
+your issues.
