@@ -22,10 +22,10 @@
   "text.twitchchat.command.enable.select_channel": "No te vas a conectar a un canal porque no has seleccionado ninguno. Puedes seleccionar un canal con el comando /twitch watch [canal]",
   "text.twitchchat.command.enable.connecting": "Conectando...",
 
-  "text.twitchchat.watch.switching": "Cambiando canales a '%d'.",
-  "text.twitchchat.watch.connect_on_enable": "El mod se conectará a '%d' según lo actives.",
+  "text.twitchchat.watch.switching": "Cambiando canales a '%s'.",
+  "text.twitchchat.watch.connect_on_enable": "El mod se conectará a '%s' según lo actives.",
 
   "text.twitchchat.chat.integration_disabled": "La integración de twitchj no está activada, para activarla escribe /twitch enable.",
-  "text.twitchchat.bot.connected": "Conectado al canal '%d'",
-  "text.twitchchat.bot.kicked": "Expulsado del canal actual por: '%d'"
+  "text.twitchchat.bot.connected": "Conectado al canal '%s'",
+  "text.twitchchat.bot.kicked": "Expulsado del canal actual por: '%s'"
 }

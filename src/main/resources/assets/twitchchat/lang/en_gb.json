@@ -22,10 +22,10 @@
   "text.twitchchat.command.enable.select_channel": "You won't connect to a channel because you haven't selected any. You can select a channel with /twitch watch [channel]",
   "text.twitchchat.command.enable.connecting": "Connecting...",
 
-  "text.twitchchat.watch.switching": "Switching channels to '%d'.",
-  "text.twitchchat.watch.connect_on_enable": "The mod will connect to '%d' as soon as you enable it.",
+  "text.twitchchat.watch.switching": "Switching channels to '%s'.",
+  "text.twitchchat.watch.connect_on_enable": "The mod will connect to '%s' as soon as you enable it.",
 
   "text.twitchchat.chat.integration_disabled": "Twitch integration is not enabled, to enable it do /twitch enable.",
-  "text.twitchchat.bot.connected": "Connected to channel '%d'",
-  "text.twitchchat.bot.kicked": "Kicked from the current channel because: '%d'"
+  "text.twitchchat.bot.connected": "Connected to channel '%s'",
+  "text.twitchchat.bot.kicked": "Kicked from the current channel because: '%s'"
 }
