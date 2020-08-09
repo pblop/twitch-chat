@@ -18,28 +18,27 @@ import to.pabli.twitchchat.twitch_integration.CalculateMinecraftColor;
 public class ChatMixin {
 	@Inject(at = @At("HEAD"), method = "sendMessage(Ljava/lang/String;Z)V", cancellable = true)
 	private void sendMessage(String text, boolean showInHistory, CallbackInfo info) {
-    ModConfig config = ModConfig.getConfig();
+      ModConfig config = ModConfig.getConfig();
 
+      // If the message is a twitch message
+      if (text.startsWith(config.getPrefix())) {
+        if (TwitchChatMod.bot != null && TwitchChatMod.bot.isConnected()) {
+          String textWithoutPrefix = text.replaceFirst(config.getPrefix(), "");
+          TwitchChatMod.bot.sendMessage(textWithoutPrefix); // Send the message to the Twitch IRC Chat
 
-    // If the message is a twitch message
-    if (text.startsWith(config.getPrefix())) {
-      if (TwitchChatMod.bot != null && TwitchChatMod.bot.isConnected()) {
-        String textWithoutPrefix = text.replaceFirst(config.getPrefix(), "");
-        TwitchChatMod.bot.sendMessage(textWithoutPrefix); // Send the message to the Twitch IRC Chat
+          Date currentTime = new Date();
+          String formattedTime = TwitchChatMod.formatDateTwitch(currentTime);
 
-        Date currentTime = new Date();
-        String formattedTime = TwitchChatMod.formatDateTwitch(currentTime);
+          String username = TwitchChatMod.bot.getUsername();
+          Formatting userColor = CalculateMinecraftColor.getDefaultUserColor(username);
 
-        String username = TwitchChatMod.bot.getUsername();
-        Formatting userColor = CalculateMinecraftColor.getDefaultUserColor(username);
-
-        // Add the message to the Minecraft Chat
-        TwitchChatMod.addTwitchMessage(formattedTime, username, textWithoutPrefix, userColor);
-        MinecraftClient.getInstance().inGameHud.getChatHud().addToMessageHistory(text);
-        info.cancel();
-      } else {
-        TwitchChatMod.addNotification(new TranslatableText("text.twitchchat.chat.integration_disabled"));
+          // Add the message to the Minecraft Chat
+          TwitchChatMod.addTwitchMessage(formattedTime, username, textWithoutPrefix, userColor);
+          MinecraftClient.getInstance().inGameHud.getChatHud().addToMessageHistory(text);
+          info.cancel();
+        } else {
+          TwitchChatMod.addNotification(new TranslatableText("text.twitchchat.chat.integration_disabled"));
+        }
       }
-    }
 	}
 }
