@@ -19,7 +19,7 @@ repositories {
     maven { url = 'http://maven.sargunv.s3-website-us-west-2.amazonaws.com/' }
     maven {
         name = 'CottonMC'
-        url = 'http://server.bbkr.space:8081/artifactory/libs-snapshot'
+		url = 'https://server.bbkr.space/artifactory/libs-release'
     }
 }
 
