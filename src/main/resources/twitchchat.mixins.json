@@ -5,7 +5,8 @@
   "mixins": [
   ],
   "client": [
-    "ChatMixin"
+    "ChatMixin",
+    "TextRendererTextModifierMixin"
   ],
   "injectors": {
     "defaultRequire": 1
