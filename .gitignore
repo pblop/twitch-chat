@@ -24,3 +24,5 @@ bin/
 
 run/
 .DS_Store
+
+logs/
