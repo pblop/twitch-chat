@@ -2,6 +2,8 @@ package to.pabli.twitchchat.config;
 
 import io.github.prospector.modmenu.api.ConfigScreenFactory;
 import io.github.prospector.modmenu.api.ModMenuApi;
+
+import java.util.ArrayList;
 import java.util.function.Function;
 
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
@@ -10,6 +12,7 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
@@ -48,6 +51,14 @@ public class ModMenuCompat implements ModMenuApi {
               .setSaveConsumer((s -> ModConfig.getConfig().setDateFormat(s)))
               .setTooltip(new TranslatableText("text.twitchchat.default.dateFormat.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_DATE_FORMAT)
+              .build());
+
+      ConfigCategory category2 = builder.getOrCreateCategory(new LiteralText("category2"));
+      category2.addEntry(entryBuilder
+              .startStrList(new LiteralText("strlist"), ModConfig.getConfig().getIgnoreList())
+              .setSaveConsumer((s -> ModConfig.getConfig().setIgnoreList(s)))
+              .setTooltip(new LiteralText("tooltip"))
+              .setDefaultValue(ModConfig.DEFAULT_IGNORE_LIST)
               .build());
 
       return builder.build();

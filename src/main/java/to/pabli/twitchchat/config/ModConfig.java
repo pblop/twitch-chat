@@ -1,5 +1,7 @@
 package to.pabli.twitchchat.config;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.File;
@@ -7,6 +9,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.fabricmc.loader.api.FabricLoader;
 
 public class ModConfig {
@@ -16,6 +21,7 @@ public class ModConfig {
   public static final String DEFAULT_OAUTH_KEY = "";
   public static final String DEFAULT_PREFIX = ":";
   public static final String DEFAULT_DATE_FORMAT = "[H:mm] ";
+  public static final List<String> DEFAULT_IGNORE_LIST = new ArrayList<>();
 
   private static ModConfig SINGLE_INSTANCE = null;
   private final File configFile;
@@ -24,8 +30,8 @@ public class ModConfig {
   private String username;
   private String oauthKey;
   private String prefix;
-
   private String dateFormat;
+  private List<String> ignoreList;
 
   public ModConfig() {
     this.configFile = FabricLoader
@@ -39,6 +45,7 @@ public class ModConfig {
     this.oauthKey = DEFAULT_OAUTH_KEY;
     this.prefix = DEFAULT_PREFIX;
     this.dateFormat = DEFAULT_DATE_FORMAT;
+    this.ignoreList = DEFAULT_IGNORE_LIST;
   }
 
   public static ModConfig getConfig() {
@@ -60,6 +67,12 @@ public class ModConfig {
         this.oauthKey = jsonObject.getAsJsonPrimitive("oauthKey").getAsString();
         this.prefix = jsonObject.getAsJsonPrimitive("prefix").getAsString();
 
+        JsonArray ignoreListJsonArray = jsonObject.getAsJsonArray("ignoreList");
+        if (ignoreListJsonArray != null) {
+          for (JsonElement usernameJsonElement : ignoreListJsonArray) {
+            this.ignoreList.add(usernameJsonElement.getAsString());
+          }
+        }
       }
     } catch (IOException e) {
       // Do nothing, we have no file and thus we have to keep everything as default
@@ -72,6 +85,12 @@ public class ModConfig {
     jsonObject.addProperty("username", this.username);
     jsonObject.addProperty("oauthKey", this.oauthKey);
     jsonObject.addProperty("prefix", this.prefix);
+
+    JsonArray ignoreListJsonArray = new JsonArray();
+    for (String username : this.ignoreList) {
+      ignoreListJsonArray.add(username);
+    }
+    jsonObject.add("ignoreList", ignoreListJsonArray);
 
     try (PrintWriter out = new PrintWriter(configFile)) {
        out.println(jsonObject.toString());
@@ -118,5 +137,13 @@ public class ModConfig {
 
   public void setDateFormat(String dateFormat) {
     this.dateFormat = dateFormat;
+  }
+
+  public List<String> getIgnoreList() {
+    return ignoreList;
+  }
+
+  public void setIgnoreList(List<String> ignoreList) {
+    this.ignoreList = ignoreList;
   }
 }
