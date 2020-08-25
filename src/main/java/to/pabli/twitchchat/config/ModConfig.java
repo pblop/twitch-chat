@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import net.fabricmc.loader.api.FabricLoader;
@@ -45,7 +46,7 @@ public class ModConfig {
     this.oauthKey = DEFAULT_OAUTH_KEY;
     this.prefix = DEFAULT_PREFIX;
     this.dateFormat = DEFAULT_DATE_FORMAT;
-    this.ignoreList = DEFAULT_IGNORE_LIST;
+    this.ignoreList = new ArrayList<>(DEFAULT_IGNORE_LIST);
   }
 
   public static ModConfig getConfig() {
@@ -69,6 +70,7 @@ public class ModConfig {
 
         JsonArray ignoreListJsonArray = jsonObject.getAsJsonArray("ignoreList");
         if (ignoreListJsonArray != null) {
+          this.ignoreList = new ArrayList<>();
           for (JsonElement usernameJsonElement : ignoreListJsonArray) {
             this.ignoreList.add(usernameJsonElement.getAsString());
           }

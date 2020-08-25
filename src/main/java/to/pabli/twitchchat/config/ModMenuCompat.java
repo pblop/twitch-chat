@@ -56,7 +56,7 @@ public class ModMenuCompat implements ModMenuApi {
               .build());
       cosmeticsCategory.addEntry(entryBuilder
               .startStrList(new LiteralText("Ignore list"), ModConfig.getConfig().getIgnoreList())
-              .setSaveConsumer((s -> ModConfig.getConfig().setIgnoreList(s)))
+              .setSaveConsumer((s -> ModConfig.getConfig().setIgnoreList(new ArrayList<>(s))))
               .setTooltip(new LiteralText("Messages from users in this list won't be displayed"))
               .setDefaultValue(ModConfig.DEFAULT_IGNORE_LIST)
               .build());
