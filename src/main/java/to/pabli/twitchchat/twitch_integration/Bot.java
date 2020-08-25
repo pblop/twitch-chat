@@ -30,6 +30,7 @@ import org.pircbotx.hooks.events.PrivateMessageEvent;
 import org.pircbotx.hooks.events.UnknownEvent;
 import org.pircbotx.hooks.types.GenericMessageEvent;
 import to.pabli.twitchchat.TwitchChatMod;
+import to.pabli.twitchchat.config.ModConfig;
 
 public class Bot extends ListenerAdapter {
   private final PircBotX ircBot;
@@ -95,18 +96,19 @@ public class Bot extends ListenerAdapter {
     if (user != null) {
       ImmutableMap<String, String> v3Tags = event.getV3Tags();
       if (v3Tags != null) {
-        String colorTag = v3Tags.get("color");
-        Formatting formattingColor;
-        if (colorTag.equals("")) {
-          formattingColor = CalculateMinecraftColor.getDefaultUserColor(user.getNick());
-        } else {
-          Color userColor = Color.decode(colorTag);
-          formattingColor = CalculateMinecraftColor.findNearestMinecraftColor(userColor);
+        if (!ModConfig.getConfig().getIgnoreList().contains(user.getNick())) {
+          String colorTag = v3Tags.get("color");
+          Formatting formattingColor;
+          if (colorTag.equals("")) {
+            formattingColor = CalculateMinecraftColor.getDefaultUserColor(user.getNick());
+          } else {
+            Color userColor = Color.decode(colorTag);
+            formattingColor = CalculateMinecraftColor.findNearestMinecraftColor(userColor);
+          }
+          String formattedTime = TwitchChatMod.formatTMISentTimestamp(v3Tags.get("tmi-sent-ts"));
+          TwitchChatMod.addTwitchMessage(formattedTime, user.getNick(), message, formattingColor);
         }
-        String formattedTime = TwitchChatMod.formatTMISentTimestamp(v3Tags.get("tmi-sent-ts"));
-        TwitchChatMod.addTwitchMessage(formattedTime, user.getNick(), message, formattingColor);
       } else {
-        System.out.println();
       }
     } else {
       System.out.println("NON-USER MESSAGE" + event.getMessage());
