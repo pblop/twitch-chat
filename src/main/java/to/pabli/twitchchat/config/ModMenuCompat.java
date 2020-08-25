@@ -40,24 +40,24 @@ public class ModMenuCompat implements ModMenuApi {
               .setTooltip(new TranslatableText("text.twitchchat.default.oauthKey.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_OAUTH_KEY)
               .build());
-      defaultCategory.addEntry(entryBuilder
+
+      ConfigCategory cosmeticsCategory = builder.getOrCreateCategory(new LiteralText("Cosmetics"));
+      cosmeticsCategory.addEntry(entryBuilder
               .startStrField(new TranslatableText("text.twitchchat.default.prefix"), ModConfig.getConfig().getPrefix())
               .setSaveConsumer((s -> ModConfig.getConfig().setPrefix(s)))
               .setTooltip(new TranslatableText("text.twitchchat.default.prefix.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_PREFIX)
               .build());
-      defaultCategory.addEntry(entryBuilder
+      cosmeticsCategory.addEntry(entryBuilder
               .startStrField(new TranslatableText("text.twitchchat.default.dateFormat"), ModConfig.getConfig().getDateFormat())
               .setSaveConsumer((s -> ModConfig.getConfig().setDateFormat(s)))
               .setTooltip(new TranslatableText("text.twitchchat.default.dateFormat.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_DATE_FORMAT)
               .build());
-
-      ConfigCategory category2 = builder.getOrCreateCategory(new LiteralText("category2"));
-      category2.addEntry(entryBuilder
-              .startStrList(new LiteralText("strlist"), ModConfig.getConfig().getIgnoreList())
+      cosmeticsCategory.addEntry(entryBuilder
+              .startStrList(new LiteralText("Ignore list"), ModConfig.getConfig().getIgnoreList())
               .setSaveConsumer((s -> ModConfig.getConfig().setIgnoreList(s)))
-              .setTooltip(new LiteralText("tooltip"))
+              .setTooltip(new LiteralText("Messages from users in this list won't be displayed"))
               .setDefaultValue(ModConfig.DEFAULT_IGNORE_LIST)
               .build());
 
