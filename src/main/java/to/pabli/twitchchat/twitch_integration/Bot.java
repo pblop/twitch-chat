@@ -109,6 +109,7 @@ public class Bot extends ListenerAdapter {
           TwitchChatMod.addTwitchMessage(formattedTime, user.getNick(), message, formattingColor);
         }
       } else {
+        System.out.println("Message with no v3tags: " + event.getMessage());
       }
     } else {
       System.out.println("NON-USER MESSAGE" + event.getMessage());
