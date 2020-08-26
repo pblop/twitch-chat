@@ -24,10 +24,10 @@ public class TwitchWatchCommand {
               ModConfig.getConfig().setChannel(channelName);
               // Also switch channels if the bot has been initialized
               if (TwitchChatMod.bot != null) {
-                ctx.getSource().sendFeedback(new TranslatableText("text.twitchchat.watch.switching", channelName));
+                ctx.getSource().sendFeedback(new TranslatableText("text.twitchchat.command.watch.switching", channelName));
                 TwitchChatMod.bot.joinChannel(channelName);
               } else {
-                ctx.getSource().sendFeedback(new TranslatableText("text.twitchchat.watch.connect_on_enable", channelName));
+                ctx.getSource().sendFeedback(new TranslatableText("text.twitchchat.command.watch.connect_on_enable", channelName));
               }
               ModConfig.getConfig().save();
               return 1;

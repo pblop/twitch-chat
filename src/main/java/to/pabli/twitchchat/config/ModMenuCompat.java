@@ -21,43 +21,43 @@ public class ModMenuCompat implements ModMenuApi {
   public ConfigScreenFactory<?> getModConfigScreenFactory() {
     return (ConfigScreenFactory<Screen>) screen -> {
       ConfigBuilder builder = ConfigBuilder.create();
-      builder.setTitle(new TranslatableText("text.twitchchat.title"));
+      builder.setTitle(new TranslatableText("config.twitchchat.title"));
       builder.setSavingRunnable(() -> ModConfig.getConfig().save());
 
 
       ConfigEntryBuilder entryBuilder = ConfigEntryBuilder.create();
 
-      ConfigCategory defaultCategory = builder.getOrCreateCategory(new TranslatableText("text.twitchchat.category.default"));
+      ConfigCategory defaultCategory = builder.getOrCreateCategory(new TranslatableText("config.twitchchat.category.default"));
       defaultCategory.addEntry(entryBuilder
-              .startStrField(new TranslatableText("text.twitchchat.default.username"), ModConfig.getConfig().getUsername())
+              .startStrField(new TranslatableText("config.twitchchat.default.username"), ModConfig.getConfig().getUsername())
               .setSaveConsumer((s -> ModConfig.getConfig().setUsername(s)))
-              .setTooltip(new TranslatableText("text.twitchchat.default.username.tooltip"))
+              .setTooltip(new TranslatableText("config.twitchchat.default.username.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_USERNAME)
               .build());
       defaultCategory.addEntry(entryBuilder
-              .startStrField(new TranslatableText("text.twitchchat.default.oauthKey"), ModConfig.getConfig().getOauthKey())
+              .startStrField(new TranslatableText("config.twitchchat.default.oauthKey"), ModConfig.getConfig().getOauthKey())
               .setSaveConsumer((s -> ModConfig.getConfig().setOauthKey(s)))
-              .setTooltip(new TranslatableText("text.twitchchat.default.oauthKey.tooltip"))
+              .setTooltip(new TranslatableText("config.twitchchat.default.oauthKey.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_OAUTH_KEY)
               .build());
 
-      ConfigCategory cosmeticsCategory = builder.getOrCreateCategory(new LiteralText("Cosmetics"));
+      ConfigCategory cosmeticsCategory = builder.getOrCreateCategory(new TranslatableText("config.twitchchat.category.cosmetics"));
       cosmeticsCategory.addEntry(entryBuilder
-              .startStrField(new TranslatableText("text.twitchchat.default.prefix"), ModConfig.getConfig().getPrefix())
+              .startStrField(new TranslatableText("config.twitchchat.cosmetics.prefix"), ModConfig.getConfig().getPrefix())
               .setSaveConsumer((s -> ModConfig.getConfig().setPrefix(s)))
-              .setTooltip(new TranslatableText("text.twitchchat.default.prefix.tooltip"))
+              .setTooltip(new TranslatableText("config.twitchchat.cosmetics.prefix.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_PREFIX)
               .build());
       cosmeticsCategory.addEntry(entryBuilder
-              .startStrField(new TranslatableText("text.twitchchat.default.dateFormat"), ModConfig.getConfig().getDateFormat())
+              .startStrField(new TranslatableText("config.twitchchat.cosmetics.dateFormat"), ModConfig.getConfig().getDateFormat())
               .setSaveConsumer((s -> ModConfig.getConfig().setDateFormat(s)))
-              .setTooltip(new TranslatableText("text.twitchchat.default.dateFormat.tooltip"))
+              .setTooltip(new TranslatableText("config.twitchchat.cosmetics.dateFormat.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_DATE_FORMAT)
               .build());
       cosmeticsCategory.addEntry(entryBuilder
-              .startStrList(new LiteralText("Ignore list"), ModConfig.getConfig().getIgnoreList())
+              .startStrList(new TranslatableText("config.twitchchat.cosmetics.ignorelist"), ModConfig.getConfig().getIgnoreList())
               .setSaveConsumer((s -> ModConfig.getConfig().setIgnoreList(new ArrayList<>(s))))
-              .setTooltip(new LiteralText("Messages from users in this list won't be displayed"))
+              .setTooltip(new TranslatableText("config.twitchchat.cosmetics.ignorelist.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_IGNORE_LIST)
               .build());
 
