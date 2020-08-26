@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -146,6 +147,7 @@ public class ModConfig {
   }
 
   public void setIgnoreList(List<String> ignoreList) {
-    this.ignoreList = ignoreList;
+    // Force all usernames to be lowercase
+    this.ignoreList = ignoreList.parallelStream().map(String::toLowerCase).collect(Collectors.toList());
   }
 }
