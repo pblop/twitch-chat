@@ -61,9 +61,9 @@ public class ModMenuCompat implements ModMenuApi {
               .setDefaultValue(ModConfig.DEFAULT_IGNORE_LIST)
               .build());
       cosmeticsCategory.addEntry(entryBuilder
-              .startBooleanToggle(new LiteralText("Suggest usernames for /twitch watch"), ModConfig.getConfig().areTwitchWatchSuggestionsEnabled())
+              .startBooleanToggle(new TranslatableText("config.twitchchat.cosmetics.twitchWatchSuggestions"), ModConfig.getConfig().areTwitchWatchSuggestionsEnabled())
               .setSaveConsumer((b -> ModConfig.getConfig().setTwitchWatchSuggestions(b)))
-              .setTooltip(new LiteralText("Autocomplete /twitch watch channel names with usernames from your current game"))
+              .setTooltip(new TranslatableText("config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_TWITCH_WATCH_SUGGESTIONS)
               .build());
 

@@ -13,6 +13,8 @@
   "config.twitchchat.cosmetics.dateFormat.tooltip": "Personaliza el formato de la marca de tiempo que van a seguir los mensajes",
   "config.twitchchat.cosmetics.ignorelist": "Lista de ignorados",
   "config.twitchchat.cosmetics.ignorelist.tooltip": "Los mensajes de usuarios en esta lista no serán mostrados",
+  "config.twitchchat.cosmetics.twitchWatchSuggestions": "Sugerencias para /twitch watch",
+  "config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip": "Autocompletar los nombres de canales de /twitch watch con usuarios en tu servidor",
 
   "text.twitchchat.command.base.noargs1": "¡Bienvenido al mod de puente de chat entre Minecraft y Twitch!",
   "text.twitchchat.command.base.noargs2": "Para inicializarlo simplemente escribe /twitch enable cuando hayas terminado de configurar los ajustes.",
