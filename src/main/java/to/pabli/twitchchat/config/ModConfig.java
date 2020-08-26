@@ -24,6 +24,7 @@ public class ModConfig {
   public static final String DEFAULT_PREFIX = ":";
   public static final String DEFAULT_DATE_FORMAT = "[H:mm] ";
   public static final List<String> DEFAULT_IGNORE_LIST = new ArrayList<>();
+  public static final boolean DEFAULT_TWITCH_WATCH_SUGGESTIONS = false;
 
   private static ModConfig SINGLE_INSTANCE = null;
   private final File configFile;
@@ -34,6 +35,7 @@ public class ModConfig {
   private String prefix;
   private String dateFormat;
   private List<String> ignoreList;
+  private boolean twitchWatchSuggestions;
 
   public ModConfig() {
     this.configFile = FabricLoader
@@ -48,6 +50,7 @@ public class ModConfig {
     this.prefix = DEFAULT_PREFIX;
     this.dateFormat = DEFAULT_DATE_FORMAT;
     this.ignoreList = new ArrayList<>(DEFAULT_IGNORE_LIST);
+    this.twitchWatchSuggestions = DEFAULT_TWITCH_WATCH_SUGGESTIONS;
   }
 
   public static ModConfig getConfig() {
@@ -64,18 +67,30 @@ public class ModConfig {
       if (!jsonStr. equals("")) {
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonStr);
-        this.channel = jsonObject.getAsJsonPrimitive("channel").getAsString();
-        this.username = jsonObject.getAsJsonPrimitive("username").getAsString();
-        this.oauthKey = jsonObject.getAsJsonPrimitive("oauthKey").getAsString();
-        this.prefix = jsonObject.getAsJsonPrimitive("prefix").getAsString();
+        this.channel = jsonObject.has("channel")
+                ? jsonObject.getAsJsonPrimitive("channel").getAsString()
+                : DEFAULT_CHANNEL;
+        this.username = jsonObject.has("username")
+                ? jsonObject.getAsJsonPrimitive("username").getAsString()
+                : DEFAULT_USERNAME;
+        this.oauthKey = jsonObject.has("oauthKey")
+                ? jsonObject.getAsJsonPrimitive("oauthKey").getAsString()
+                : DEFAULT_OAUTH_KEY;
+        this.prefix = jsonObject.has("prefix")
+                ? jsonObject.getAsJsonPrimitive("prefix").getAsString()
+                : DEFAULT_PREFIX;
 
-        JsonArray ignoreListJsonArray = jsonObject.getAsJsonArray("ignoreList");
-        if (ignoreListJsonArray != null) {
+        if (jsonObject.has("ignoreList")) {
+          JsonArray ignoreListJsonArray = jsonObject.getAsJsonArray("ignoreList");
           this.ignoreList = new ArrayList<>();
           for (JsonElement usernameJsonElement : ignoreListJsonArray) {
             this.ignoreList.add(usernameJsonElement.getAsString());
           }
         }
+
+        this.twitchWatchSuggestions = jsonObject.has("twitchWatchSuggestions")
+                ? jsonObject.getAsJsonPrimitive("twitchWatchSuggestions").getAsBoolean()
+                : DEFAULT_TWITCH_WATCH_SUGGESTIONS;
       }
     } catch (IOException e) {
       // Do nothing, we have no file and thus we have to keep everything as default
@@ -95,6 +110,7 @@ public class ModConfig {
     }
     jsonObject.add("ignoreList", ignoreListJsonArray);
 
+    jsonObject.addProperty("twitchWatchSuggestions", this.twitchWatchSuggestions);
     try (PrintWriter out = new PrintWriter(configFile)) {
        out.println(jsonObject.toString());
     } catch (FileNotFoundException e) {
@@ -149,5 +165,13 @@ public class ModConfig {
   public void setIgnoreList(List<String> ignoreList) {
     // Force all usernames to be lowercase
     this.ignoreList = ignoreList.parallelStream().map(String::toLowerCase).collect(Collectors.toList());
+  }
+
+  public boolean areTwitchWatchSuggestionsEnabled() {
+    return twitchWatchSuggestions;
+  }
+
+  public void setTwitchWatchSuggestions(boolean twitchWatchSuggestions) {
+    this.twitchWatchSuggestions = twitchWatchSuggestions;
   }
 }

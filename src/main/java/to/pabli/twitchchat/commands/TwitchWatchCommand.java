@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.cottonmc.clientcommands.ArgumentBuilders;
 import io.github.cottonmc.clientcommands.CottonClientCommandSource;
+import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import to.pabli.twitchchat.TwitchChatMod;
@@ -18,6 +19,7 @@ public class TwitchWatchCommand {
         // It will switch channels in the config to the channel name provided and
         // if the bot is connected to some channel, it will switch channels on the fly.
         .then(ArgumentBuilders.argument("channel_name", StringArgumentType.string())
+            .suggests(new TwitchWatchSuggestionProvider())
             .executes(ctx -> {
               String channelName = StringArgumentType.getString(ctx, "channel_name");
 
