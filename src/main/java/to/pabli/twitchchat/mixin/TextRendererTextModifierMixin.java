@@ -69,7 +69,7 @@ public class TextRendererTextModifierMixin {
         x = this.drawLayer(text, x, y, color, false, matrix4f, vertexConsumerProvider, seeThrough, backgroundColor, light);
         info.setReturnValue((int)x + (shadow ? 1 : 0));
     }
-    
+
     private StringRenderable replaceStringRenderable(StringRenderable renderable, String target, String replacement) {
         ArrayList<StringRenderable> stringRenderableList = new ArrayList<>();
         renderable.visit((style, string) -> {

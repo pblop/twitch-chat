@@ -2,11 +2,10 @@
   "required": true,
   "package": "to.pabli.twitchchat.mixin",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [
-  ],
   "client": [
     "ChatMixin",
-    "TextRendererTextModifierMixin"
+    "TextRendererTextModifierMixin",
+    "CustomGlyphFontStorage"
   ],
   "injectors": {
     "defaultRequire": 1
