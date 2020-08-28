@@ -1,8 +1,10 @@
 package to.pabli.twitchchat.mixin;
 
 
+import net.minecraft.client.font.GlyphRenderer;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.font.TextVisitFactory;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.text.StringRenderable;
@@ -13,7 +15,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.ArrayList;
+import java.util.Optional;
 
 @Mixin(TextRenderer.class)
 public class TextRendererTextModifierMixin {
@@ -31,7 +37,7 @@ public class TextRendererTextModifierMixin {
 
     @Inject(at = @At("HEAD"), method = "drawInternal(Ljava/lang/String;FFIZLnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/VertexConsumerProvider;ZIIZ)I", cancellable = true)
     private void drawInternal(String text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough, int backgroundColor, int light, boolean mirror, CallbackInfoReturnable<Integer> info) {
-        text = text.replace("LOL", "wow");
+        text = text.replace("LOL", "\ue000");
 
         if (mirror) {
             text = this.mirror(text);
@@ -51,9 +57,8 @@ public class TextRendererTextModifierMixin {
 
     @Inject(at = @At("HEAD"), method = "drawInternal(Lnet/minecraft/text/StringRenderable;FFIZLnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/VertexConsumerProvider;ZII)I", cancellable = true)
     private void drawInternal(StringRenderable text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumerProvider, boolean seeThrough, int backgroundColor, int light, CallbackInfoReturnable<Integer> info) {
-        if (text.getString().contains("LOL")) {
-            text = StringRenderable.plain("WOW");
-        }
+        text = replaceStringRenderable(text, "LOL", "\ue000");
+
         color = tweakTransparency(color);
         Matrix4f matrix4f = matrix.copy();
         if (shadow) {
@@ -63,5 +68,16 @@ public class TextRendererTextModifierMixin {
 
         x = this.drawLayer(text, x, y, color, false, matrix4f, vertexConsumerProvider, seeThrough, backgroundColor, light);
         info.setReturnValue((int)x + (shadow ? 1 : 0));
+    }
+    
+    private StringRenderable replaceStringRenderable(StringRenderable renderable, String target, String replacement) {
+        ArrayList<StringRenderable> stringRenderableList = new ArrayList<>();
+        renderable.visit((style, string) -> {
+            string = string.replace(target, replacement);
+            stringRenderableList.add(StringRenderable.styled(string, style));
+            return Optional.empty();
+        }, Style.EMPTY);
+
+        return StringRenderable.concat(stringRenderableList);
     }
 }
