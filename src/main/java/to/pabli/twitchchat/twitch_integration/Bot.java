@@ -10,25 +10,20 @@ import javax.net.ssl.SSLSocketFactory;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
-import org.apache.commons.lang3.time.StopWatch;
 import org.pircbotx.Channel;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
 import org.pircbotx.User;
 import org.pircbotx.cap.EnableCapHandler;
 import org.pircbotx.exception.IrcException;
-import org.pircbotx.hooks.Event;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.DisconnectEvent;
 import org.pircbotx.hooks.events.JoinEvent;
 import org.pircbotx.hooks.events.KickEvent;
-import org.pircbotx.hooks.events.ListenerExceptionEvent;
 import org.pircbotx.hooks.events.MessageEvent;
 import org.pircbotx.hooks.events.NoticeEvent;
 import org.pircbotx.hooks.events.PingEvent;
-import org.pircbotx.hooks.events.PrivateMessageEvent;
 import org.pircbotx.hooks.events.UnknownEvent;
-import org.pircbotx.hooks.types.GenericMessageEvent;
 import to.pabli.twitchchat.TwitchChatMod;
 import to.pabli.twitchchat.emotes.EmoteDownloader;
 
@@ -137,7 +132,7 @@ public class Bot extends ListenerAdapter {
       case "ROOMSTATE":
         System.out.println("Roomstate");
         // Download badges and emotes for this room
-        EmoteDownloader.getConfig().downloadBadges(tags.get("room-id"));
+        EmoteDownloader.getInstance().downloadBadges(tags.get("room-id"));
         System.out.println(tags.toString());
         break;
       default:

@@ -7,10 +7,8 @@ import java.util.UUID;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.MessageType;
-import net.minecraft.text.BaseText;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import to.pabli.twitchchat.config.ModConfig;
 import to.pabli.twitchchat.emotes.EmoteDownloader;
@@ -18,10 +16,11 @@ import to.pabli.twitchchat.twitch_integration.Bot;
 
 public class TwitchChatMod implements ModInitializer {
   public static Bot bot;
+  public static final String CLIENT_ID = "9tvrwrfx1397vabxtz0sfoz2iu1k3a";
 
   @Override
   public void onInitialize() {
-    EmoteDownloader.getConfig().downloadBadges("global");
+    EmoteDownloader.getInstance().downloadBadges("global");
     ModConfig.getConfig().load();
   }
 

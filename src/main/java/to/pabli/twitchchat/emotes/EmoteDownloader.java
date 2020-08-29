@@ -1,14 +1,24 @@
 package to.pabli.twitchchat.emotes;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.commons.io.FileUtils;
-import to.pabli.twitchchat.config.ModConfig;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import to.pabli.twitchchat.TwitchChatMod;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -20,7 +30,7 @@ public class EmoteDownloader {
         this.myExecutor = Executors.newCachedThreadPool();
     }
 
-    public static EmoteDownloader getConfig() {
+    public static EmoteDownloader getInstance() {
         if (SINGLE_INSTANCE == null) {
             SINGLE_INSTANCE = new EmoteDownloader();
         }
@@ -51,7 +61,63 @@ public class EmoteDownloader {
                         new URL(badgesUrlString),
                         getBadgeFile(channelId)
                 );
-            } catch (IOException ignored) { }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
+    }
+
+    public void downloadEmoteImage(Emote emote) {
+        this.myExecutor.execute(() -> {
+            if (!emote.hasLocalEmoteImageCopy()) {
+                try {
+                    FileUtils.copyURLToFile(
+                            new URL("https://static-cdn.jtvnw.net/emoticons/v1/" + emote.getId() + "/1.0"),
+                            emote.getLocalEmoteImage()
+                    );
+                } catch (MalformedURLException e) {
+                    System.err.println("Somehow we malformed an emote url");
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    System.err.println("Exception copying url to file");
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void downloadChatEmoticonsBySet(String set) {
+        this.myExecutor.execute(() -> {
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+            HttpGet httpGet = new HttpGet("https://api.twitch.tv/kraken/chat/emoticon_images?emotesets="+set);
+            httpGet.setHeader("Accept", "application/vnd.twitchtv.v5+json");
+            httpGet.setHeader("Client-ID", TwitchChatMod.CLIENT_ID);
+            try {
+                HttpResponse httpResponse = httpClient.execute(httpGet);
+                String body = istos(httpResponse.getEntity().getContent());
+
+                JsonParser jsonParser = new JsonParser();
+                JsonObject jsonObject = (JsonObject) jsonParser.parse(body);
+                JsonObject emoticonSets = jsonObject.getAsJsonObject("emoticon_sets");
+                JsonArray emoticonSet = emoticonSets.get(set).getAsJsonArray();
+
+                for (JsonElement emoticonElement : emoticonSet) {
+                    JsonObject emoticon = emoticonElement.getAsJsonObject();
+                    Emote emote = new Emote(emoticon.get("code").getAsString(), emoticon.get("id").getAsInt());
+                    downloadEmoteImage(emote);
+                    Emote.SET.add(emote);
+                }
+
+                System.out.println(Emote.SET);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private String istos(InputStream is) throws IOException {
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(is, writer, "utf-8");
+        return writer.toString();
     }
 }
