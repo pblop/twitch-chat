@@ -18,7 +18,7 @@ public class ModConfig {
   public static final String DEFAULT_DATE_FORMAT = "[H:mm] ";
 
   private static ModConfig SINGLE_INSTANCE = null;
-  private File configFile;
+  private final File configFile;
 
   private String channel;
   private String username;
@@ -27,7 +27,7 @@ public class ModConfig {
 
   private String dateFormat;
 
-  public ModConfig() {
+  private ModConfig() {
     this.configFile = FabricLoader
         .getInstance()
         .getConfigDirectory()
