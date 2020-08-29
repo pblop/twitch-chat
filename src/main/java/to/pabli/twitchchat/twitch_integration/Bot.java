@@ -122,22 +122,23 @@ public class Bot extends ListenerAdapter {
 
   @Override
   public void onUnknown(UnknownEvent event) {
+    ImmutableMap<String, String> tags = event.getTags();
     // Parse custom twitch events
     switch (event.getCommand()) {
       case "USERSTATE":
         System.out.println("Userstate");
-        System.out.println(event.getTags().toString());
+        System.out.println(tags.toString());
 
         // Update our user data
-        this.userData.setDisplayName(event.getTags().get("display-name"));
-        Color userColor = Color.decode(event.getTags().get("color"));
+        this.userData.setDisplayName(tags.get("display-name"));
+        Color userColor = Color.decode(tags.get("color"));
         this.userData.setUserColor(CalculateMinecraftColor.findNearestMinecraftColor(userColor));
         break;
       case "ROOMSTATE":
         System.out.println("Roomstate");
         // Download badges and emotes for this room
-        EmoteDownloader.getConfig().downloadBadges(event.getTags().get("room-id"));
-        System.out.println(event.getTags().toString());
+        EmoteDownloader.getConfig().downloadBadges(tags.get("room-id"));
+        System.out.println(tags.toString());
         break;
       default:
         System.out.println("UNKNOWN TWITCH EVENT: " + event.toString());
