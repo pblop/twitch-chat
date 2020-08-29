@@ -69,19 +69,17 @@ public class EmoteDownloader {
 
     public void downloadEmoteImage(Emote emote) {
         this.myExecutor.execute(() -> {
-            if (!emote.hasLocalEmoteImageCopy()) {
-                try {
-                    FileUtils.copyURLToFile(
-                            new URL("https://static-cdn.jtvnw.net/emoticons/v1/" + emote.getId() + "/1.0"),
-                            emote.getLocalEmoteImage()
-                    );
-                } catch (MalformedURLException e) {
-                    System.err.println("Somehow we malformed an emote url");
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    System.err.println("Exception copying url to file");
-                    e.printStackTrace();
-                }
+            try {
+                FileUtils.copyURLToFile(
+                        new URL("https://static-cdn.jtvnw.net/emoticons/v1/" + emote.getId() + "/1.0"),
+                        emote.getLocalEmoteImage()
+                );
+            } catch (MalformedURLException e) {
+                System.err.println("Somehow we malformed an emote url");
+                e.printStackTrace();
+            } catch (IOException e) {
+                System.err.println("Exception copying url to file");
+                e.printStackTrace();
             }
         });
     }
@@ -104,7 +102,9 @@ public class EmoteDownloader {
                 for (JsonElement emoticonElement : emoticonSet) {
                     JsonObject emoticon = emoticonElement.getAsJsonObject();
                     Emote emote = new Emote(emoticon.get("code").getAsString(), emoticon.get("id").getAsInt());
-                    downloadEmoteImage(emote);
+                    if (!emote.hasLocalEmoteImageCopy()) {
+                        downloadEmoteImage(emote);
+                    }
                     Emote.SET.add(emote);
                 }
 
