@@ -30,16 +30,23 @@ import org.pircbotx.hooks.events.PrivateMessageEvent;
 import org.pircbotx.hooks.events.UnknownEvent;
 import org.pircbotx.hooks.types.GenericMessageEvent;
 import to.pabli.twitchchat.TwitchChatMod;
+import to.pabli.twitchchat.emotes.EmoteDownloader;
 
 public class Bot extends ListenerAdapter {
   private final PircBotX ircBot;
   private final String username;
   private String channel;
-  private ExecutorService myExecutor;
+  private final ExecutorService myExecutor;
+
+  // Twitch user data
+  private final TwitchUserData userData;
 
   public Bot(String username, String oauthKey, String channel) {
     this.channel = channel.toLowerCase();
     this.username = username.toLowerCase();
+
+    // Set default values for Twitch user data
+    this.userData = new TwitchUserData(this.username);
 
     Configuration.Builder builder = new Configuration.Builder()
         .setAutoNickChange(false) //Twitch doesn't support multiple users
@@ -104,7 +111,7 @@ public class Bot extends ListenerAdapter {
           formattingColor = CalculateMinecraftColor.findNearestMinecraftColor(userColor);
         }
         String formattedTime = TwitchChatMod.formatTMISentTimestamp(v3Tags.get("tmi-sent-ts"));
-        TwitchChatMod.addTwitchMessage(formattedTime, user.getNick(), message, formattingColor);
+        TwitchChatMod.addTwitchMessage(formattedTime, v3Tags.get("display-name"), message, formattingColor);
       } else {
         System.out.println();
       }
@@ -120,6 +127,11 @@ public class Bot extends ListenerAdapter {
       case "USERSTATE":
         System.out.println("Userstate");
         System.out.println(event.getTags().toString());
+
+        // Update our user data
+        this.userData.setDisplayName(event.getTags().get("display-name"));
+        Color userColor = Color.decode(event.getTags().get("color"));
+        this.userData.setUserColor(CalculateMinecraftColor.findNearestMinecraftColor(userColor));
         break;
       case "ROOMSTATE":
         System.out.println("Roomstate");
@@ -175,11 +187,9 @@ public class Bot extends ListenerAdapter {
     ircBot.sendIRC().message("#" + this.channel, message);
   }
 
-  public String getUsername() {
-    return username;
+  public TwitchUserData getUserData() {
+    return userData;
   }
-
-
 
   public void joinChannel(String channel) {
     String oldChannel = this.channel;
