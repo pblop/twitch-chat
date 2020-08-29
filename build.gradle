@@ -21,6 +21,7 @@ repositories {
         name = 'CottonMC'
         url = 'http://server.bbkr.space:8081/artifactory/libs-snapshot'
     }
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -48,8 +49,8 @@ dependencies {
     include "io.github.cottonmc:cotton-client-commands:${project.cotton_client_commands_version}"
 
     // irc
-    implementation 'org.pircbotx:pircbotx:2.1'
-    include 'org.pircbotx:pircbotx:2.1'
+    implementation 'com.github.pircbotx:pircbotx:2.2'
+    include 'com.github.pircbotx:pircbotx:2.2'
 
 	// pircbotx needs this 🤷‍
 	include group: 'org.slf4j', name: 'slf4j-api', version: '1.7.13'
