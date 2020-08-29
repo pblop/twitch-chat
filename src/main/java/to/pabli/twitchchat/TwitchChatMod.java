@@ -13,13 +13,15 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import to.pabli.twitchchat.config.ModConfig;
+import to.pabli.twitchchat.emotes.EmoteDownloader;
 import to.pabli.twitchchat.twitch_integration.Bot;
 
 public class TwitchChatMod implements ModInitializer {
   public static Bot bot;
 
-	@Override
+  @Override
   public void onInitialize() {
+    EmoteDownloader.getConfig().downloadBadges("global");
     ModConfig.getConfig().load();
   }
 

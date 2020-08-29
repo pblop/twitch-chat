@@ -114,8 +114,22 @@ public class Bot extends ListenerAdapter {
   }
 
   @Override
-  public void onUnknown(UnknownEvent event) throws Exception {
-    System.out.println("UNKNOWN TWITCH EVENT: " + event.toString());
+  public void onUnknown(UnknownEvent event) {
+    // Parse custom twitch events
+    switch (event.getCommand()) {
+      case "USERSTATE":
+        System.out.println("Userstate");
+        System.out.println(event.getTags().toString());
+        break;
+      case "ROOMSTATE":
+        System.out.println("Roomstate");
+        // Download badges and emotes for this room
+        EmoteDownloader.getConfig().downloadBadges(event.getTags().get("room-id"));
+        System.out.println(event.getTags().toString());
+        break;
+      default:
+        System.out.println("UNKNOWN TWITCH EVENT: " + event.toString());
+    }
   }
 
   @Override
@@ -143,7 +157,7 @@ public class Bot extends ListenerAdapter {
   public void onJoin(JoinEvent event) throws Exception {
     super.onJoin(event);
     Channel channel = event.getChannel();
-     if (currentChannel == null || !currentChannel.equals(channel)) {
+    if (currentChannel == null || !currentChannel.equals(channel)) {
       TwitchChatMod.addNotification(new TranslatableText("text.twitchchat.bot.connected", this.channel));
       currentChannel = channel;
     }
