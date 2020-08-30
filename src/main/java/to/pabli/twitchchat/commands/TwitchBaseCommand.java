@@ -7,7 +7,7 @@ import io.github.cottonmc.clientcommands.ArgumentBuilders;
 import io.github.cottonmc.clientcommands.ClientCommandPlugin;
 import io.github.cottonmc.clientcommands.CottonClientCommandSource;
 import net.minecraft.text.TranslatableText;
-import to.pabli.twitchchat.emotes.EmoteDownloader;
+import to.pabli.twitchchat.emotes.EmoteManager;
 
 public class TwitchBaseCommand implements ClientCommandPlugin {
   @Override
@@ -21,7 +21,7 @@ public class TwitchBaseCommand implements ClientCommandPlugin {
         .then(
                 ArgumentBuilders.literal("test")
                         .executes(ctx -> {
-                            EmoteDownloader.getInstance().downloadChatEmoticonsBySet("0");
+                            EmoteManager.getInstance().downloadChatEmoticonsBySet("0");
                             return 1;
                         })
         )

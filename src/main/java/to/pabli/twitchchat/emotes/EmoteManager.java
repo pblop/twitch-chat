@@ -20,14 +20,22 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
-public class EmoteDownloader {
-    private static EmoteDownloader INSTANCE;
-    public static EmoteDownloader getInstance() {
+public class EmoteManager {
+
+    private final Set<Emote> set;
+    private final Map<Integer, Emote> hashMap;
+
+    private static EmoteManager INSTANCE;
+    public static EmoteManager getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new EmoteDownloader();
+            INSTANCE = new EmoteManager();
         }
 
         return INSTANCE;
@@ -35,12 +43,26 @@ public class EmoteDownloader {
 
     private ExecutorService myExecutor;
 
-    private EmoteDownloader() {
+    private EmoteManager() {
         this.myExecutor = Executors.newCachedThreadPool();
+        this.set = new HashSet<>();
+        this.hashMap = new HashMap<>();
     }
 
+    public void addEmote(Emote emote) {
+        this.set.add(emote);
+        this.hashMap.put((int) emote.getCharIdentifier(), emote);
+    }
 
-
+    public Set<Emote> getSet() {
+        return set;
+    }
+    public Set<Emote> getSetClone() {
+        return new HashSet<>(set);
+    }
+    public Map<Integer, Emote> getHashMap() {
+        return hashMap;
+    }
 
     public File getBadgeFile(String channelId) {
         return FabricLoader
@@ -70,23 +92,6 @@ public class EmoteDownloader {
         });
     }
 
-    public void downloadEmoteImage(Emote emote) {
-        this.myExecutor.execute(() -> {
-            try {
-                FileUtils.copyURLToFile(
-                        new URL("https://static-cdn.jtvnw.net/emoticons/v1/" + emote.getId() + "/1.0"),
-                        emote.getLocalEmoteImage()
-                );
-            } catch (MalformedURLException e) {
-                System.err.println("Somehow we malformed an emote url");
-                e.printStackTrace();
-            } catch (IOException e) {
-                System.err.println("Exception copying url to file");
-                e.printStackTrace();
-            }
-        });
-    }
-
     public void downloadChatEmoticonsBySet(String set) {
         this.myExecutor.execute(() -> {
             CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -106,12 +111,10 @@ public class EmoteDownloader {
                     JsonObject emoticon = emoticonElement.getAsJsonObject();
                     Emote emote = new Emote(emoticon.get("code").getAsString(), emoticon.get("id").getAsInt());
                     if (!emote.hasLocalEmoteImageCopy()) {
-                        downloadEmoteImage(emote);
+                        emote.downloadEmoteImage();
                     }
-                    Emote.SET.add(emote);
+                    addEmote(emote);
                 }
-
-                System.out.println(Emote.SET);
             } catch (IOException e) {
                 e.printStackTrace();
             }

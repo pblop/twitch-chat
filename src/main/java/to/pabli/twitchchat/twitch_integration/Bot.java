@@ -25,7 +25,7 @@ import org.pircbotx.hooks.events.NoticeEvent;
 import org.pircbotx.hooks.events.PingEvent;
 import org.pircbotx.hooks.events.UnknownEvent;
 import to.pabli.twitchchat.TwitchChatMod;
-import to.pabli.twitchchat.emotes.EmoteDownloader;
+import to.pabli.twitchchat.emotes.EmoteManager;
 
 public class Bot extends ListenerAdapter {
   private final PircBotX ircBot;
@@ -132,7 +132,7 @@ public class Bot extends ListenerAdapter {
       case "ROOMSTATE":
         System.out.println("Roomstate");
         // Download badges and emotes for this room
-        EmoteDownloader.getInstance().downloadBadges(tags.get("room-id"));
+        EmoteManager.getInstance().downloadBadges(tags.get("room-id"));
         System.out.println(tags.toString());
         break;
       default:

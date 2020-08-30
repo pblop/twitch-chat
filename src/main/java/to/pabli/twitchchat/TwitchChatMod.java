@@ -14,7 +14,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
 import to.pabli.twitchchat.config.ModConfig;
 import to.pabli.twitchchat.emotes.Emote;
-import to.pabli.twitchchat.emotes.EmoteDownloader;
+import to.pabli.twitchchat.emotes.EmoteManager;
 import to.pabli.twitchchat.twitch_integration.Bot;
 
 public class TwitchChatMod implements ModInitializer {
@@ -23,14 +23,14 @@ public class TwitchChatMod implements ModInitializer {
 
   @Override
   public void onInitialize() {
-    EmoteDownloader.getInstance().downloadBadges("global");
+    EmoteManager.getInstance().downloadBadges("global");
     ModConfig.getConfig().load();
   }
 
   public static void addTwitchMessage(String time, String username, String message, Formatting textColor) {
     MutableText timestampText = new LiteralText(time);
     MutableText usernameText = new LiteralText(username).formatted(textColor);
-    Map<String, String> targetReplacementMap = Emote.SET.stream().filter(emote -> message.contains(emote.getCode())).collect(Collectors.toMap(Emote::getCode, Emote::getCharIdentifierAsString));
+    Map<String, String> targetReplacementMap = EmoteManager.getInstance().getSetClone().stream().filter(emote -> message.contains(emote.getCode())).collect(Collectors.toMap(Emote::getCode, Emote::getCharIdentifierAsString));
     MutableText messageBodyText = new LiteralText(": " + TwitchChatMod.replaceString(message, targetReplacementMap));
 
     MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT,

@@ -7,9 +7,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import to.pabli.twitchchat.emotes.Emote;
+import to.pabli.twitchchat.emotes.EmoteManager;
 import to.pabli.twitchchat.emotes.EmoteRenderableGlyph;
 
-import java.io.IOException;
 import java.util.Optional;
 
 
@@ -19,32 +19,30 @@ public abstract class CustomGlyphFontStorage {
 
     @Inject(at = @At("HEAD"), method = "getGlyph", cancellable = true)
     public void getGlyph(int charCode, CallbackInfoReturnable<Glyph> info) {
-        Optional<Emote> glyphEmote = Emote.SET.stream().filter(emote -> {
-            int emoteCharIdentifierCharCode = emote.getCharIdentifier();
-            return emoteCharIdentifierCharCode == charCode;
-        }).findFirst();
+        Emote emote = EmoteManager.getInstance().getHashMap().get(charCode);
 
-        if (glyphEmote.isPresent()) {
-            try {
-                info.setReturnValue(new EmoteRenderableGlyph(glyphEmote.get()).getGlyph());
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (emote != null) {
+            EmoteRenderableGlyph renderableGlyph = emote.getRenderableGlyph();
+            if (renderableGlyph != null) {
+                // != null means the renderableGlyph exists (has been downloaded)
+                info.setReturnValue(renderableGlyph.getGlyph());
+            } else {
+                // TODO: Ask to download our emote
             }
         }
     }
 
     @Inject(at = @At("HEAD"), method = "getGlyphRenderer(I)Lnet/minecraft/client/font/GlyphRenderer;", cancellable = true)
     public void getGlyphRenderer(int charCode, CallbackInfoReturnable<GlyphRenderer> info) {
-        Optional<Emote> glyphEmote = Emote.SET.stream().filter(emote -> {
-            int emoteCharIdentifierCharCode = emote.getCharIdentifier();
-            return emoteCharIdentifierCharCode == charCode;
-        }).findFirst();
+        Emote emote = EmoteManager.getInstance().getHashMap().get(charCode);
 
-        if (glyphEmote.isPresent()) {
-            try {
-                info.setReturnValue(getGlyphRenderer(new EmoteRenderableGlyph(glyphEmote.get())));
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (emote != null) {
+            EmoteRenderableGlyph renderableGlyph = emote.getRenderableGlyph();
+            if (renderableGlyph != null) {
+                // != null means the renderableGlyph exists (has been downloaded)
+                info.setReturnValue(getGlyphRenderer(renderableGlyph));
+            } else {
+                // TODO: Ask to download our emote
             }
         }
     }
