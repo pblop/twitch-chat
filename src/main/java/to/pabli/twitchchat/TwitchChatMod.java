@@ -2,7 +2,9 @@ package to.pabli.twitchchat;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.MinecraftClient;
@@ -11,6 +13,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
 import to.pabli.twitchchat.config.ModConfig;
+import to.pabli.twitchchat.emotes.Emote;
 import to.pabli.twitchchat.emotes.EmoteDownloader;
 import to.pabli.twitchchat.twitch_integration.Bot;
 
@@ -27,7 +30,8 @@ public class TwitchChatMod implements ModInitializer {
   public static void addTwitchMessage(String time, String username, String message, Formatting textColor) {
     MutableText timestampText = new LiteralText(time);
     MutableText usernameText = new LiteralText(username).formatted(textColor);
-    MutableText messageBodyText = new LiteralText(": " + message);
+    Map<String, String> targetReplacementMap = Emote.SET.stream().filter(emote -> message.contains(emote.getCode())).collect(Collectors.toMap(Emote::getCode, Emote::getCharIdentifierAsString));
+    MutableText messageBodyText = new LiteralText(": " + TwitchChatMod.replaceString(message, targetReplacementMap));
 
     MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT,
         timestampText
@@ -45,5 +49,11 @@ public class TwitchChatMod implements ModInitializer {
   public static String formatDateTwitch(Date date) {
     SimpleDateFormat sf = new SimpleDateFormat(ModConfig.getConfig().getDateFormat());
     return sf.format(date);
+  }
+  public static String replaceString(String string, Map<String, String> targetReplacementMap) {
+    for (Map.Entry<String, String> entry : targetReplacementMap.entrySet()) {
+      string = string.replace(entry.getKey(), entry.getValue());
+    }
+    return string;
   }
 }

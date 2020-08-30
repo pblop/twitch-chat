@@ -25,7 +25,11 @@ public class EmoteRenderableGlyph implements RenderableGlyph {
       this.image = Util.make(new NativeImage(NativeImage.Format.ABGR, width, height, false), (nativeImage) -> {
          for (int x = 0; x < image.getWidth(); x++) {
             for (int y = 0; y < image.getHeight(); y++) {
-               nativeImage.setPixelColor(x, y, image.getRGB(x, y));
+               int alphaAndGreen = image.getRGB(x, y) & 0xFF00FF00;
+               int red   = (image.getRGB(x, y) & 0x00FF0000) >> 16;
+               int blue  =  image.getRGB(x, y) & 0x000000FF;
+               int abgrColor = alphaAndGreen | (blue << 16) | red;
+               nativeImage.setPixelColor(x, y, abgrColor);
             }
          }
          nativeImage.untrack();

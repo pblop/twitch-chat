@@ -17,6 +17,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import to.pabli.twitchchat.TwitchChatMod;
+import to.pabli.twitchchat.config.ModConfig;
 import to.pabli.twitchchat.emotes.Emote;
 
 import java.awt.*;
@@ -40,8 +42,9 @@ public class TextRendererTextModifierMixin {
     @Inject(at = @At("HEAD"), method = "drawInternal(Ljava/lang/String;FFIZLnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/VertexConsumerProvider;ZIIZ)I", cancellable = true)
     private void drawInternal(String text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough, int backgroundColor, int light, boolean mirror, CallbackInfoReturnable<Integer> info) {
         String finalText = text;
-        Map<String, String> targetReplacementHashMap = Emote.SET.stream().filter(emote -> finalText.contains(emote.getCode())).collect(Collectors.toMap(Emote::getCode, Emote::getCharIdentifierAsString));
-        text = replaceString(text, targetReplacementHashMap);
+        // Only swap emote codes and their respective identification characters when writing a Twitch message.
+        Map<String, String> targetReplacementMap = Emote.SET.stream().filter(emote -> finalText.contains(emote.getCode())).collect(Collectors.toMap(Emote::getCode, Emote::getCharIdentifierAsString));
+        text = TwitchChatMod.replaceString(text, targetReplacementMap);
 
         if (mirror) {
             text = this.mirror(text);
@@ -62,8 +65,8 @@ public class TextRendererTextModifierMixin {
     @Inject(at = @At("HEAD"), method = "drawInternal(Lnet/minecraft/text/StringRenderable;FFIZLnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/VertexConsumerProvider;ZII)I", cancellable = true)
     private void drawInternal(StringRenderable text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumerProvider, boolean seeThrough, int backgroundColor, int light, CallbackInfoReturnable<Integer> info) {
         String finalText = text.getString();
-        Map<String, String> targetReplacementHashMap = Emote.SET.stream().filter(emote -> finalText.contains(emote.getCode())).collect(Collectors.toMap(Emote::getCode, Emote::getCharIdentifierAsString));
-        text = replaceStringRenderable(text, targetReplacementHashMap);
+        Map<String, String> targetReplacementMap = Emote.SET.stream().filter(emote -> finalText.contains(emote.getCode())).collect(Collectors.toMap(Emote::getCode, Emote::getCharIdentifierAsString));
+        text = replaceStringRenderable(text, targetReplacementMap);
 
         color = tweakTransparency(color);
         Matrix4f matrix4f = matrix.copy();
@@ -76,19 +79,12 @@ public class TextRendererTextModifierMixin {
         info.setReturnValue((int)x + (shadow ? 1 : 0));
     }
 
-    private String replaceString(String string, Map<String, String> targetReplacementHashMap) {
-        for (Map.Entry<String, String> entry : targetReplacementHashMap.entrySet()) {
-            string = string.replace(entry.getKey(), entry.getValue());
-        }
-        return string;
-    }
-
-    private StringRenderable replaceStringRenderable(StringRenderable renderable, Map<String, String> targetReplacementHashMap) {
-        Set<Map.Entry<String, String>> targetReplacementHashMapEntrySet = targetReplacementHashMap.entrySet();
+    private StringRenderable replaceStringRenderable(StringRenderable renderable, Map<String, String> targetReplacementMap) {
+        Set<Map.Entry<String, String>> targetReplacementMapEntrySet = targetReplacementMap.entrySet();
 
         ArrayList<StringRenderable> stringRenderableList = new ArrayList<>();
         renderable.visit((style, string) -> {
-            for (Map.Entry<String, String> entry : targetReplacementHashMapEntrySet) {
+            for (Map.Entry<String, String> entry : targetReplacementMapEntrySet) {
                 string = string.replace(entry.getKey(), entry.getValue());
             }
             stringRenderableList.add(StringRenderable.styled(string, style));
