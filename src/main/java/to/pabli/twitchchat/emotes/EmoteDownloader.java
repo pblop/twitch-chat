@@ -19,24 +19,27 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class EmoteDownloader {
+    private static EmoteDownloader INSTANCE;
+    public static EmoteDownloader getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new EmoteDownloader();
+        }
+
+        return INSTANCE;
+    }
+
     private ExecutorService myExecutor;
-    private static EmoteDownloader SINGLE_INSTANCE;
 
     private EmoteDownloader() {
         this.myExecutor = Executors.newCachedThreadPool();
     }
 
-    public static EmoteDownloader getInstance() {
-        if (SINGLE_INSTANCE == null) {
-            SINGLE_INSTANCE = new EmoteDownloader();
-        }
 
-        return SINGLE_INSTANCE;
-    }
 
 
     public File getBadgeFile(String channelId) {

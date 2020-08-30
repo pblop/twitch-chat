@@ -5,38 +5,51 @@ import net.minecraft.client.font.RenderableGlyph;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.util.Util;
 
-public enum EmoteRenderableGlyph implements RenderableGlyph {
-   INSTANCE;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
-   private static final NativeImage IMAGE = Util.make(new NativeImage(NativeImage.Format.ABGR, 5, 8, false), (nativeImage) -> {
-      for(int i = 0; i < 8; ++i) {
-         for(int j = 0; j < 5; ++j) {
-            boolean bl = j == 0 || j + 1 == 5 || i == 0 || i + 1 == 8;
-               nativeImage.setPixelColor(j, i, bl ? 0xFF3333CC : 0xFFCC3333);
+public class EmoteRenderableGlyph implements RenderableGlyph {
+   private final NativeImage image;
+   private final int width;
+   private final int height;
+   // TODO: Calculate oversample dynamically to fit.
+   private final float oversample = 3F;
+
+   public EmoteRenderableGlyph(Emote emote) throws IOException {
+      BufferedImage image = ImageIO.read(emote.getLocalEmoteImage());
+
+      this.width = image.getWidth();
+      this.height = image.getHeight();
+
+      this.image = Util.make(new NativeImage(NativeImage.Format.ABGR, width, height, false), (nativeImage) -> {
+         for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+               nativeImage.setPixelColor(x, y, image.getRGB(x, y));
+            }
          }
-      }
-
-      nativeImage.untrack();
-   });
+         nativeImage.untrack();
+      });
+   }
 
    public int getWidth() {
-      return 5;
+      return width;
    }
 
    public int getHeight() {
-      return 8;
+      return height;
    }
 
    public float getAdvance() {
-      return 6.0F;
+      return (float)width / oversample + 1;
    }
 
    public float getOversample() {
-      return 1.0F;
+      return oversample;
    }
 
    public void upload(int x, int y) {
-      IMAGE.upload(0, x, y, false);
+      this.image.upload(0, x, y, false);
    }
 
    public boolean hasColor() {
