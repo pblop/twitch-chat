@@ -24,9 +24,29 @@ public class TwitchChatMod implements ModInitializer {
   }
 
   public static void addTwitchMessage(String time, String username, String message, Formatting textColor) {
+	  addTwitchMessage(time, username, message, textColor, false);
+  }
+  public static void addTwitchMessage(String time, String username, String message, Formatting textColor, boolean isMeMessage) {
     MutableText timestampText = new LiteralText(time);
     MutableText usernameText = new LiteralText(username).formatted(textColor);
-    MutableText messageBodyText = new LiteralText(": " + message);
+    MutableText messageBodyText;
+
+    if (!isMeMessage) {
+      messageBodyText = new LiteralText(": " + message);
+    } else {
+      // '/me' messages have the same color as the username in the Twitch website.
+      // And thus I set the color of the message to be the same as the username.
+      // They also don't have a colon after the username.
+      messageBodyText = new LiteralText(" " + message).formatted(textColor);
+
+      // In Minecraft, a '/me' message is marked with a star before the name, like so:
+      //
+      // <Player> This is a normal message
+      // * Player this is a '/me' message
+      //
+      // The star is always white (that's why I don't format it).
+      usernameText = new LiteralText("* ").append(usernameText);
+    }
 
     MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT,
         timestampText
@@ -38,7 +58,10 @@ public class TwitchChatMod implements ModInitializer {
   }
 
   public static String formatTMISentTimestamp(String tmiSentTS) {
-    Date date = new Date(Long.parseLong(tmiSentTS));
+    return formatTMISentTimestamp(Long.parseLong(tmiSentTS));
+  }
+  public static String formatTMISentTimestamp(long tmiSentTS) {
+    Date date = new Date(tmiSentTS);
     return formatDateTwitch(date);
   }
   public static String formatDateTwitch(Date date) {

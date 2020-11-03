@@ -30,7 +30,13 @@ public class ChatMixin {
           String formattedTime = TwitchChatMod.formatDateTwitch(currentTime);
 
           String username = TwitchChatMod.bot.getUsername();
-          Formatting userColor = CalculateMinecraftColor.getDefaultUserColor(username);
+          Formatting userColor;
+          if (TwitchChatMod.bot.isFormattingColorCached(username)) {
+            userColor = TwitchChatMod.bot.getFormattingColor(username);
+          } else {
+            userColor = CalculateMinecraftColor.getDefaultUserColor(username);
+            TwitchChatMod.bot.putFormattingColor(username, userColor);
+          }
 
           // Add the message to the Minecraft Chat
           TwitchChatMod.addTwitchMessage(formattedTime, username, textWithoutPrefix, userColor);

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import java.awt.Color;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.net.ssl.SSLSocketFactory;
@@ -19,15 +20,7 @@ import org.pircbotx.cap.EnableCapHandler;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.Event;
 import org.pircbotx.hooks.ListenerAdapter;
-import org.pircbotx.hooks.events.DisconnectEvent;
-import org.pircbotx.hooks.events.JoinEvent;
-import org.pircbotx.hooks.events.KickEvent;
-import org.pircbotx.hooks.events.ListenerExceptionEvent;
-import org.pircbotx.hooks.events.MessageEvent;
-import org.pircbotx.hooks.events.NoticeEvent;
-import org.pircbotx.hooks.events.PingEvent;
-import org.pircbotx.hooks.events.PrivateMessageEvent;
-import org.pircbotx.hooks.events.UnknownEvent;
+import org.pircbotx.hooks.events.*;
 import org.pircbotx.hooks.types.GenericMessageEvent;
 import to.pabli.twitchchat.TwitchChatMod;
 import to.pabli.twitchchat.config.ModConfig;
@@ -37,10 +30,12 @@ public class Bot extends ListenerAdapter {
   private final String username;
   private String channel;
   private ExecutorService myExecutor;
+  private HashMap<String, Formatting> formattingColorCache; // Map of usernames to colors to keep consistency with usernames and colors
 
   public Bot(String username, String oauthKey, String channel) {
     this.channel = channel.toLowerCase();
     this.username = username.toLowerCase();
+    formattingColorCache = new HashMap<>();
 
     Configuration.Builder builder = new Configuration.Builder()
         .setAutoNickChange(false) //Twitch doesn't support multiple users
@@ -96,17 +91,25 @@ public class Bot extends ListenerAdapter {
     if (user != null) {
       ImmutableMap<String, String> v3Tags = event.getV3Tags();
       if (v3Tags != null) {
-        if (!ModConfig.getConfig().getIgnoreList().contains(user.getNick().toLowerCase())) {
+        String nick = user.getNick();
+        if (!ModConfig.getConfig().getIgnoreList().contains(nick)) {
           String colorTag = v3Tags.get("color");
           Formatting formattingColor;
-          if (colorTag.equals("")) {
-            formattingColor = CalculateMinecraftColor.getDefaultUserColor(user.getNick());
+          
+          if (isFormattingColorCached(nick)) {
+            formattingColor = getFormattingColor(nick);
           } else {
-            Color userColor = Color.decode(colorTag);
-            formattingColor = CalculateMinecraftColor.findNearestMinecraftColor(userColor);
+            if (colorTag.equals("")) {
+              formattingColor = CalculateMinecraftColor.getDefaultUserColor(nick);
+            } else {
+              Color userColor = Color.decode(colorTag);
+              formattingColor = CalculateMinecraftColor.findNearestMinecraftColor(userColor);
+            }
+            putFormattingColor(nick, formattingColor);
           }
+
           String formattedTime = TwitchChatMod.formatTMISentTimestamp(v3Tags.get("tmi-sent-ts"));
-          TwitchChatMod.addTwitchMessage(formattedTime, user.getNick(), message, formattingColor);
+          TwitchChatMod.addTwitchMessage(formattedTime, nick, message, formattingColor);
         }
       } else {
         System.out.println("Message with no v3tags: " + event.getMessage());
@@ -141,6 +144,32 @@ public class Bot extends ListenerAdapter {
     Exception disconnectException = event.getDisconnectException();
   }
 
+  // Hanlde /me
+  @Override
+  public void onAction(ActionEvent event) throws Exception {
+    User user = event.getUser();
+
+    if (user != null) {
+      String nick = user.getNick();
+
+      if (!ModConfig.getConfig().getIgnoreList().contains(nick.toLowerCase())) {
+        String formattedTime = TwitchChatMod.formatTMISentTimestamp(event.getTimestamp());
+
+        Formatting formattingColor;
+        if (isFormattingColorCached(nick)) {
+          formattingColor = getFormattingColor(nick);
+        } else {
+          formattingColor = CalculateMinecraftColor.getDefaultUserColor(nick);
+          putFormattingColor(nick, formattingColor);
+        }
+
+        TwitchChatMod.addTwitchMessage(formattedTime, nick, event.getMessage(), formattingColor, true);
+      }
+    } else {
+      System.out.println("NON-USER ACTION" + event.getMessage());
+    }
+  }
+
   Channel currentChannel;
   @Override
   public void onJoin(JoinEvent event) throws Exception {
@@ -168,7 +197,15 @@ public class Bot extends ListenerAdapter {
     return username;
   }
 
-
+  public void putFormattingColor(String nick, Formatting color) {
+    formattingColorCache.put(nick.toLowerCase(), color);
+  }
+  public Formatting getFormattingColor(String nick) {
+    return formattingColorCache.get(nick.toLowerCase());
+  }
+  public boolean isFormattingColorCached(String nick) {
+    return formattingColorCache.containsKey(nick.toLowerCase());
+  }
 
   public void joinChannel(String channel) {
     String oldChannel = this.channel;
