@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +24,7 @@ public class ModConfig {
   public static final String DEFAULT_DATE_FORMAT = "[H:mm] ";
   public static final List<String> DEFAULT_IGNORE_LIST = new ArrayList<>();
   public static final boolean DEFAULT_TWITCH_WATCH_SUGGESTIONS = false;
+  public static final boolean DEFAULT_BROADCAST = false;
 
   private static ModConfig SINGLE_INSTANCE = null;
   private final File configFile;
@@ -36,6 +36,7 @@ public class ModConfig {
   private String dateFormat;
   private List<String> ignoreList;
   private boolean twitchWatchSuggestions;
+  private boolean broadcast;
 
   public ModConfig() {
     this.configFile = FabricLoader
@@ -51,6 +52,7 @@ public class ModConfig {
     this.dateFormat = DEFAULT_DATE_FORMAT;
     this.ignoreList = new ArrayList<>(DEFAULT_IGNORE_LIST);
     this.twitchWatchSuggestions = DEFAULT_TWITCH_WATCH_SUGGESTIONS;
+    this.broadcast = DEFAULT_BROADCAST;
   }
 
   public static ModConfig getConfig() {
@@ -91,6 +93,10 @@ public class ModConfig {
         this.twitchWatchSuggestions = jsonObject.has("twitchWatchSuggestions")
                 ? jsonObject.getAsJsonPrimitive("twitchWatchSuggestions").getAsBoolean()
                 : DEFAULT_TWITCH_WATCH_SUGGESTIONS;
+
+        this.broadcast = jsonObject.has("broadcast")
+                ? jsonObject.getAsJsonPrimitive("broadcast").getAsBoolean()
+                : DEFAULT_BROADCAST;
       }
     } catch (IOException e) {
       // Do nothing, we have no file and thus we have to keep everything as default
@@ -111,6 +117,7 @@ public class ModConfig {
     jsonObject.add("ignoreList", ignoreListJsonArray);
 
     jsonObject.addProperty("twitchWatchSuggestions", this.twitchWatchSuggestions);
+    jsonObject.addProperty("broadcast", this.broadcast);
     try (PrintWriter out = new PrintWriter(configFile)) {
        out.println(jsonObject.toString());
     } catch (FileNotFoundException e) {
@@ -173,5 +180,13 @@ public class ModConfig {
 
   public void setTwitchWatchSuggestions(boolean twitchWatchSuggestions) {
     this.twitchWatchSuggestions = twitchWatchSuggestions;
+  }
+
+  public boolean isBroadcastEnabled() {
+    return broadcast;
+  }
+
+  public void setBroadcastEnabled(boolean broadcastEnabled) {
+    this.broadcast = broadcastEnabled;
   }
 }
