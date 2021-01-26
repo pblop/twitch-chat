@@ -70,6 +70,12 @@ public class ModMenuCompat implements ModMenuApi {
               .setTooltip(new TranslatableText("config.twitchchat.cosmetics.broadcast.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_BROADCAST)
               .build());
+      cosmeticsCategory.addEntry(entryBuilder
+              .startStrField(new TranslatableText("config.twitchchat.cosmetics.broadcastPrefix"), ModConfig.getConfig().getBroadcastPrefix())
+              .setSaveConsumer((s -> ModConfig.getConfig().setBroadcastPrefix(s)))
+              .setTooltip(new TranslatableText("config.twitchchat.cosmetics.broadcastPrefix.tooltip"))
+              .setDefaultValue(ModConfig.DEFAULT_BROADCAST_PREFIX)
+              .build());
 
       return builder.build();
     };

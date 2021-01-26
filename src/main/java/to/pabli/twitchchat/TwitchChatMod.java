@@ -28,7 +28,6 @@ public class TwitchChatMod implements ModInitializer {
     MutableText timestampText = new LiteralText(time);
     MutableText usernameText = new LiteralText(username).formatted(textColor);
     MutableText messageBodyText;
-    String plainTextMessage = "[twitch] " + username + ": " + message;
 
     if (!isMeMessage) {
       messageBodyText = new LiteralText(": " + message);
@@ -49,6 +48,7 @@ public class TwitchChatMod implements ModInitializer {
 
     if (ModConfig.getConfig().isBroadcastEnabled()) {
       try {
+        String plainTextMessage = ModConfig.getConfig().getBroadcastPrefix() + username + ": " + message;
         if (MinecraftClient.getInstance().player != null) {
           MinecraftClient.getInstance().player.sendChatMessage(plainTextMessage);
         }

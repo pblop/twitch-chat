@@ -17,6 +17,8 @@
   "config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip": "Autocompletar los nombres de canales de /twitch watch con usuarios en tu servidor",
   "config.twitchchat.cosmetics.broadcast": "Transmitir mensajes de Twitch",
   "config.twitchchat.cosmetics.broadcast.tooltip": "Envía mensajes de chat de Twitch al chat del servidor",
+  "config.twitchchat.cosmetics.broadcastPrefix": "Prefijo de mensaje de difusión",
+  "config.twitchchat.cosmetics.broadcastPrefix.tooltip": "Ponga esto al comienzo de los mensajes al transmitir al servidor",
 
   "text.twitchchat.command.base.noargs1": "¡Bienvenido al mod de puente de chat entre Minecraft y Twitch!",
   "text.twitchchat.command.base.noargs2": "Para inicializarlo simplemente escribe /twitch enable cuando hayas terminado de configurar los ajustes.",
