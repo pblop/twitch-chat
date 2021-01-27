@@ -25,7 +25,7 @@ public class ModConfig {
   public static final List<String> DEFAULT_IGNORE_LIST = new ArrayList<>();
   public static final boolean DEFAULT_TWITCH_WATCH_SUGGESTIONS = false;
   public static final boolean DEFAULT_BROADCAST = false;
-  public static final String DEFAULT_BROADCAST_PREFIX = "[twitch] ";
+  public static final String DEFAULT_BROADCAST_PREFIX = "[Twitch] ";
 
   private static ModConfig SINGLE_INSTANCE = null;
   private final File configFile;
