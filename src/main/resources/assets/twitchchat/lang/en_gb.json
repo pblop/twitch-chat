@@ -15,6 +15,10 @@
   "config.twitchchat.cosmetics.ignorelist.tooltip": "Messages from users in this list won't be displayed",
   "config.twitchchat.cosmetics.twitchWatchSuggestions": "Suggestions for /twitch watch",
   "config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip": "Autocomplete /twitch watch channel names with names from users in your server",
+  "config.twitchchat.cosmetics.broadcast": "Broadcast Twitch messages",
+  "config.twitchchat.cosmetics.broadcast.tooltip": "Sends Twitch chat messages to the server chat",
+  "config.twitchchat.cosmetics.broadcastPrefix": "Broadcast message prefix",
+  "config.twitchchat.cosmetics.broadcastPrefix.tooltip": "This is going to be added to the beginning of messages broadcasted to the server",
 
   "text.twitchchat.command.base.noargs1": "Welcome to the Minecraft-Twitch Bridge mod!",
   "text.twitchchat.command.base.noargs2": "To enable it just do /twitch enable when you're done setting up the config.",
@@ -29,6 +33,9 @@
 
   "text.twitchchat.command.watch.switching": "Switching channels to '%s'...",
   "text.twitchchat.command.watch.connect_on_enable": "The mod will connect to '%s' as soon as you enable it.",
+
+  "text.twitchchat.command.broadcast.enabled": "Broadcasting enabled",
+  "text.twitchchat.command.broadcast.disabled": "Broadcasting disabled",
 
   "text.twitchchat.chat.integration_disabled": "Twitch integration is not enabled, to enable it do /twitch enable.",
   "text.twitchchat.bot.connected": "Connected to channel '%s'",

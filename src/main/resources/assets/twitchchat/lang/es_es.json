@@ -15,6 +15,10 @@
   "config.twitchchat.cosmetics.ignorelist.tooltip": "Los mensajes de usuarios en esta lista no serán mostrados",
   "config.twitchchat.cosmetics.twitchWatchSuggestions": "Sugerencias para /twitch watch",
   "config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip": "Autocompletar los nombres de canales de /twitch watch con usuarios en tu servidor",
+  "config.twitchchat.cosmetics.broadcast": "Retransmitir mensajes de Twitch",
+  "config.twitchchat.cosmetics.broadcast.tooltip": "Retransmite los mensajes de chat de Twitch al chat del servidor",
+  "config.twitchchat.cosmetics.broadcastPrefix": "Prefijo de los mensajes retransmitidos",
+  "config.twitchchat.cosmetics.broadcastPrefix.tooltip": "Esto se va a añadir al principio de los mensajes que se retransmiten al servidor",
 
   "text.twitchchat.command.base.noargs1": "¡Bienvenido al mod de puente de chat entre Minecraft y Twitch!",
   "text.twitchchat.command.base.noargs2": "Para inicializarlo simplemente escribe /twitch enable cuando hayas terminado de configurar los ajustes.",
@@ -29,6 +33,9 @@
 
   "text.twitchchat.command.watch.switching": "Cambiando canales a '%s'...",
   "text.twitchchat.command.watch.connect_on_enable": "El mod se conectará a '%s' según lo actives.",
+
+  "text.twitchchat.command.broadcast.enabled": "Retransmisión activada",
+  "text.twitchchat.command.broadcast.disabled": "Retransmisión desactivada",
 
   "text.twitchchat.chat.integration_disabled": "La integración de twitchj no está activada, para activarla escribe /twitch enable.",
   "text.twitchchat.bot.connected": "Conectado al canal '%s'",

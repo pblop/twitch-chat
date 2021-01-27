@@ -7,10 +7,8 @@ import java.util.UUID;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.MessageType;
-import net.minecraft.text.BaseText;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import to.pabli.twitchchat.config.ModConfig;
 import to.pabli.twitchchat.twitch_integration.Bot;
@@ -48,10 +46,21 @@ public class TwitchChatMod implements ModInitializer {
       usernameText = new LiteralText("* ").append(usernameText);
     }
 
-    MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT,
-        timestampText
-        .append(usernameText)
-        .append(messageBodyText), UUID.randomUUID());
+    if (ModConfig.getConfig().isBroadcastEnabled()) {
+      try {
+        String plainTextMessage = ModConfig.getConfig().getBroadcastPrefix() + username + ": " + message;
+        if (MinecraftClient.getInstance().player != null) {
+          MinecraftClient.getInstance().player.sendChatMessage(plainTextMessage);
+        }
+      } catch (NullPointerException e) {
+        System.err.println("TWITCH BOT FAILED TO BROADCAST MESSAGE: " + e.getMessage());
+      }
+    } else {
+      MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT,
+          timestampText
+          .append(usernameText)
+          .append(messageBodyText), UUID.randomUUID());
+    }
   }
   public static void addNotification(MutableText message) {
     MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT, message.formatted(Formatting.DARK_GRAY), UUID.randomUUID());

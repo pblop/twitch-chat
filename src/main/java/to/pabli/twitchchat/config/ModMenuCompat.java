@@ -4,7 +4,6 @@ import io.github.prospector.modmenu.api.ConfigScreenFactory;
 import io.github.prospector.modmenu.api.ModMenuApi;
 
 import java.util.ArrayList;
-import java.util.function.Function;
 
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
@@ -12,7 +11,6 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
@@ -65,6 +63,18 @@ public class ModMenuCompat implements ModMenuApi {
               .setSaveConsumer((b -> ModConfig.getConfig().setTwitchWatchSuggestions(b)))
               .setTooltip(new TranslatableText("config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_TWITCH_WATCH_SUGGESTIONS)
+              .build());
+      cosmeticsCategory.addEntry(entryBuilder
+              .startBooleanToggle(new TranslatableText("config.twitchchat.cosmetics.broadcast"), ModConfig.getConfig().isBroadcastEnabled())
+              .setSaveConsumer((b -> ModConfig.getConfig().setBroadcastEnabled(b)))
+              .setTooltip(new TranslatableText("config.twitchchat.cosmetics.broadcast.tooltip"))
+              .setDefaultValue(ModConfig.DEFAULT_BROADCAST)
+              .build());
+      cosmeticsCategory.addEntry(entryBuilder
+              .startStrField(new TranslatableText("config.twitchchat.cosmetics.broadcastPrefix"), ModConfig.getConfig().getBroadcastPrefix())
+              .setSaveConsumer((s -> ModConfig.getConfig().setBroadcastPrefix(s)))
+              .setTooltip(new TranslatableText("config.twitchchat.cosmetics.broadcastPrefix.tooltip"))
+              .setDefaultValue(ModConfig.DEFAULT_BROADCAST_PREFIX)
               .build());
 
       return builder.build();
