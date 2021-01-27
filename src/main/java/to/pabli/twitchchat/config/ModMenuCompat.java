@@ -25,20 +25,6 @@ public class ModMenuCompat implements ModMenuApi {
 
       ConfigEntryBuilder entryBuilder = ConfigEntryBuilder.create();
 
-      ConfigCategory defaultCategory = builder.getOrCreateCategory(new TranslatableText("config.twitchchat.category.default"));
-      defaultCategory.addEntry(entryBuilder
-              .startStrField(new TranslatableText("config.twitchchat.default.username"), ModConfig.getConfig().getUsername())
-              .setSaveConsumer((s -> ModConfig.getConfig().setUsername(s)))
-              .setTooltip(new TranslatableText("config.twitchchat.default.username.tooltip"))
-              .setDefaultValue(ModConfig.DEFAULT_USERNAME)
-              .build());
-      defaultCategory.addEntry(entryBuilder
-              .startStrField(new TranslatableText("config.twitchchat.default.oauthKey"), ModConfig.getConfig().getOauthKey())
-              .setSaveConsumer((s -> ModConfig.getConfig().setOauthKey(s)))
-              .setTooltip(new TranslatableText("config.twitchchat.default.oauthKey.tooltip"))
-              .setDefaultValue(ModConfig.DEFAULT_OAUTH_KEY)
-              .build());
-
       ConfigCategory cosmeticsCategory = builder.getOrCreateCategory(new TranslatableText("config.twitchchat.category.cosmetics"));
       cosmeticsCategory.addEntry(entryBuilder
               .startStrField(new TranslatableText("config.twitchchat.cosmetics.prefix"), ModConfig.getConfig().getPrefix())
@@ -75,6 +61,34 @@ public class ModMenuCompat implements ModMenuApi {
               .setSaveConsumer((s -> ModConfig.getConfig().setBroadcastPrefix(s)))
               .setTooltip(new TranslatableText("config.twitchchat.cosmetics.broadcastPrefix.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_BROADCAST_PREFIX)
+              .build());
+
+      ConfigCategory broadcastCategory = builder.getOrCreateCategory(new TranslatableText("config.twitchchat.category.broadcast"));
+      broadcastCategory.addEntry(entryBuilder
+              .startBooleanToggle(new TranslatableText("config.twitchchat.broadcast.toggle"), ModConfig.getConfig().isBroadcastEnabled())
+              .setSaveConsumer((b -> ModConfig.getConfig().setBroadcastEnabled(b)))
+              .setTooltip(new TranslatableText("config.twitchchat.broadcast.toggle.tooltip"))
+              .setDefaultValue(ModConfig.DEFAULT_BROADCAST)
+              .build());
+      broadcastCategory.addEntry(entryBuilder
+              .startStrField(new TranslatableText("config.twitchchat.broadcast.prefix"), ModConfig.getConfig().getBroadcastPrefix())
+              .setSaveConsumer((s -> ModConfig.getConfig().setBroadcastPrefix(s)))
+              .setTooltip(new TranslatableText("config.twitchchat.broadcast.prefix.tooltip"))
+              .setDefaultValue(ModConfig.DEFAULT_BROADCAST_PREFIX)
+              .build());
+
+      ConfigCategory credentialsCategory = builder.getOrCreateCategory(new TranslatableText("config.twitchchat.category.credentials"));
+      credentialsCategory.addEntry(entryBuilder
+              .startStrField(new TranslatableText("config.twitchchat.credentials.username"), ModConfig.getConfig().getUsername())
+              .setSaveConsumer((s -> ModConfig.getConfig().setUsername(s)))
+              .setTooltip(new TranslatableText("config.twitchchat.credentials.username.tooltip"))
+              .setDefaultValue(ModConfig.DEFAULT_USERNAME)
+              .build());
+      credentialsCategory.addEntry(entryBuilder
+              .startStrField(new TranslatableText("config.twitchchat.credentials.oauthKey"), ModConfig.getConfig().getOauthKey())
+              .setSaveConsumer((s -> ModConfig.getConfig().setOauthKey(s)))
+              .setTooltip(new TranslatableText("config.twitchchat.credentials.oauthKey.tooltip"))
+              .setDefaultValue(ModConfig.DEFAULT_OAUTH_KEY)
               .build());
 
       return builder.build();
