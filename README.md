@@ -17,7 +17,7 @@ If you encounter any bug or issue or have any suggestion, please add it as an is
 4.  Fill in the config textboxes (your twitch username, oauth token).
 5.  Go in game and type `/twitch watch CHANNEL` (where CHANNEL should be the name of the Twitch channel you want to join).
 6.  Type `/twitch enable`.
-7.  Now you can talk in the Twitch chat using `:<message>`!
+7.  Now you can talk in the Twitch chat using `:MESSAGE`!
 
 ## Commands:
 - `/twitch watch CHANNEL` – Changes the watched Twitch channel to `CHANNEL` 
