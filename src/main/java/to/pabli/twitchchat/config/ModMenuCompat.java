@@ -50,18 +50,6 @@ public class ModMenuCompat implements ModMenuApi {
               .setTooltip(new TranslatableText("config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_TWITCH_WATCH_SUGGESTIONS)
               .build());
-      cosmeticsCategory.addEntry(entryBuilder
-              .startBooleanToggle(new TranslatableText("config.twitchchat.cosmetics.broadcast"), ModConfig.getConfig().isBroadcastEnabled())
-              .setSaveConsumer((b -> ModConfig.getConfig().setBroadcastEnabled(b)))
-              .setTooltip(new TranslatableText("config.twitchchat.cosmetics.broadcast.tooltip"))
-              .setDefaultValue(ModConfig.DEFAULT_BROADCAST)
-              .build());
-      cosmeticsCategory.addEntry(entryBuilder
-              .startStrField(new TranslatableText("config.twitchchat.cosmetics.broadcastPrefix"), ModConfig.getConfig().getBroadcastPrefix())
-              .setSaveConsumer((s -> ModConfig.getConfig().setBroadcastPrefix(s)))
-              .setTooltip(new TranslatableText("config.twitchchat.cosmetics.broadcastPrefix.tooltip"))
-              .setDefaultValue(ModConfig.DEFAULT_BROADCAST_PREFIX)
-              .build());
 
       ConfigCategory broadcastCategory = builder.getOrCreateCategory(new TranslatableText("config.twitchchat.category.broadcast"));
       broadcastCategory.addEntry(entryBuilder
