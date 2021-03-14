@@ -23,7 +23,7 @@ public class ChatMixin {
       // If the message is a twitch message
       if (text.startsWith(config.getPrefix())) {
         if (TwitchChatMod.bot != null && TwitchChatMod.bot.isConnected()) {
-          String textWithoutPrefix = text.replaceFirst(config.getPrefix(), "");
+          String textWithoutPrefix = text.substring(text.indexOf(prefix) + prefix.length());
           TwitchChatMod.bot.sendMessage(textWithoutPrefix); // Send the message to the Twitch IRC Chat
 
           Date currentTime = new Date();
