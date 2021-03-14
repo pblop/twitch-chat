@@ -109,7 +109,7 @@ public class Bot extends ListenerAdapter {
           }
 
           String formattedTime = TwitchChatMod.formatTMISentTimestamp(v3Tags.get("tmi-sent-ts"));
-          TwitchChatMod.addTwitchMessage(formattedTime, nick, message, formattingColor);
+          TwitchChatMod.addTwitchMessage(formattedTime, nick, message, formattingColor, false);
         }
       } else {
         System.out.println("Message with no v3tags: " + event.getMessage());

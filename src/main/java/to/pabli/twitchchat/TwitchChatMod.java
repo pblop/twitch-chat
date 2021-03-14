@@ -21,9 +21,6 @@ public class TwitchChatMod implements ModInitializer {
     ModConfig.getConfig().load();
   }
 
-  public static void addTwitchMessage(String time, String username, String message, Formatting textColor) {
-	  addTwitchMessage(time, username, message, textColor, false);
-  }
   public static void addTwitchMessage(String time, String username, String message, Formatting textColor, boolean isMeMessage) {
     MutableText timestampText = new LiteralText(time);
     MutableText usernameText = new LiteralText(username).formatted(textColor);
