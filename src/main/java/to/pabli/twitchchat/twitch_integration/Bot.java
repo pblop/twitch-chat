@@ -144,7 +144,7 @@ public class Bot extends ListenerAdapter {
     Exception disconnectException = event.getDisconnectException();
   }
 
-  // Hanlde /me
+  // Handle /me
   @Override
   public void onAction(ActionEvent event) throws Exception {
     User user = event.getUser();
