@@ -20,8 +20,16 @@ public class ChatMixin {
 	private void sendMessage(String text, boolean showInHistory, CallbackInfo info) {
       ModConfig config = ModConfig.getConfig();
 
+
+      String prefix = config.getPrefix();
+
+      // Allow users to write /twitch commands (such as disabling and enabling the mod) when their prefix is "".
+      if (prefix.equals("") && text.startsWith("/twitch")) {
+        return; // Don't cancel the message, return execution to the real method
+      }
+
       // If the message is a twitch message
-      if (text.startsWith(config.getPrefix())) {
+      if (text.startsWith(prefix)) {
         if (TwitchChatMod.bot != null && TwitchChatMod.bot.isConnected()) {
           String textWithoutPrefix = text.substring(text.indexOf(prefix) + prefix.length());
           TwitchChatMod.bot.sendMessage(textWithoutPrefix); // Send the message to the Twitch IRC Chat
