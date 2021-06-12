@@ -20,7 +20,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [ "to.pabli.twitchchat.TwitchChatMod" ],
-    "modmenu": [ "to.pabli.twitchchat.config.ModMenuCompat" ],
+    "modmenu": [ "to.pabli.twitchchat.config.ModMenuCompat" ]
   },
   "mixins": [
     "twitchchat.mixins.json"
