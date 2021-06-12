@@ -21,16 +21,16 @@
   "entrypoints": {
     "main": [ "to.pabli.twitchchat.TwitchChatMod" ],
     "modmenu": [ "to.pabli.twitchchat.config.ModMenuCompat" ],
-    "cotton-client-commands": [ "to.pabli.twitchchat.commands.TwitchBaseCommand" ]
   },
   "mixins": [
     "twitchchat.mixins.json"
   ],
 
   "depends": {
-    "fabricloader": ">=0.4.0",
+    "fabricloader": ">=0.11.3",
     "fabric": "*",
-    "modmenu": "*"
+    "modmenu": "*",
+    "java": ">=16"
    },
   "custom": {
     "modmenu:clientsideOnly": true
