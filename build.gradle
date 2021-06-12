@@ -13,6 +13,7 @@ group = project.maven_group
 repositories {
     maven { url = 'https://minecraft.curseforge.com/api/maven' }
     maven { url = 'https://maven.shedaniel.me/' }
+	maven { url = 'https://maven.terraformersmc.com/'}
     maven {
         name = 'CottonMC'
 		url = 'https://server.bbkr.space/artifactory/libs-release'
@@ -40,7 +41,7 @@ dependencies {
 //    include "me.shedaniel.cloth:config-2:${project.cloth_config_version}"
 
     // not required, but we want to see our config screen
-	modImplementation "io.github.prospector:modmenu:${project.mod_menu_version}"
+	modImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
 
     // irc
     implementation 'org.pircbotx:pircbotx:2.1'
