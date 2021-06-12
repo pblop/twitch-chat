@@ -1,16 +1,15 @@
 package to.pabli.twitchchat.commands;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import io.github.cottonmc.clientcommands.ArgumentBuilders;
-import io.github.cottonmc.clientcommands.CottonClientCommandSource;
-import net.minecraft.text.LiteralText;
+import com.mojang.brigadier.builder.ArgumentBuilder;
+import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import to.pabli.twitchchat.TwitchChatMod;
 
-public class TwitchDisableCommand {
-  public static LiteralArgumentBuilder<CottonClientCommandSource> getArgumentBuilder() {
-    return ArgumentBuilders.literal("disable")
+public class TwitchDisableCommand implements SubCommand {
+  public ArgumentBuilder<FabricClientCommandSource, ?> getArgumentBuilder() {
+    return ClientCommandManager.literal("disable")
         // The command to be executed if the command "twitch" is entered with the argument "disable"
         // It shuts down the irc bot.
         .executes(ctx -> {
