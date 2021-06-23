@@ -8,7 +8,7 @@ This mod requires [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmen
 
 **NOTE: Even though the mod is on beta, it's fully functional! It's on beta to symbolise I'm not finished adding features.
 If you encounter any bug or issue or have any suggestion, please add it as an issue
-[here](https://github.com/PabloPerezRodriguez/twitch-chat/issues/new).**
+[here](https://github.com/pblop/twitch-chat/issues/new).**
 
 ## Usage.
 1.  Get a Twitch oauth key here https://twitchapps.com/tmi/ and write it down somewhere.
@@ -45,10 +45,10 @@ Don't translate **%d** or **%s** signs, they're used to dynamically insert numbe
 ## Contact.
 
 If you have any questions don't hesitate to email, tweet or DM me, you can find my public profiles on my
-[GitHub profile](https://github.com/PabloPerezRodriguez). I'll answer ASAP.
+[GitHub profile](https://github.com/pblop). I'll answer ASAP.
 
 Just don't personally send me bugs, ideas or feature/help requests, those go in
-[GitHub issues](https://github.com/PabloPerezRodriguez/twitch-chat/issues) or
+[GitHub issues](https://github.com/pblop/twitch-chat/issues) or
 [CurseForge](https://www.curseforge.com/minecraft/mc-mods/twitch-chat).
 
 
