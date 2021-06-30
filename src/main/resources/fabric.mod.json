@@ -10,9 +10,9 @@
     "Pablo Pérez Rodríguez"
   ],
   "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/twitch-chat",
-    "issues": "https://github.com/PabloPerezRodriguez/twitch-chat/issues",
-    "sources": "https://github.com/PabloPerezRodriguez/twitch-chat"
+    "homepage": "https://github.com/pblop/twitch-chat",
+    "issues": "https://github.com/pblop/twitch-chat/issues",
+    "sources": "https://github.com/pblop/twitch-chat"
   },
 
   "license": "MIT",
