@@ -43,8 +43,7 @@ public class ModConfig {
   public ModConfig() {
     this.configFile = FabricLoader
         .getInstance()
-        .getConfigDirectory()
-        .toPath()
+        .getConfigDir()
         .resolve("twitchchat.json")
         .toFile();
     this.channel = DEFAULT_CHANNEL;
@@ -70,8 +69,7 @@ public class ModConfig {
     try {
       String jsonStr = new String(Files.readAllBytes(this.configFile.toPath()));
       if (!jsonStr. equals("")) {
-        JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonStr);
+        JsonObject jsonObject = (JsonObject) JsonParser.parseString(jsonStr);
         this.channel = jsonObject.has("channel")
                 ? jsonObject.getAsJsonPrimitive("channel").getAsString()
                 : DEFAULT_CHANNEL;

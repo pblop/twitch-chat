@@ -1,10 +1,10 @@
 plugins {
-	id 'fabric-loom' version '0.8-SNAPSHOT'
+	id 'fabric-loom' version '0.10-SNAPSHOT'
 	id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_16
-targetCompatibility = JavaVersion.VERSION_16
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
@@ -14,10 +14,8 @@ repositories {
     maven { url = 'https://minecraft.curseforge.com/api/maven' }
     maven { url = 'https://maven.shedaniel.me/' }
 	maven { url = 'https://maven.terraformersmc.com/'}
-    maven {
-        name = 'CottonMC'
-		url = 'https://server.bbkr.space/artifactory/libs-release'
-    }
+	maven { url 'https://jitpack.io' }
+
 }
 
 dependencies {
@@ -44,8 +42,8 @@ dependencies {
 	modImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
 
     // irc
-    implementation 'org.pircbotx:pircbotx:2.1'
-    include 'org.pircbotx:pircbotx:2.1'
+    implementation 'com.github.pircbotx:pircbotx:12f5639c5d'
+    include 'com.github.pircbotx:pircbotx:12f5639c5d'
 
 	// pircbotx needs this 🤷‍
 	include group: 'org.slf4j', name: 'slf4j-api', version: '1.7.13'
@@ -71,8 +69,8 @@ tasks.withType(JavaCompile).configureEach {
 	// If Javadoc is generated, this must be specified in that task too.
 	it.options.encoding = "UTF-8"
 
-	// Minecraft 1.17 (21w19a) upwards uses Java 16.
-	it.options.release = 16
+	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
+	it.options.release = 17
 }
 
 java {
@@ -92,13 +90,7 @@ jar {
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
-			// add all the jars that should be included when publishing to maven
-			artifact(remapJar) {
-				builtBy remapJar
-			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
-			}
+			from components.java
 		}
 	}
 
