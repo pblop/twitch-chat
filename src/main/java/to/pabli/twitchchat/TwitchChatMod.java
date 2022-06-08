@@ -54,6 +54,7 @@ public class TwitchChatMod implements ModInitializer {
     if (ModConfig.getConfig().isBroadcastEnabled()) {
       try {
         String plainTextMessage = ModConfig.getConfig().getBroadcastPrefix() + username + ": " + message;
+        plainTextMessage = sanitiseMessage(plainTextMessage);
         if (MinecraftClient.getInstance().player != null) {
           MinecraftClient.getInstance().player.sendChatMessage(plainTextMessage);
         }
@@ -67,6 +68,11 @@ public class TwitchChatMod implements ModInitializer {
           .append(messageBodyText), UUID.randomUUID());
     }
   }
+
+  private static String sanitiseMessage(String message) {
+    return message.replaceAll("§", "");
+  }
+
   public static void addNotification(MutableText message) {
     MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT, message.formatted(Formatting.DARK_GRAY), UUID.randomUUID());
   }
