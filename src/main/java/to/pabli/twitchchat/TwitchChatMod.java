@@ -3,16 +3,12 @@ package to.pabli.twitchchat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.message.MessageType;
 import net.minecraft.text.Text;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.registry.BuiltinRegistries;
 import to.pabli.twitchchat.commands.TwitchBaseCommand;
 import to.pabli.twitchchat.config.ModConfig;
 import to.pabli.twitchchat.twitch_integration.Bot;
@@ -25,8 +21,8 @@ public class TwitchChatMod implements ModInitializer {
     ModConfig.getConfig().load();
 
     // Register commands
-    CommandDispatcher<FabricClientCommandSource> dispatcher = ClientCommandManager.getActiveDispatcher();
-    new TwitchBaseCommand().registerCommands(dispatcher);
+    ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
+        new TwitchBaseCommand().registerCommands(dispatcher));
   }
 
   public static void addTwitchMessage(String time, String username, String message, Formatting textColor, boolean isMeMessage) {
