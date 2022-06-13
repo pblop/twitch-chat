@@ -4,7 +4,7 @@ import java.util.Date;
 import net.fabricmc.fabric.impl.client.indigo.IndigoMixinConfigPlugin;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -53,7 +53,7 @@ public class ChatMixin {
           MinecraftClient.getInstance().inGameHud.getChatHud().addToMessageHistory(text);
           info.cancel();
         } else {
-          TwitchChatMod.addNotification(new TranslatableText("text.twitchchat.chat.integration_disabled"));
+          TwitchChatMod.addNotification(Text.translatable("text.twitchchat.chat.integration_disabled"));
         }
       }
 	}

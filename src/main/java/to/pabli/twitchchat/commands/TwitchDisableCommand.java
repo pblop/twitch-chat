@@ -3,7 +3,7 @@ package to.pabli.twitchchat.commands;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import to.pabli.twitchchat.TwitchChatMod;
 
@@ -14,12 +14,12 @@ public class TwitchDisableCommand implements SubCommand {
         // It shuts down the irc bot.
         .executes(ctx -> {
           if (TwitchChatMod.bot == null || !TwitchChatMod.bot.isConnected()) {
-            ctx.getSource().sendFeedback(new TranslatableText("text.twitchchat.command.disable.already_disabled"));
+            ctx.getSource().sendFeedback(Text.translatable("text.twitchchat.command.disable.already_disabled"));
             return 1;
           }
 
           TwitchChatMod.bot.stop();
-          ctx.getSource().sendFeedback(new TranslatableText("text.twitchchat.command.disable.disabled").formatted(
+          ctx.getSource().sendFeedback(Text.translatable("text.twitchchat.command.disable.disabled").formatted(
               Formatting.DARK_GRAY));
 
           // Return a result. -1 is failure, 0 is a pass and 1 is success.

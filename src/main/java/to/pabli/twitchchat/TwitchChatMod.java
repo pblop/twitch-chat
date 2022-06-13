@@ -9,8 +9,8 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.MessageType;
-import net.minecraft.text.LiteralText;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.text.Text;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
 import to.pabli.twitchchat.commands.TwitchBaseCommand;
@@ -30,17 +30,17 @@ public class TwitchChatMod implements ModInitializer {
   }
 
   public static void addTwitchMessage(String time, String username, String message, Formatting textColor, boolean isMeMessage) {
-    MutableText timestampText = new LiteralText(time);
-    MutableText usernameText = new LiteralText(username).formatted(textColor);
+    MutableText timestampText = Text.literal(time);
+    MutableText usernameText = Text.literal(username).formatted(textColor);
     MutableText messageBodyText;
 
     if (!isMeMessage) {
-      messageBodyText = new LiteralText(": " + message);
+      messageBodyText = Text.literal(": " + message);
     } else {
       // '/me' messages have the same color as the username in the Twitch website.
       // And thus I set the color of the message to be the same as the username.
       // They also don't have a colon after the username.
-      messageBodyText = new LiteralText(" " + message).formatted(textColor);
+      messageBodyText = Text.literal(" " + message).formatted(textColor);
 
       // In Minecraft, a '/me' message is marked with a star before the name, like so:
       //
@@ -48,7 +48,7 @@ public class TwitchChatMod implements ModInitializer {
       // * Player this is a '/me' message
       //
       // The star is always white (that's why I don't format it).
-      usernameText = new LiteralText("* ").append(usernameText);
+      usernameText = Text.literal("* ").append(usernameText);
     }
 
     if (ModConfig.getConfig().isBroadcastEnabled()) {

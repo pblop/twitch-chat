@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import to.pabli.twitchchat.config.ModConfig;
 
 public class TwitchBroadcastCommand implements SubCommand {
@@ -21,9 +21,9 @@ public class TwitchBroadcastCommand implements SubCommand {
               ModConfig.getConfig().setBroadcastEnabled(enabled);
               // Also switch channels if the bot has been initialized
               if (enabled) {
-                ctx.getSource().sendFeedback(new TranslatableText("text.twitchchat.command.broadcast.enabled"));
+                ctx.getSource().sendFeedback(Text.translatable("text.twitchchat.command.broadcast.enabled"));
               } else {
-                ctx.getSource().sendFeedback(new TranslatableText("text.twitchchat.command.broadcast.disabled"));
+                ctx.getSource().sendFeedback(Text.translatable("text.twitchchat.command.broadcast.disabled"));
               }
               ModConfig.getConfig().save();
               return 1;

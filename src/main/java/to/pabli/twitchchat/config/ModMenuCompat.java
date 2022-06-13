@@ -11,7 +11,7 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class ModMenuCompat implements ModMenuApi {
@@ -19,63 +19,63 @@ public class ModMenuCompat implements ModMenuApi {
   public ConfigScreenFactory<?> getModConfigScreenFactory() {
     return (ConfigScreenFactory<Screen>) screen -> {
       ConfigBuilder builder = ConfigBuilder.create();
-      builder.setTitle(new TranslatableText("config.twitchchat.title"));
+      builder.setTitle(Text.translatable("config.twitchchat.title"));
       builder.setSavingRunnable(() -> ModConfig.getConfig().save());
 
 
       ConfigEntryBuilder entryBuilder = ConfigEntryBuilder.create();
 
-      ConfigCategory cosmeticsCategory = builder.getOrCreateCategory(new TranslatableText("config.twitchchat.category.cosmetics"));
+      ConfigCategory cosmeticsCategory = builder.getOrCreateCategory(Text.translatable("config.twitchchat.category.cosmetics"));
       cosmeticsCategory.addEntry(entryBuilder
-              .startStrField(new TranslatableText("config.twitchchat.cosmetics.prefix"), ModConfig.getConfig().getPrefix())
+              .startStrField(Text.translatable("config.twitchchat.cosmetics.prefix"), ModConfig.getConfig().getPrefix())
               .setSaveConsumer((s -> ModConfig.getConfig().setPrefix(s)))
-              .setTooltip(new TranslatableText("config.twitchchat.cosmetics.prefix.tooltip"))
+              .setTooltip(Text.translatable("config.twitchchat.cosmetics.prefix.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_PREFIX)
               .build());
       cosmeticsCategory.addEntry(entryBuilder
-              .startStrField(new TranslatableText("config.twitchchat.cosmetics.dateFormat"), ModConfig.getConfig().getDateFormat())
+              .startStrField(Text.translatable("config.twitchchat.cosmetics.dateFormat"), ModConfig.getConfig().getDateFormat())
               .setSaveConsumer((s -> ModConfig.getConfig().setDateFormat(s)))
-              .setTooltip(new TranslatableText("config.twitchchat.cosmetics.dateFormat.tooltip"))
+              .setTooltip(Text.translatable("config.twitchchat.cosmetics.dateFormat.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_DATE_FORMAT)
               .build());
       cosmeticsCategory.addEntry(entryBuilder
-              .startStrList(new TranslatableText("config.twitchchat.cosmetics.ignorelist"), ModConfig.getConfig().getIgnoreList())
+              .startStrList(Text.translatable("config.twitchchat.cosmetics.ignorelist"), ModConfig.getConfig().getIgnoreList())
               .setSaveConsumer((l -> ModConfig.getConfig().setIgnoreList(new ArrayList<>(l))))
-              .setTooltip(new TranslatableText("config.twitchchat.cosmetics.ignorelist.tooltip"))
+              .setTooltip(Text.translatable("config.twitchchat.cosmetics.ignorelist.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_IGNORE_LIST)
               .build());
       cosmeticsCategory.addEntry(entryBuilder
-              .startBooleanToggle(new TranslatableText("config.twitchchat.cosmetics.twitchWatchSuggestions"), ModConfig.getConfig().areTwitchWatchSuggestionsEnabled())
+              .startBooleanToggle(Text.translatable("config.twitchchat.cosmetics.twitchWatchSuggestions"), ModConfig.getConfig().areTwitchWatchSuggestionsEnabled())
               .setSaveConsumer((b -> ModConfig.getConfig().setTwitchWatchSuggestions(b)))
-              .setTooltip(new TranslatableText("config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip"))
+              .setTooltip(Text.translatable("config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_TWITCH_WATCH_SUGGESTIONS)
               .build());
 
-      ConfigCategory broadcastCategory = builder.getOrCreateCategory(new TranslatableText("config.twitchchat.category.broadcast"));
+      ConfigCategory broadcastCategory = builder.getOrCreateCategory(Text.translatable("config.twitchchat.category.broadcast"));
       broadcastCategory.addEntry(entryBuilder
-              .startBooleanToggle(new TranslatableText("config.twitchchat.broadcast.toggle"), ModConfig.getConfig().isBroadcastEnabled())
+              .startBooleanToggle(Text.translatable("config.twitchchat.broadcast.toggle"), ModConfig.getConfig().isBroadcastEnabled())
               .setSaveConsumer((b -> ModConfig.getConfig().setBroadcastEnabled(b)))
-              .setTooltip(new TranslatableText("config.twitchchat.broadcast.toggle.tooltip"))
+              .setTooltip(Text.translatable("config.twitchchat.broadcast.toggle.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_BROADCAST)
               .build());
       broadcastCategory.addEntry(entryBuilder
-              .startStrField(new TranslatableText("config.twitchchat.broadcast.prefix"), ModConfig.getConfig().getBroadcastPrefix())
+              .startStrField(Text.translatable("config.twitchchat.broadcast.prefix"), ModConfig.getConfig().getBroadcastPrefix())
               .setSaveConsumer((s -> ModConfig.getConfig().setBroadcastPrefix(s)))
-              .setTooltip(new TranslatableText("config.twitchchat.broadcast.prefix.tooltip"))
+              .setTooltip(Text.translatable("config.twitchchat.broadcast.prefix.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_BROADCAST_PREFIX)
               .build());
 
-      ConfigCategory credentialsCategory = builder.getOrCreateCategory(new TranslatableText("config.twitchchat.category.credentials"));
+      ConfigCategory credentialsCategory = builder.getOrCreateCategory(Text.translatable("config.twitchchat.category.credentials"));
       credentialsCategory.addEntry(entryBuilder
-              .startStrField(new TranslatableText("config.twitchchat.credentials.username"), ModConfig.getConfig().getUsername())
+              .startStrField(Text.translatable("config.twitchchat.credentials.username"), ModConfig.getConfig().getUsername())
               .setSaveConsumer((s -> ModConfig.getConfig().setUsername(s)))
-              .setTooltip(new TranslatableText("config.twitchchat.credentials.username.tooltip"))
+              .setTooltip(Text.translatable("config.twitchchat.credentials.username.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_USERNAME)
               .build());
       credentialsCategory.addEntry(entryBuilder
-              .startStrField(new TranslatableText("config.twitchchat.credentials.oauthKey"), ModConfig.getConfig().getOauthKey())
+              .startStrField(Text.translatable("config.twitchchat.credentials.oauthKey"), ModConfig.getConfig().getOauthKey())
               .setSaveConsumer((s -> ModConfig.getConfig().setOauthKey(s)))
-              .setTooltip(new TranslatableText("config.twitchchat.credentials.oauthKey.tooltip"))
+              .setTooltip(Text.translatable("config.twitchchat.credentials.oauthKey.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_OAUTH_KEY)
               .build());
 
