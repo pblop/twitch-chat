@@ -21,7 +21,7 @@ public class TwitchWatchSuggestionProvider implements SuggestionProvider<FabricC
             List<AbstractClientPlayerEntity> players = MinecraftClient.getInstance().world.getPlayers();
 
             for (AbstractClientPlayerEntity player : players) {
-                builder.suggest(player.getName().getContent());
+                builder.suggest(player.getName().getString());
             }
         }
 

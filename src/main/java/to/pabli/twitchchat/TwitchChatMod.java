@@ -2,7 +2,6 @@ package to.pabli.twitchchat;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ModInitializer;
@@ -13,6 +12,7 @@ import net.minecraft.network.message.MessageType;
 import net.minecraft.text.Text;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.registry.BuiltinRegistries;
 import to.pabli.twitchchat.commands.TwitchBaseCommand;
 import to.pabli.twitchchat.config.ModConfig;
 import to.pabli.twitchchat.twitch_integration.Bot;
@@ -25,7 +25,7 @@ public class TwitchChatMod implements ModInitializer {
     ModConfig.getConfig().load();
 
     // Register commands
-    CommandDispatcher<FabricClientCommandSource> dispatcher = ClientCommandManager.DISPATCHER;
+    CommandDispatcher<FabricClientCommandSource> dispatcher = ClientCommandManager.getActiveDispatcher();
     new TwitchBaseCommand().registerCommands(dispatcher);
   }
 
@@ -62,10 +62,10 @@ public class TwitchChatMod implements ModInitializer {
         System.err.println("TWITCH BOT FAILED TO BROADCAST MESSAGE: " + e.getMessage());
       }
     } else {
-      MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT,
+      MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(
           timestampText
           .append(usernameText)
-          .append(messageBodyText), UUID.randomUUID());
+          .append(messageBodyText));
     }
   }
 
@@ -74,7 +74,7 @@ public class TwitchChatMod implements ModInitializer {
   }
 
   public static void addNotification(MutableText message) {
-    MinecraftClient.getInstance().inGameHud.addChatMessage(MessageType.CHAT, message.formatted(Formatting.DARK_GRAY), UUID.randomUUID());
+    MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(message.formatted(Formatting.DARK_GRAY));
   }
 
   public static String formatTMISentTimestamp(String tmiSentTS) {
