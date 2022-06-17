@@ -3,8 +3,8 @@ package to.pabli.twitchchat.mixin;
 import java.util.Date;
 import net.fabricmc.fabric.impl.client.indigo.IndigoMixinConfigPlugin;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,7 +14,7 @@ import to.pabli.twitchchat.TwitchChatMod;
 import to.pabli.twitchchat.config.ModConfig;
 import to.pabli.twitchchat.twitch_integration.CalculateMinecraftColor;
 
-@Mixin(Screen.class)
+@Mixin(ChatScreen.class)
 public class ChatMixin {
 	@Inject(at = @At("HEAD"), method = "sendMessage(Ljava/lang/String;Z)V", cancellable = true)
 	private void sendMessage(String text, boolean showInHistory, CallbackInfo info) {
@@ -53,7 +53,7 @@ public class ChatMixin {
           MinecraftClient.getInstance().inGameHud.getChatHud().addToMessageHistory(text);
           info.cancel();
         } else {
-          TwitchChatMod.addNotification(new TranslatableText("text.twitchchat.chat.integration_disabled"));
+          TwitchChatMod.addNotification(Text.translatable("text.twitchchat.chat.integration_disabled"));
         }
       }
 	}

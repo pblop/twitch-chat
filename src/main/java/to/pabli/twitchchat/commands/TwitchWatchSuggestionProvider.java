@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import to.pabli.twitchchat.config.ModConfig;
@@ -21,7 +21,7 @@ public class TwitchWatchSuggestionProvider implements SuggestionProvider<FabricC
             List<AbstractClientPlayerEntity> players = MinecraftClient.getInstance().world.getPlayers();
 
             for (AbstractClientPlayerEntity player : players) {
-                builder.suggest(player.getName().asString());
+                builder.suggest(player.getName().getString());
             }
         }
 

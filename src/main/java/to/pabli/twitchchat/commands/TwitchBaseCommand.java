@@ -5,9 +5,9 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.text.Text;
 
 public class TwitchBaseCommand implements BaseCommand {
   public void registerCommands(CommandDispatcher<FabricClientCommandSource> dispatcher) {
@@ -19,8 +19,8 @@ public class TwitchBaseCommand implements BaseCommand {
           .then(new TwitchWatchCommand().getArgumentBuilder())
           .then(new TwitchBroadcastCommand().getArgumentBuilder())
           .executes(source -> {
-              source.getSource().sendFeedback(new TranslatableText("text.twitchchat.command.base.noargs1"));
-              source.getSource().sendFeedback(new TranslatableText("text.twitchchat.command.base.noargs2"));
+              source.getSource().sendFeedback(Text.translatable("text.twitchchat.command.base.noargs1"));
+              source.getSource().sendFeedback(Text.translatable("text.twitchchat.command.base.noargs2"));
               return 1;
           })
       );
