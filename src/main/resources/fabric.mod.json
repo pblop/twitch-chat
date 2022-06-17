@@ -19,8 +19,8 @@
 
   "environment": "*",
   "entrypoints": {
-    "main": [ "to.pabli.twitchchat.TwitchChatMod" ],
-    "modmenu": [ "to.pabli.twitchchat.config.ModMenuCompat" ]
+    "main": [ "eu.pabl.twitchchat.TwitchChatMod" ],
+    "modmenu": [ "eu.pabl.twitchchat.config.ModMenuCompat" ]
   },
   "mixins": [
     "twitchchat.mixins.json"

@@ -1,5 +1,8 @@
-package to.pabli.twitchchat.mixin;
+package eu.pabl.twitchchat.mixin;
 
+import eu.pabl.twitchchat.TwitchChatMod;
+import eu.pabl.twitchchat.config.ModConfig;
+import eu.pabl.twitchchat.twitch_integration.CalculateMinecraftColor;
 import java.util.Date;
 import net.fabricmc.fabric.impl.client.indigo.IndigoMixinConfigPlugin;
 import net.minecraft.client.MinecraftClient;
@@ -10,9 +13,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import to.pabli.twitchchat.TwitchChatMod;
-import to.pabli.twitchchat.config.ModConfig;
-import to.pabli.twitchchat.twitch_integration.CalculateMinecraftColor;
 
 @Mixin(ChatScreen.class)
 public class ChatMixin {

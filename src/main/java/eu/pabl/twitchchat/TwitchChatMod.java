@@ -1,5 +1,8 @@
-package to.pabli.twitchchat;
+package eu.pabl.twitchchat;
 
+import eu.pabl.twitchchat.commands.TwitchBaseCommand;
+import eu.pabl.twitchchat.config.ModConfig;
+import eu.pabl.twitchchat.twitch_integration.Bot;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -9,9 +12,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
-import to.pabli.twitchchat.commands.TwitchBaseCommand;
-import to.pabli.twitchchat.config.ModConfig;
-import to.pabli.twitchchat.twitch_integration.Bot;
 
 public class TwitchChatMod implements ModInitializer {
   public static Bot bot;

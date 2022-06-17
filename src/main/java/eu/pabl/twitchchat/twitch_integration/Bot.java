@@ -1,6 +1,7 @@
-package to.pabli.twitchchat.twitch_integration;
+package eu.pabl.twitchchat.twitch_integration;
 
 import com.google.common.collect.ImmutableMap;
+import eu.pabl.twitchchat.config.ModConfig;
 import java.awt.Color;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -10,19 +11,15 @@ import java.util.concurrent.Executors;
 import javax.net.ssl.SSLSocketFactory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.apache.commons.lang3.time.StopWatch;
 import org.pircbotx.Channel;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
 import org.pircbotx.User;
 import org.pircbotx.cap.EnableCapHandler;
 import org.pircbotx.exception.IrcException;
-import org.pircbotx.hooks.Event;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.*;
-import org.pircbotx.hooks.types.GenericMessageEvent;
-import to.pabli.twitchchat.TwitchChatMod;
-import to.pabli.twitchchat.config.ModConfig;
+import eu.pabl.twitchchat.TwitchChatMod;
 
 public class Bot extends ListenerAdapter {
   private final PircBotX ircBot;

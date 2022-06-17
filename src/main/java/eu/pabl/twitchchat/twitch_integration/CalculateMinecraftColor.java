@@ -1,4 +1,4 @@
-package to.pabli.twitchchat.twitch_integration;
+package eu.pabl.twitchchat.twitch_integration;
 
 import java.awt.Color;
 import java.util.Arrays;

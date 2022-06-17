@@ -1,11 +1,11 @@
-package to.pabli.twitchchat.commands;
+package eu.pabl.twitchchat.commands;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import eu.pabl.twitchchat.config.ModConfig;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.text.Text;
-import to.pabli.twitchchat.config.ModConfig;
 
 public class TwitchBroadcastCommand implements SubCommand {
   public ArgumentBuilder<FabricClientCommandSource, ?> getArgumentBuilder() {

@@ -1,4 +1,4 @@
-package to.pabli.twitchchat.config;
+package eu.pabl.twitchchat.config;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

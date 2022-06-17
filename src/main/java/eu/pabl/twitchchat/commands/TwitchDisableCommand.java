@@ -1,11 +1,11 @@
-package to.pabli.twitchchat.commands;
+package eu.pabl.twitchchat.commands;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import eu.pabl.twitchchat.TwitchChatMod;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import to.pabli.twitchchat.TwitchChatMod;
 
 public class TwitchDisableCommand implements SubCommand {
   public ArgumentBuilder<FabricClientCommandSource, ?> getArgumentBuilder() {

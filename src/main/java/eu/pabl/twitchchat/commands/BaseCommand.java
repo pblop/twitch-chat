@@ -1,4 +1,4 @@
-package to.pabli.twitchchat.commands;
+package eu.pabl.twitchchat.commands;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;

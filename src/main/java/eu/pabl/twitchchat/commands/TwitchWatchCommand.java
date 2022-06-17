@@ -1,12 +1,12 @@
-package to.pabli.twitchchat.commands;
+package eu.pabl.twitchchat.commands;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import eu.pabl.twitchchat.config.ModConfig;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.text.Text;
-import to.pabli.twitchchat.TwitchChatMod;
-import to.pabli.twitchchat.config.ModConfig;
+import eu.pabl.twitchchat.TwitchChatMod;
 
 public class TwitchWatchCommand implements SubCommand {
   public ArgumentBuilder<FabricClientCommandSource, ?> getArgumentBuilder() {
