@@ -1,0 +1,44 @@
+{
+  "config.twitchchat.title": "Twitch Chat Bridge",
+  "config.twitchchat.category.credentials": "Данные для входа",
+  "config.twitchchat.credentials.channel": "Twitch канал",
+  "config.twitchchat.credentials.username": "Имя пользователя",
+  "config.twitchchat.credentials.username.tooltip": "Ваше Twitch имя пользователя",
+  "config.twitchchat.credentials.oauthKey": "OAuth Токен",
+  "config.twitchchat.credentials.oauthKey.tooltip": "Ваш Twitch OAuth токен",
+  "config.twitchchat.category.cosmetics": "Внешний вид",
+  "config.twitchchat.cosmetics.prefix": "Префикс",
+  "config.twitchchat.cosmetics.prefix.tooltip": "Поставит этот перед вашими сообщениями чтобы отправить их на Twitch канал",
+  "config.twitchchat.cosmetics.dateFormat": "Формат даты и времени",
+  "config.twitchchat.cosmetics.dateFormat.tooltip": "Изменить формат даты и времени для сообщений",
+  "config.twitchchat.cosmetics.ignorelist": "Черный список",
+  "config.twitchchat.cosmetics.ignorelist.tooltip": "Сообщения от пользователей ниже не будут отображены",
+  "config.twitchchat.cosmetics.twitchWatchSuggestions": "Автозаполнение для /twitch watch",
+  "config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip": "Автозаполнение имен игроков с вашего сервера для /twitch watch ",
+  "config.twitchchat.category.broadcast": "Трансляция",
+  "config.twitchchat.broadcast.toggle": "Транслировать Twitch сообщения",
+  "config.twitchchat.broadcast.toggle.tooltip": "Отправляет сообщения из Twitch чата в чат сервера",
+  "config.twitchchat.broadcast.prefix": "Префикс отправки",
+  "config.twitchchat.broadcast.prefix.tooltip": "Данный префикс будет стоять перед Twitch сообщениями в чате сервера",
+
+  "text.twitchchat.command.base.noargs1": "Добро пожаловать в Minecraft-Twitch Bridge мод!",
+  "text.twitchchat.command.base.noargs2": "Чтобы включить его просто используйте /twitch enable, когда вы завершите настраивать конфигурацию.",
+
+  "text.twitchchat.command.disable.already_disabled": "Twitch интеграция уже отключена!",
+  "text.twitchchat.command.disable.disabled": "Twitch интеграция отключена!",
+
+  "text.twitchchat.command.enable.already_enabled": "Twitch интеграция уже включена!",
+  "text.twitchchat.command.enable.set_config": "Для начала настройте конфигурацию!",
+  "text.twitchchat.command.enable.select_channel": "Вы не сможете подключиться к каналу, т.к. не выбрали его. Вы можете выбрать канал с помощью /twitch watch [channel]",
+  "text.twitchchat.command.enable.connecting": "Подключение...",
+
+  "text.twitchchat.command.watch.switching": "Переключение каналов на '%s'...",
+  "text.twitchchat.command.watch.connect_on_enable": "Этот мод подключится к '%s' как только вы включите его.",
+
+  "text.twitchchat.command.broadcast.enabled": "Передача включена",
+  "text.twitchchat.command.broadcast.disabled": "Передача отключена",
+
+  "text.twitchchat.chat.integration_disabled": "Twitch интеграция не включена, чтобы включить ее используйте /twitch enable.",
+  "text.twitchchat.bot.connected": "Подключение к каналу '%s'",
+  "text.twitchchat.bot.kicked": "Отключение от текущего канала по причине: '%s'"
+}
