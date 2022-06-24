@@ -1,0 +1,44 @@
+{
+  "config.twitchchat.title": "Twitch Chat Bridge",
+  "config.twitchchat.category.credentials": "계정 인증",
+  "config.twitchchat.credentials.channel": "트위치 채널",
+  "config.twitchchat.credentials.username": "아이디",
+  "config.twitchchat.credentials.username.tooltip": "사용자 트위치 아이디",
+  "config.twitchchat.credentials.oauthKey": "인증 토큰",
+  "config.twitchchat.credentials.oauthKey.tooltip": "사용자 트위치 인증 토큰",
+  "config.twitchchat.category.cosmetics": "Cosmetics",
+  "config.twitchchat.cosmetics.prefix": "접두사",
+  "config.twitchchat.cosmetics.prefix.tooltip": "트위치 채널 채팅창에서 입력되는 메시지가 전송될 때 앞에 붙을 접두사입니다.",
+  "config.twitchchat.cosmetics.dateFormat": "타임스탬프 형식",
+  "config.twitchchat.cosmetics.dateFormat.tooltip": "출력되는 메시지에 적용할 타임스탬프 형식을 커스터마이즈합니다.",
+  "config.twitchchat.cosmetics.ignorelist": "무시 목록",
+  "config.twitchchat.cosmetics.ignorelist.tooltip": "이 목록에 있는 사용자의 메시지는 표시하지 않습니다.",
+  "config.twitchchat.cosmetics.twitchWatchSuggestions": "/twitch watch 이름 제안",
+  "config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip": "서버에 있는 사용자의 이름을 사용하여 /twitch watch 채널 이름을 자동 완성합니다.",
+  "config.twitchchat.category.broadcast": "방송",
+  "config.twitchchat.broadcast.toggle": "트위치 방송 메시지",
+  "config.twitchchat.broadcast.toggle.tooltip": "서버 채팅에 트위치 채팅 메시지를 전송합니다.",
+  "config.twitchchat.broadcast.prefix": "방송 메시지 접두사",
+  "config.twitchchat.broadcast.prefix.tooltip": "서버로 전송되는 메시지 시작 부분에 추가됩니다.",
+
+  "text.twitchchat.command.base.noargs1": "Minecraft-Twitch Bridge 모드 사용을 환영합니다!",
+  "text.twitchchat.command.base.noargs2": "환경설정을 모두 끝냈다면 /twitch enable 명령어를 통해 모드를 활성화하세요.",
+
+  "text.twitchchat.command.disable.already_disabled": "트위치 통합이 이미 비활성화되었습니다!",
+  "text.twitchchat.command.disable.disabled": "트위치 통합이 이제 비활성화됩니다!",
+
+  "text.twitchchat.command.enable.already_enabled": "트위치 통합이 이미 활성화되었습니다!",
+  "text.twitchchat.command.enable.set_config": "먼저 환경설정을 끝마쳐야 합니다!",
+  "text.twitchchat.command.enable.select_channel": "선택된 채널이 없기 때문에 채널에 연결하지 않습니다. /twitch watch [channel]을 통해 채널을 선택할 수 있습니다.",
+  "text.twitchchat.command.enable.connecting": "연결 중...",
+
+  "text.twitchchat.command.watch.switching": "'%s'(으)로 채널 전환 중...",
+  "text.twitchchat.command.watch.connect_on_enable": "활성화하자마자 '%s'에 연결합니다.",
+
+  "text.twitchchat.command.broadcast.enabled": "방송 활성화됨",
+  "text.twitchchat.command.broadcast.disabled": "방송 비활성화됨",
+
+  "text.twitchchat.chat.integration_disabled": "트위치 통합이 비활성화 상태입니다. /twitch enable을 통해 활성화해주세요.",
+  "text.twitchchat.bot.connected": "'%s' 채널에 연결됨",
+  "text.twitchchat.bot.kicked": "현재 채널에서 밴당했습니다. 사유: '%s'"
+}
