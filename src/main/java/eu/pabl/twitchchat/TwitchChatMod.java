@@ -52,7 +52,7 @@ public class TwitchChatMod implements ModInitializer {
         String plainTextMessage = ModConfig.getConfig().getBroadcastPrefix() + username + ": " + message;
         plainTextMessage = sanitiseMessage(plainTextMessage);
         if (MinecraftClient.getInstance().player != null) {
-          MinecraftClient.getInstance().player.sendChatMessage(plainTextMessage);
+          MinecraftClient.getInstance().player.sendChatMessage(plainTextMessage, null);
         }
       } catch (NullPointerException e) {
         System.err.println("TWITCH BOT FAILED TO BROADCAST MESSAGE: " + e.getMessage());
