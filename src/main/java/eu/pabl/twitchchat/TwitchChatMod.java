@@ -9,6 +9,8 @@ import java.util.Date;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.MessageIndicator;
+import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.text.Text;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
@@ -58,10 +60,14 @@ public class TwitchChatMod implements ModInitializer {
         System.err.println("TWITCH BOT FAILED TO BROADCAST MESSAGE: " + e.getMessage());
       }
     } else {
+      // This is just what ChatHud#addMessage(String) does, but with a custom MessageIndicator.
+      // TODO: Actually add the custom MessageIndicator. Currently using notSecure to check it's
+      // working and differentiate it from the normal messages.
       MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(
-          timestampText
-          .append(usernameText)
-          .append(messageBodyText));
+          timestampText.append(usernameText).append(messageBodyText),
+          (MessageSignatureData)null,
+          MessageIndicator.notSecure()
+      );
     }
   }
 
