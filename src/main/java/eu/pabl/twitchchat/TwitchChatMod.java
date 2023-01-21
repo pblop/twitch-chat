@@ -66,7 +66,7 @@ public class TwitchChatMod implements ModInitializer {
     } else {
       // This is just what ChatHud#addMessage(String) does, but with a custom MessageIndicator.
       // TODO: Actually add the custom MessageIndicator. Currently using notSecure to check it's
-      // working and differentiate it from the normal messages.
+      //       working and differentiate it from the normal messages.
       MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(
           timestampText.append(usernameText).append(messageBodyText),
           (MessageSignatureData)null,
