@@ -41,9 +41,9 @@ dependencies {
     // not required, but we want to see our config screen
 	modImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
 
-    // irc
-    implementation 'com.github.pircbotx:pircbotx:12f5639c5d'
-    include 'com.github.pircbotx:pircbotx:12f5639c5d'
+    // twitch
+	implementation "com.github.twitch4j:twitch4j:1.13.0"
+	implementation group: 'com.github.philippheuer.events4j', name: 'events4j-handler-simple', version: '0.9.8'
 
 //	 pircbotx needs this 🤷‍
 //	include group: 'org.slf4j', name: 'slf4j-api', version: '1.7.13'
