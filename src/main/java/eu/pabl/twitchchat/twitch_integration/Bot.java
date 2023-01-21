@@ -48,6 +48,8 @@ public class Bot {
     String message = event.getMessage();
 
     String time = TwitchChatMod.formatDateTwitch(event.getFiredAt().getTime());
+    // TODO: Helix supports getting the colour of a user, so we can use that instead of calculating
+    //       the colour ourselves. It works the same way as it did previously with tags and pircbotx.
     Formatting textColor = CalculateMinecraftColor.getDefaultUserColor(username);
 
     TwitchChatMod.addTwitchMessage(time, username, message, textColor, false);
