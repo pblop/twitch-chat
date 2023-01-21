@@ -9,6 +9,8 @@ import net.minecraft.util.Formatting;
 
 public class TwitchDisableCommand implements SubCommand {
   public ArgumentBuilder<FabricClientCommandSource, ?> getArgumentBuilder() {
+    // TODO: Maybe change the name of this command (and by extension its feedback messages) to 'disconnect' or 'leave'
+    //       to make it more clear that it's not disabling the mod, just disconnecting from the Twitch channel.
     return ClientCommandManager.literal("disable")
         // The command to be executed if the command "twitch" is entered with the argument "disable"
         // It shuts down the irc bot.
