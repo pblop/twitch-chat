@@ -30,15 +30,16 @@ public class Bot {
     this.username = username.toLowerCase();
     formattingColorCache = new HashMap<>();
 
+    OAuth2Credential oAuth2Credential = new OAuth2Credential("twitch", oauthKey);
+
     this.twitchClient = TwitchClientBuilder.builder()
         .withEnableChat(true)
         .withDefaultEventHandler(SimpleEventHandler.class)
-        .withDefaultAuthToken(new OAuth2Credential("twitch", oauthKey))
+        .withChatAccount(oAuth2Credential)
+        .withDefaultAuthToken(oAuth2Credential)
         .build();
 
-    this.twitchClient.getEventManager().onEvent(ChannelMessageEvent.class, event -> {
-      System.out.println("[" + event.getChannel().getName() + "] " + event.getUser().getName() + ": " + event.getMessage());
-    });
+    this.twitchClient.getEventManager().onEvent(ChannelMessageEvent.class, this::onChannelMessage);
 
 //    this.myExecutor = Executors.newCachedThreadPool();
   }
@@ -63,6 +64,16 @@ public class Bot {
   public boolean isConnected() {
 //    return this.twitchClient.getClientHelper().;
     return true;
+  }
+
+  private void onChannelMessage(ChannelMessageEvent event) {
+    String username = event.getUser().getName();
+    String message = event.getMessage();
+
+    String time = TwitchChatMod.formatDateTwitch(event.getFiredAt().getTime());
+    Formatting textColor = CalculateMinecraftColor.getDefaultUserColor(username);
+
+    TwitchChatMod.addTwitchMessage(time, username, message, textColor, false);
   }
 
 //  @Override
