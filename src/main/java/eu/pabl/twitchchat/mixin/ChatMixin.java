@@ -4,7 +4,6 @@ import eu.pabl.twitchchat.TwitchChatMod;
 import eu.pabl.twitchchat.config.ModConfig;
 import eu.pabl.twitchchat.twitch_integration.CalculateMinecraftColor;
 import java.util.Date;
-import net.fabricmc.fabric.impl.client.indigo.IndigoMixinConfigPlugin;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.text.Text;
@@ -12,7 +11,6 @@ import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ChatScreen.class)
@@ -31,7 +29,7 @@ public class ChatMixin {
 
       // If the message is a twitch message
       if (text.startsWith(prefix)) {
-        if (TwitchChatMod.bot != null && TwitchChatMod.bot.isConnected()) {
+        if (TwitchChatMod.bot.isConnected()) {
           String textWithoutPrefix = text.substring(text.indexOf(prefix) + prefix.length());
           TwitchChatMod.bot.sendMessage(textWithoutPrefix); // Send the message to the Twitch IRC Chat
 

@@ -32,33 +32,15 @@ public class Bot {
         .build();
 
     this.twitchClient.getEventManager().onEvent(ChannelMessageEvent.class, this::onChannelMessage);
-
-//    this.myExecutor = Executors.newCachedThreadPool();
-  }
-
-  public void enable() {
-    if (!this.channel.equals("")) {
-      this.twitchClient.getChat().joinChannel(this.channel);
-    }
-
-//    myExecutor.execute(() -> {
-//      try {
-//        ircBot.startBot();
-//      } catch (IOException | IrcException e) {
-//        e.printStackTrace();
-//      }
-//    });
   }
 
   public void disable() {
     this.twitchClient.getChat().leaveChannel(this.channel);
-    this.twitchClient.getChat().disconnect();
-    this.twitchClient.close();
+    this.channel = "";
   }
 
   public boolean isConnected() {
-//    return this.twitchClient.getClientHelper().;
-    return true;
+    return !this.channel.equals("");
   }
 
   private void onChannelMessage(ChannelMessageEvent event) {

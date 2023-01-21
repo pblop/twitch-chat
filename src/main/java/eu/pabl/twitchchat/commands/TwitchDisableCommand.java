@@ -13,14 +13,13 @@ public class TwitchDisableCommand implements SubCommand {
         // The command to be executed if the command "twitch" is entered with the argument "disable"
         // It shuts down the irc bot.
         .executes(ctx -> {
-          if (TwitchChatMod.bot == null || !TwitchChatMod.bot.isConnected()) {
+          if (!TwitchChatMod.bot.isConnected()) {
             ctx.getSource().sendFeedback(Text.translatable("text.twitchchat.command.disable.already_disabled"));
             return 1;
           }
 
           TwitchChatMod.bot.disable();
-          ctx.getSource().sendFeedback(Text.translatable("text.twitchchat.command.disable.disabled").formatted(
-              Formatting.DARK_GRAY));
+          ctx.getSource().sendFeedback(Text.translatable("text.twitchchat.command.disable.disabled").formatted(Formatting.DARK_GRAY));
 
           // Return a result. -1 is failure, 0 is a pass and 1 is success.
           return 1;

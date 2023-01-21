@@ -22,6 +22,10 @@ public class TwitchChatMod implements ModInitializer {
   public void onInitialize() {
     ModConfig.getConfig().load();
 
+    // Initialize the bot
+    ModConfig config = ModConfig.getConfig();
+    TwitchChatMod.bot = new Bot(config.getUsername(), config.getOauthKey(), config.getChannel());
+
     // Register commands
     ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
         new TwitchBaseCommand().registerCommands(dispatcher));
