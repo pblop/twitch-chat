@@ -5,16 +5,8 @@ import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
-import com.google.common.collect.ImmutableMap;
-import eu.pabl.twitchchat.config.ModConfig;
-import java.awt.Color;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import javax.net.ssl.SSLSocketFactory;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import eu.pabl.twitchchat.TwitchChatMod;
 
@@ -44,8 +36,11 @@ public class Bot {
 //    this.myExecutor = Executors.newCachedThreadPool();
   }
 
-  public void start() {
-    System.out.println("TWITCH BOT STARTED");
+  public void enable() {
+    if (!this.channel.equals("")) {
+      this.twitchClient.getChat().joinChannel(this.channel);
+    }
+
 //    myExecutor.execute(() -> {
 //      try {
 //        ircBot.startBot();
@@ -55,10 +50,10 @@ public class Bot {
 //    });
   }
 
-  public void stop() {
+  public void disable() {
+    this.twitchClient.getChat().leaveChannel(this.channel);
+    this.twitchClient.getChat().disconnect();
     this.twitchClient.close();
-//    ircBot.stopBotReconnect();
-//    ircBot.close();
   }
 
   public boolean isConnected() {

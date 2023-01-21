@@ -18,7 +18,7 @@ public class TwitchDisableCommand implements SubCommand {
             return 1;
           }
 
-          TwitchChatMod.bot.stop();
+          TwitchChatMod.bot.disable();
           ctx.getSource().sendFeedback(Text.translatable("text.twitchchat.command.disable.disabled").formatted(
               Formatting.DARK_GRAY));
 

@@ -32,7 +32,7 @@ public class TwitchEnableCommand implements SubCommand {
           }
 
           TwitchChatMod.bot = new Bot(config.getUsername(), config.getOauthKey(), config.getChannel());
-          TwitchChatMod.bot.start();
+          TwitchChatMod.bot.enable();
           ctx.getSource().sendFeedback(Text.translatable("text.twitchchat.command.enable.connecting").formatted(Formatting.DARK_GRAY));
           // Return a result. -1 is failure, 0 is a pass and 1 is success.
           return 1;
