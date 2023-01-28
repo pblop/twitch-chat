@@ -62,16 +62,16 @@ public class Bot {
     return !this.channel.equals("");
   }
 
+  String channelUserHasJoined;
   private void onChannelJoin(ChannelJoinEvent event) {
-    // ERROR: This fires not only when the user joins the channel, but also when other users join
-    //        the channel. Maybe filter by username/ID to only send the notification when THIS user
-    //        joins the channel?
-    //        Also, this fires more than once when the user joins the channel. Maybe only send the
-    //        notification once? The different fires probably contain different information.
-    // ALSO:  This event fires when the bot is started, but no channel is joined. I haven't yet
+    // ERROR: This event fires when the bot is started, but no channel is joined. I haven't yet
     //        checked what information is contained in that specific event.
     //        This causes a crash, because the in-game chat hud has not been initialized yet.
-    TwitchChatMod.addNotification(Text.translatable("text.twitchchat.bot.connected", this.channel));
+    String joinChannelId = event.getChannel().getId();
+    if (this.channelUserHasJoined == null || !this.channelUserHasJoined.equals(joinChannelId)) {
+      this.channelUserHasJoined = joinChannelId;
+      TwitchChatMod.addNotification(Text.translatable("text.twitchchat.bot.connected", this.channel));
+    }
   }
 
   private static Text getTranslatedReasonText(ChannelJoinFailureEvent.Reason r) {
@@ -140,19 +140,6 @@ public class Bot {
 //    System.out.println("TWITCH DISCONNECT: " + event.toString());
 //    Exception disconnectException = event.getDisconnectException();
 //  }
-//
-//
-//  Channel currentChannel;
-//  @Override
-//  public void onJoin(JoinEvent event) throws Exception {
-//    super.onJoin(event);
-//    Channel channel = event.getChannel();
-//     if (currentChannel == null || !currentChannel.equals(channel)) {
-//      TwitchChatMod.addNotification(Text.translatable("text.twitchchat.bot.connected", this.channel));
-//      currentChannel = channel;
-//    }
-//  }
-//
 
   public void sendMessage(String message) {
     this.twitchClient.getChat().sendMessage(this.channel, message);
