@@ -80,6 +80,7 @@ public class TwitchChatMod implements ModInitializer {
   }
 
   public static void addNotification(MutableText message) {
+    System.out.println("TWITCH BOT: " + message.getString());
     MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(message.formatted(Formatting.DARK_GRAY));
   }
 

@@ -4,12 +4,19 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
+import com.github.twitch4j.chat.events.AbstractChannelMessageEvent;
+import com.github.twitch4j.chat.events.channel.ChannelJoinEvent;
+import com.github.twitch4j.chat.events.channel.ChannelJoinFailureEvent;
+import com.github.twitch4j.chat.events.channel.ChannelMessageActionEvent;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
+import com.github.twitch4j.chat.events.channel.ChannelNoticeEvent;
+import com.github.twitch4j.chat.events.channel.IRCMessageEvent;
 import com.github.twitch4j.helix.domain.UserChatColorList;
 import java.awt.Color;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import eu.pabl.twitchchat.TwitchChatMod;
 
@@ -22,7 +29,7 @@ public class Bot {
   public Bot(String username, String oauthKey, String channel) {
     this.channel = channel.toLowerCase();
     this.username = username.toLowerCase();
-    formattingColorCache = new HashMap<>();
+    this.formattingColorCache = new HashMap<>();
 
     OAuth2Credential oAuth2Credential = new OAuth2Credential("twitch", oauthKey);
 
@@ -32,9 +39,18 @@ public class Bot {
         .withDefaultEventHandler(SimpleEventHandler.class)
         .withChatAccount(oAuth2Credential)
         .withDefaultAuthToken(oAuth2Credential)
+        .withDefaultEventHandler(SimpleEventHandler.class)
         .build();
 
     this.twitchClient.getEventManager().onEvent(ChannelMessageEvent.class, this::onChannelMessage);
+    this.twitchClient.getEventManager().onEvent(ChannelMessageActionEvent.class, this::onChannelMessageAction);
+    this.twitchClient.getEventManager().onEvent(ChannelJoinEvent.class, this::onChannelJoin);
+    this.twitchClient.getEventManager().onEvent(ChannelJoinFailureEvent.class, this::onChannelJoinFailure);
+    this.twitchClient.getEventManager().onEvent(ChannelNoticeEvent.class, this::onChannelNotice);
+    this.twitchClient.getEventManager().onEvent(IRCMessageEvent.class, ircMessageEvent -> {
+      System.out.println("IRC: " + ircMessageEvent.toString());
+    });
+
   }
 
   public void disable() {
@@ -46,7 +62,36 @@ public class Bot {
     return !this.channel.equals("");
   }
 
+  private void onChannelJoin(ChannelJoinEvent event) {
+    // ERROR: This fires not only when the user joins the channel, but also when other users join
+    //        the channel. Maybe filter by username/ID to only send the notification when THIS user
+    //        joins the channel?
+    //        Also, this fires more than once when the user joins the channel. Maybe only send the
+    //        notification once? The different fires probably contain different information.
+    // ALSO:  This event fires when the bot is started, but no channel is joined. I haven't yet
+    //        checked what information is contained in that specific event.
+    //        This causes a crash, because the in-game chat hud has not been initialized yet.
+    TwitchChatMod.addNotification(Text.translatable("text.twitchchat.bot.connected", this.channel));
+  }
+
+  private static Text getTranslatedReasonText(ChannelJoinFailureEvent.Reason r) {
+    // TODO: Add translations for the reasons (RETRIES_EXHAUSTED, USER_BANNED, CHANNEL_SUSPENDED).
+    return Text.translatable("text.twitchchat.bot.join_failure_reason." + r.name().toLowerCase());
+  }
+  private void onChannelJoinFailure(ChannelJoinFailureEvent event) {
+    TwitchChatMod.addNotification(Text.translatable("text.twitchchat.bot.join_failure",
+        this.channel,
+        getTranslatedReasonText(event.getReason()) // TODO: Maybe this requires a string instead of a Text?
+    ));
+  }
+
   private void onChannelMessage(ChannelMessageEvent event) {
+    this.onChannelMessageAny(event, false);
+  }
+  private void onChannelMessageAction(ChannelMessageActionEvent event) {
+    this.onChannelMessageAny(event, true);
+  }
+  private void onChannelMessageAny(AbstractChannelMessageEvent event, boolean isAction) {
     String username = event.getUser().getName();
     String userId = event.getUser().getId();
     String message = event.getMessage();
@@ -71,55 +116,14 @@ public class Bot {
       putFormattingColor(username, textColor);
     }
 
-    TwitchChatMod.addTwitchMessage(time, username, message, textColor, false);
+    TwitchChatMod.addTwitchMessage(time, username, message, textColor, isAction);
   }
 
-//  @Override
-//  public void onMessage(MessageEvent event) throws Exception {
-//    String message = event.getMessage();
-//    System.out.println("TWITCH MESSAGE: " + message);
-//    User user = event.getUser();
-//    if (user != null) {
-//      ImmutableMap<String, String> v3Tags = event.getV3Tags();
-//      if (v3Tags != null) {
-//        String nick = user.getNick();
-//        if (!ModConfig.getConfig().getIgnoreList().contains(nick)) {
-//          String colorTag = v3Tags.get("color");
-//          Formatting formattingColor;
-//
-//          if (isFormattingColorCached(nick)) {
-//            formattingColor = getFormattingColor(nick);
-//          } else {
-//            if (colorTag.equals("")) {
-//              formattingColor = CalculateMinecraftColor.getDefaultUserColor(nick);
-//            } else {
-//              Color userColor = Color.decode(colorTag);
-//              formattingColor = CalculateMinecraftColor.findNearestMinecraftColor(userColor);
-//            }
-//            putFormattingColor(nick, formattingColor);
-//          }
-//
-//          String formattedTime = TwitchChatMod.formatTMISentTimestamp(v3Tags.get("tmi-sent-ts"));
-//          TwitchChatMod.addTwitchMessage(formattedTime, nick, message, formattingColor, false);
-//        }
-//      } else {
-//        System.out.println("Message with no v3tags: " + event.getMessage());
-//      }
-//    } else {
-//      System.out.println("NON-USER MESSAGE" + event.getMessage());
-//    }
-//  }
-//
-//  @Override
-//  public void onUnknown(UnknownEvent event) throws Exception {
-//    System.out.println("UNKNOWN TWITCH EVENT: " + event.toString());
-//  }
-//
-//  @Override
-//  public void onNotice(NoticeEvent event) {
-//    System.out.println("TWITCH NOTICE: " + event.toString());
-//    TwitchChatMod.addNotification(Text.literal(event.getNotice()));
-//  }
+  private void onChannelNotice(ChannelNoticeEvent event) {
+    String message = event.getMessage();
+    TwitchChatMod.addNotification(Text.literal(message));
+  }
+
 //
 //  @Override
 //  public void onKick(KickEvent event) {
@@ -135,31 +139,6 @@ public class Bot {
 //    Exception disconnectException = event.getDisconnectException();
 //  }
 //
-//  // Handle /me
-//  @Override
-//  public void onAction(ActionEvent event) throws Exception {
-//    User user = event.getUser();
-//
-//    if (user != null) {
-//      String nick = user.getNick();
-//
-//      if (!ModConfig.getConfig().getIgnoreList().contains(nick.toLowerCase())) {
-//        String formattedTime = TwitchChatMod.formatTMISentTimestamp(event.getTimestamp());
-//
-//        Formatting formattingColor;
-//        if (isFormattingColorCached(nick)) {
-//          formattingColor = getFormattingColor(nick);
-//        } else {
-//          formattingColor = CalculateMinecraftColor.getDefaultUserColor(nick);
-//          putFormattingColor(nick, formattingColor);
-//        }
-//
-//        TwitchChatMod.addTwitchMessage(formattedTime, nick, event.getMessage(), formattingColor, true);
-//      }
-//    } else {
-//      System.out.println("NON-USER ACTION" + event.getMessage());
-//    }
-//  }
 //
 //  Channel currentChannel;
 //  @Override
@@ -172,13 +151,6 @@ public class Bot {
 //    }
 //  }
 //
-//  /**
-//   * We MUST respond to this or else we will get kicked
-//   */
-//  @Override
-//  public void onPing(PingEvent event) {
-//    ircBot.sendRaw().rawLineNow(String.format("PONG %s\r\n", event.getPingValue()));
-//  }
 
   public void sendMessage(String message) {
     this.twitchClient.getChat().sendMessage(this.channel, message);
