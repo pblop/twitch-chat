@@ -5,6 +5,9 @@ import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
+import com.github.twitch4j.helix.domain.UserChatColorList;
+import java.awt.Color;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import net.minecraft.util.Formatting;
@@ -14,7 +17,6 @@ public class Bot {
   private final TwitchClient twitchClient;
   private final String username;
   private String channel;
-  private ExecutorService myExecutor;
   private HashMap<String, Formatting> formattingColorCache; // Map of usernames to colors to keep consistency with usernames and colors
 
   public Bot(String username, String oauthKey, String channel) {
@@ -26,6 +28,7 @@ public class Bot {
 
     this.twitchClient = TwitchClientBuilder.builder()
         .withEnableChat(true)
+        .withEnableHelix(true)
         .withDefaultEventHandler(SimpleEventHandler.class)
         .withChatAccount(oAuth2Credential)
         .withDefaultAuthToken(oAuth2Credential)
@@ -45,12 +48,23 @@ public class Bot {
 
   private void onChannelMessage(ChannelMessageEvent event) {
     String username = event.getUser().getName();
+    String userId = event.getUser().getId();
     String message = event.getMessage();
 
     String time = TwitchChatMod.formatDateTwitch(event.getFiredAt().getTime());
-    // TODO: Helix supports getting the colour of a user, so we can use that instead of calculating
-    //       the colour ourselves. It works the same way as it did previously with tags and pircbotx.
-    Formatting textColor = CalculateMinecraftColor.getDefaultUserColor(username);
+
+    // Get the user's color from the Helix API.
+    UserChatColorList userChatColorList = this.twitchClient.getHelix()
+        .getUserChatColor(null, Arrays.asList(userId)).execute();
+    String userColorHex = userChatColorList.getData().get(0).getColor();
+
+    Formatting textColor;
+    if (!userColorHex.equals("")) {
+      Color userColor = Color.decode(userColorHex);
+      textColor = CalculateMinecraftColor.findNearestMinecraftColor(userColor);
+    } else {
+      textColor = CalculateMinecraftColor.getDefaultUserColor(username);
+    }
 
     TwitchChatMod.addTwitchMessage(time, username, message, textColor, false);
   }
