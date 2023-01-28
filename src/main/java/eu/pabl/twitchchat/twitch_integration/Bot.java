@@ -162,7 +162,7 @@ public class Bot {
 //  }
 
   public void sendMessage(String message) {
-//    ircBot.sendIRC().message("#" + this.channel, message);
+    this.twitchClient.getChat().sendMessage(this.channel, message);
   }
 
   public String getUsername() {
