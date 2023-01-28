@@ -59,11 +59,16 @@ public class Bot {
     String userColorHex = userChatColorList.getData().get(0).getColor();
 
     Formatting textColor;
-    if (!userColorHex.equals("")) {
-      Color userColor = Color.decode(userColorHex);
-      textColor = CalculateMinecraftColor.findNearestMinecraftColor(userColor);
+    if (this.isFormattingColorCached(username)) {
+      textColor = this.getFormattingColor(username);
     } else {
-      textColor = CalculateMinecraftColor.getDefaultUserColor(username);
+      if (!userColorHex.equals("")) {
+        Color userColor = Color.decode(userColorHex);
+        textColor = CalculateMinecraftColor.findNearestMinecraftColor(userColor);
+      } else {
+        textColor = CalculateMinecraftColor.getDefaultUserColor(username);
+      }
+      putFormattingColor(username, textColor);
     }
 
     TwitchChatMod.addTwitchMessage(time, username, message, textColor, false);
