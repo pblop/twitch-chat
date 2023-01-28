@@ -120,6 +120,8 @@ public class Bot {
   }
 
   private void onChannelNotice(ChannelNoticeEvent event) {
+    // TODO: Maybe get translations from Twitch, and add them to the translation files? Or try to
+    //       get the messages translated already from Twitch?
     String message = event.getMessage();
     TwitchChatMod.addNotification(Text.literal(message));
   }
@@ -175,14 +177,5 @@ public class Bot {
 
     this.channel = channel;
     this.twitchClient.getChat().joinChannel(channel);
-//    String oldChannel = this.channel;
-//    this.channel = channel.toLowerCase();
-//    if (ircBot.isConnected()) {
-//      myExecutor.execute(() -> {
-//        ircBot.sendRaw().rawLine("PART #" + oldChannel); // Leave the channel
-//        ircBot.sendIRC().joinChannel("#" + this.channel); // Join the new channel
-//        ircBot.sendCAP().request("twitch.tv/membership", "twitch.tv/tags", "twitch.tv/commands"); // Ask for capabilities
-//      });
-//    }
   }
 }
