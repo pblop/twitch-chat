@@ -7,6 +7,7 @@ import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.events.AbstractChannelMessageEvent;
 import com.github.twitch4j.chat.events.channel.ChannelJoinEvent;
 import com.github.twitch4j.chat.events.channel.ChannelJoinFailureEvent;
+import com.github.twitch4j.chat.events.channel.ChannelLeaveEvent;
 import com.github.twitch4j.chat.events.channel.ChannelMessageActionEvent;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import com.github.twitch4j.chat.events.channel.ChannelNoticeEvent;
@@ -26,8 +27,7 @@ public class Bot {
   private String channel;
   private HashMap<String, Formatting> formattingColorCache; // Map of usernames to colors to keep consistency with usernames and colors
 
-  public Bot(String username, String oauthKey, String channel) {
-    this.channel = channel.toLowerCase();
+  public Bot(String username, String oauthKey) {
     this.username = username.toLowerCase();
     this.formattingColorCache = new HashMap<>();
 
@@ -45,6 +45,7 @@ public class Bot {
     this.twitchClient.getEventManager().onEvent(ChannelMessageEvent.class, this::onChannelMessage);
     this.twitchClient.getEventManager().onEvent(ChannelMessageActionEvent.class, this::onChannelMessageAction);
     this.twitchClient.getEventManager().onEvent(ChannelJoinEvent.class, this::onChannelJoin);
+    this.twitchClient.getEventManager().onEvent(ChannelLeaveEvent.class, this::onChannelLeave);
     this.twitchClient.getEventManager().onEvent(ChannelJoinFailureEvent.class, this::onChannelJoinFailure);
     this.twitchClient.getEventManager().onEvent(ChannelNoticeEvent.class, this::onChannelNotice);
     this.twitchClient.getEventManager().onEvent(IRCMessageEvent.class, ircMessageEvent -> {
@@ -64,13 +65,24 @@ public class Bot {
 
   String channelUserHasJoined;
   private void onChannelJoin(ChannelJoinEvent event) {
+    // TODO: Maybe we could check if the user joining is the user we are logged in as.
+    // TODO: Check what happens whenever a user joins a channel they are banned from (an error will
+    //       probably be thrown, but I haven't checked yet, and maybe the 'joined the channel xxxxx'
+    //       message will still be displayed, when it shouldn't).
     // ERROR: This event fires when the bot is started, but no channel is joined. I haven't yet
     //        checked what information is contained in that specific event.
     //        This causes a crash, because the in-game chat hud has not been initialized yet.
     String joinChannelId = event.getChannel().getId();
     if (this.channelUserHasJoined == null || !this.channelUserHasJoined.equals(joinChannelId)) {
       this.channelUserHasJoined = joinChannelId;
-      TwitchChatMod.addNotification(Text.translatable("text.twitchchat.bot.connected", this.channel));
+      TwitchChatMod.addNotification(Text.translatable("text.twitchchat.bot.connected", event.getChannel().getName()));
+    }
+  }
+
+  private void onChannelLeave(ChannelLeaveEvent event) {
+    // TODO: Check if this event fires when the client disconnects from a channel.
+    if (event.getUser().getName().equals(this.username)) {
+      TwitchChatMod.addNotification(Text.translatable("text.twitchchat.bot.disconnected", event.getChannel().getName()));
     }
   }
 

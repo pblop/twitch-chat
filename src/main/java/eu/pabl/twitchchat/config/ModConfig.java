@@ -17,7 +17,6 @@ import net.fabricmc.loader.api.FabricLoader;
 
 public class ModConfig {
 
-  public static final String DEFAULT_CHANNEL = "";
   public static final String DEFAULT_USERNAME = "";
   public static final String DEFAULT_OAUTH_KEY = "";
   public static final String DEFAULT_PREFIX = ":";
@@ -30,7 +29,6 @@ public class ModConfig {
   private static ModConfig SINGLE_INSTANCE = null;
   private final File configFile;
 
-  private String channel;
   private String username;
   private String oauthKey;
   private String prefix;
@@ -46,7 +44,6 @@ public class ModConfig {
         .getConfigDir()
         .resolve("twitchchat.json")
         .toFile();
-    this.channel = DEFAULT_CHANNEL;
     this.username = DEFAULT_USERNAME;
     this.oauthKey = DEFAULT_OAUTH_KEY;
     this.prefix = DEFAULT_PREFIX;
@@ -70,9 +67,6 @@ public class ModConfig {
       String jsonStr = new String(Files.readAllBytes(this.configFile.toPath()));
       if (!jsonStr. equals("")) {
         JsonObject jsonObject = (JsonObject) JsonParser.parseString(jsonStr);
-        this.channel = jsonObject.has("channel")
-                ? jsonObject.getAsJsonPrimitive("channel").getAsString()
-                : DEFAULT_CHANNEL;
         this.username = jsonObject.has("username")
                 ? jsonObject.getAsJsonPrimitive("username").getAsString()
                 : DEFAULT_USERNAME;
@@ -110,7 +104,6 @@ public class ModConfig {
 
   public void save() {
     JsonObject jsonObject = new JsonObject();
-    jsonObject.addProperty("channel", this.channel);
     jsonObject.addProperty("username", this.username);
     jsonObject.addProperty("oauthKey", this.oauthKey);
     jsonObject.addProperty("prefix", this.prefix);
@@ -129,14 +122,6 @@ public class ModConfig {
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
-  }
-
-  public String getChannel() {
-    return channel;
-  }
-
-  public void setChannel(String channel) {
-    this.channel = channel;
   }
 
   public String getUsername() {
