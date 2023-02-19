@@ -1,0 +1,44 @@
+{
+  "config.twitchchat.title": "Twitch聊天桥接",
+  "config.twitchchat.category.credentials": "凭证",
+  "config.twitchchat.credentials.channel": "Twitch频道",
+  "config.twitchchat.credentials.username": "用户名",
+  "config.twitchchat.credentials.username.tooltip": "你的Twitch用户名",
+  "config.twitchchat.credentials.oauthKey": "OAuth令牌",
+  "config.twitchchat.credentials.oauthKey.tooltip": "你的Twitch OAuth令牌",
+  "config.twitchchat.category.cosmetics": "装饰",
+  "config.twitchchat.cosmetics.prefix": "前缀",
+  "config.twitchchat.cosmetics.prefix.tooltip": "在发送至Twitch频道的消息开头添加前缀",
+  "config.twitchchat.cosmetics.dateFormat": "时间戳格式",
+  "config.twitchchat.cosmetics.dateFormat.tooltip": "对在聊天前显示的时间戳格式进行自定义",
+  "config.twitchchat.cosmetics.ignorelist": "忽略列表",
+  "config.twitchchat.cosmetics.ignorelist.tooltip": "列表中的用户名对应的用户所发送的聊天将不会显示",
+  "config.twitchchat.cosmetics.twitchWatchSuggestions": "/twitch watch输入建议",
+  "config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip": "自动以服务器中用户的用户名补全/twitch watch命令",
+  "config.twitchchat.category.broadcast": "广播",
+  "config.twitchchat.broadcast.toggle": "广播Twitch消息",
+  "config.twitchchat.broadcast.toggle.tooltip": "将Twitch聊天消息发送至服务器聊天栏",
+  "config.twitchchat.broadcast.prefix": "广播消息前缀",
+  "config.twitchchat.broadcast.prefix.tooltip": "在广播至服务器的消息开头添加前缀",
+
+  "text.twitchchat.command.base.noargs1": "欢迎使用Minecraft-Twitch桥接模组！",
+  "text.twitchchat.command.base.noargs2": "设定好配置项后，执行/twitch enable命令即可启用模组功能。",
+
+  "text.twitchchat.command.disable.already_disabled": "Twitch集成已处于禁用状态！",
+  "text.twitchchat.command.disable.disabled": "Twitch集成已禁用！",
+
+  "text.twitchchat.command.enable.already_enabled": "Twitch集成已处于启用状态！",
+  "text.twitchchat.command.enable.set_config": "完成配置设定后才可启用！",
+  "text.twitchchat.command.enable.select_channel": "未选择频道，无法连接。你可以使用/twitch watch [频道]命令来选择频道",
+  "text.twitchchat.command.enable.connecting": "正在连接……",
+
+  "text.twitchchat.command.watch.switching": "正在切换频道至“%s”……",
+  "text.twitchchat.command.watch.connect_on_enable": "启用模组后将连接至“%s”。",
+
+  "text.twitchchat.command.broadcast.enabled": "已启用广播",
+  "text.twitchchat.command.broadcast.disabled": "已禁用广播",
+
+  "text.twitchchat.chat.integration_disabled": "尚未启用Twitch集成。使用/twitch enable命令来启用。",
+  "text.twitchchat.bot.connected": "已连接至频道“%s”",
+  "text.twitchchat.bot.kicked": "已被踢出当前频道。原因：“%s”"
+}
