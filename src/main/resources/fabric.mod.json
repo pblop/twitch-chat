@@ -17,7 +17,7 @@
 
   "license": "MIT",
 
-  "environment": "*",
+  "environment": "client",
   "entrypoints": {
     "main": [ "eu.pabl.twitchchat.TwitchChatMod" ],
     "modmenu": [ "eu.pabl.twitchchat.config.ModMenuCompat" ]
@@ -32,8 +32,5 @@
     "fabric": "*",
     "modmenu": "*",
     "java": ">=17"
-   },
-  "custom": {
-    "modmenu:clientsideOnly": true
-  }
+   }
 }
