@@ -14,7 +14,7 @@
   "config.twitchchat.cosmetics.ignorelist": "Liste d'ignoré(e)s",
   "config.twitchchat.cosmetics.ignorelist.tooltip": "Les messages des utilisateurs de cette liste ne seront pas affichés",
   "config.twitchchat.cosmetics.twitchWatchSuggestions": "Suggestions pour /twitch watch",
-  "config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip": "Autocomplete /twitch watch channel names with names from users in your server",
+  "config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip": "Autocompléter /twitch watch channel names avec les noms des utilisateurs de votre serveur",
   "config.twitchchat.category.broadcast": "Diffusion",
   "config.twitchchat.broadcast.toggle": "Diffuser les messages Twitch",
   "config.twitchchat.broadcast.toggle.tooltip": "Envoie les messages du tchat Twitch sur le tchat du serveur",
@@ -22,7 +22,7 @@
   "config.twitchchat.broadcast.prefix.tooltip": "Cela sera ajouté au début des messages diffusés au serveur",
 
   "text.twitchchat.command.base.noargs1": "Bienvenue sur le mod Minecraft-Twitch Bridge !",
-  "text.twitchchat.command.base.noargs2": "Pour l'activer, faites simplement /twitch enable après avoir l'paramétré.",
+  "text.twitchchat.command.base.noargs2": "Pour l'activer, faites simplement /twitch enable après l'avoir paramétré.",
 
   "text.twitchchat.command.disable.already_disabled": "L'intégration Twitch est déjà désactivée !",
   "text.twitchchat.command.disable.disabled": "L'intégration Twitch à été désactivée !",
