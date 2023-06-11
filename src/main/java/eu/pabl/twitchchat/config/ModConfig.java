@@ -82,6 +82,9 @@ public class ModConfig {
         this.prefix = jsonObject.has("prefix")
                 ? jsonObject.getAsJsonPrimitive("prefix").getAsString()
                 : DEFAULT_PREFIX;
+        this.dateFormat = jsonObject.has("dateFormat")
+                ? jsonObject.getAsJsonPrimitive("dateFormat").getAsString()
+                : DEFAULT_DATE_FORMAT;
 
         if (jsonObject.has("ignoreList")) {
           JsonArray ignoreListJsonArray = jsonObject.getAsJsonArray("ignoreList");
@@ -114,6 +117,7 @@ public class ModConfig {
     jsonObject.addProperty("username", this.username);
     jsonObject.addProperty("oauthKey", this.oauthKey);
     jsonObject.addProperty("prefix", this.prefix);
+    jsonObject.addProperty("dateFormat", this.dateFormat);
 
     JsonArray ignoreListJsonArray = new JsonArray();
     for (String username : this.ignoreList) {
