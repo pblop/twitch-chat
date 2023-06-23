@@ -7,7 +7,7 @@
   "icon": "assets/twitchchat/icon.png",
   "description": "Interconnect Minecraft chat with Twitch chat!",
   "authors": [
-    "Pablo Pérez Rodríguez"
+    "pblop (pablo@pabl.eu)"
   ],
   "contact": {
     "homepage": "https://github.com/pblop/twitch-chat",
