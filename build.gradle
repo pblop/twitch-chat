@@ -1,10 +1,7 @@
 plugins {
-	id 'fabric-loom' version '1.1-SNAPSHOT'
+	id 'fabric-loom' version '1.2-SNAPSHOT'
 	id 'maven-publish'
 }
-
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
@@ -42,8 +39,8 @@ dependencies {
 	modImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
 
     // irc
-    implementation 'com.github.pircbotx:pircbotx:12f5639c5d'
-    include 'com.github.pircbotx:pircbotx:12f5639c5d'
+    implementation 'com.github.pircbotx:pircbotx:c47a15b'
+    include 'com.github.pircbotx:pircbotx:c47a15b'
 
 //	 pircbotx needs this 🤷‍
 //	include group: 'org.slf4j', name: 'slf4j-api', version: '1.7.13'
@@ -78,6 +75,9 @@ java {
 	// if it is present.
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
 }
 
 jar {
