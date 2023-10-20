@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.net.ssl.SSLSocketFactory;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.text.TextColor;
 import org.pircbotx.Channel;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
@@ -26,7 +26,7 @@ public class Bot extends ListenerAdapter {
   private final String username;
   private String channel;
   private ExecutorService myExecutor;
-  private HashMap<String, Formatting> formattingColorCache; // Map of usernames to colors to keep consistency with usernames and colors
+  private HashMap<String, TextColor> formattingColorCache; // Map of usernames to colors to keep consistency with usernames and colors
 
   public Bot(String username, String oauthKey, String channel) {
     this.channel = channel.toLowerCase();
@@ -90,7 +90,7 @@ public class Bot extends ListenerAdapter {
         String nick = user.getNick();
         if (!ModConfig.getConfig().getIgnoreList().contains(nick)) {
           String colorTag = v3Tags.get("color");
-          Formatting formattingColor;
+          TextColor formattingColor;
           
           if (isFormattingColorCached(nick)) {
             formattingColor = getFormattingColor(nick);
@@ -99,7 +99,7 @@ public class Bot extends ListenerAdapter {
               formattingColor = CalculateMinecraftColor.getDefaultUserColor(nick);
             } else {
               Color userColor = Color.decode(colorTag);
-              formattingColor = CalculateMinecraftColor.findNearestMinecraftColor(userColor);
+              formattingColor = TextColor.fromRgb(userColor.getRGB());
             }
             putFormattingColor(nick, formattingColor);
           }
@@ -151,7 +151,7 @@ public class Bot extends ListenerAdapter {
       if (!ModConfig.getConfig().getIgnoreList().contains(nick.toLowerCase())) {
         String formattedTime = TwitchChatMod.formatTMISentTimestamp(event.getTimestamp());
 
-        Formatting formattingColor;
+        TextColor formattingColor;
         if (isFormattingColorCached(nick)) {
           formattingColor = getFormattingColor(nick);
         } else {
@@ -193,10 +193,10 @@ public class Bot extends ListenerAdapter {
     return username;
   }
 
-  public void putFormattingColor(String nick, Formatting color) {
+  public void putFormattingColor(String nick, TextColor color) {
     formattingColorCache.put(nick.toLowerCase(), color);
   }
-  public Formatting getFormattingColor(String nick) {
+  public TextColor getFormattingColor(String nick) {
     return formattingColorCache.get(nick.toLowerCase());
   }
   public boolean isFormattingColorCached(String nick) {
