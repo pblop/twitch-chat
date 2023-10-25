@@ -11,6 +11,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 
 public class TwitchChatMod implements ModInitializer {
@@ -25,9 +26,9 @@ public class TwitchChatMod implements ModInitializer {
         new TwitchBaseCommand().registerCommands(dispatcher));
   }
 
-  public static void addTwitchMessage(String time, String username, String message, Formatting textColor, boolean isMeMessage) {
+  public static void addTwitchMessage(String time, String username, String message, TextColor textColor, boolean isMeMessage) {
     MutableText timestampText = Text.literal(time);
-    MutableText usernameText = Text.literal(username).formatted(textColor);
+    MutableText usernameText = Text.literal(username).styled(style -> style.withColor(textColor));
     MutableText messageBodyText;
 
     if (!isMeMessage) {
@@ -36,7 +37,7 @@ public class TwitchChatMod implements ModInitializer {
       // '/me' messages have the same color as the username in the Twitch website.
       // And thus I set the color of the message to be the same as the username.
       // They also don't have a colon after the username.
-      messageBodyText = Text.literal(" " + message).formatted(textColor);
+      messageBodyText = Text.literal(" " + message).styled(style -> style.withColor(textColor));
 
       // In Minecraft, a '/me' message is marked with a star before the name, like so:
       //

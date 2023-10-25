@@ -8,7 +8,7 @@ import net.fabricmc.fabric.impl.client.indigo.IndigoMixinConfigPlugin;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.text.TextColor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -39,7 +39,7 @@ public class ChatMixin {
           String formattedTime = TwitchChatMod.formatDateTwitch(currentTime);
 
           String username = TwitchChatMod.bot.getUsername();
-          Formatting userColor;
+          TextColor userColor;
           if (TwitchChatMod.bot.isFormattingColorCached(username)) {
             userColor = TwitchChatMod.bot.getFormattingColor(username);
           } else {
