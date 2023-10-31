@@ -117,7 +117,22 @@ public class Bot extends ListenerAdapter {
 
   @Override
   public void onUnknown(UnknownEvent event) throws Exception {
-    System.out.println("UNKNOWN TWITCH EVENT: " + event.toString());
+    switch (event.getCommand()) {
+      case "USERSTATE" -> {
+        // Info about our user. More at https://dev.twitch.tv/docs/irc/commands/#userstate
+        // Set our correct colour :).
+        String colorTag = event.getTags().get("color");
+        if (colorTag != null) {
+          Color userColor = Color.decode(colorTag);
+          TextColor formattingColor = TextColor.fromRgb(userColor.getRGB());
+
+          putFormattingColor(getUsername(), formattingColor);
+        }
+      }
+      default -> {
+        System.out.println("UNKNOWN TWITCH EVENT: " + event.toString());
+      }
+    }
   }
 
   @Override
