@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.2-SNAPSHOT'
+	id 'fabric-loom' version '1.4-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -39,8 +39,8 @@ dependencies {
 	modImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
 
     // irc
-    implementation 'com.github.pircbotx:pircbotx:c47a15b'
-    include 'com.github.pircbotx:pircbotx:c47a15b'
+    implementation "com.github.pircbotx:pircbotx:${project.pircbotx_version}"
+    include "com.github.pircbotx:pircbotx:${project.pircbotx_version}"
 
 //	 pircbotx needs this 🤷‍
 //	include group: 'org.slf4j', name: 'slf4j-api', version: '1.7.13'
