@@ -32,5 +32,6 @@
     "fabric": "*",
     "modmenu": "*",
     "java": ">=17"
-   }
+   },
+  "accessWidener" : "twitchchat.accesswidener"
 }

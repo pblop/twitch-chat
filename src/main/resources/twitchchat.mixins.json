@@ -5,7 +5,8 @@
   "mixins": [
   ],
   "client": [
-    "ChatMixin"
+    "ChatMixin",
+    "AddEmoteFontMixin"
   ],
   "injectors": {
     "defaultRequire": 1
