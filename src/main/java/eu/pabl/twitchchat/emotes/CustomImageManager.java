@@ -107,9 +107,9 @@ public class CustomImageManager {
     // ascent is the height of the glyph relative to something
     int ascent = (int) (image.getHeight()* CUSTOM_IMAGE_SCALE_FACTOR);
     // both advance and ascent seem to correlate pretty well with its scale factor
-    this.getCustomImageFont().addGlyph(
+    this.getCustomImageFont().addGlyph(codepoint,
       new CustomImageFont.CustomImageGlyph(CUSTOM_IMAGE_SCALE_FACTOR, image, 0, 0, image.getWidth(), image.getHeight(), advance, ascent,
-        twitchEmote.name(), codepoint));
+        twitchEmote.name(), "emotes/" + twitchEmote.id()));
     this.emoteNameToCodepointHashMap.put(twitchEmote.name(), codepoint);
 
     TwitchChatMod.LOGGER.debug("Loaded emote {}", twitchEmote.name());

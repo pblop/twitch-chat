@@ -26,8 +26,8 @@ public class CustomImageFont implements Font {
 //    this.image.close();
   }
 
-  public void addGlyph(CustomImageGlyph glyph) {
-    this.glyphs.put(glyph.codepoint(), glyph);
+  public void addGlyph(int codepoint, CustomImageGlyph glyph) {
+    this.glyphs.put(codepoint, glyph);
   }
 
   @Override
@@ -41,7 +41,7 @@ public class CustomImageFont implements Font {
     return IntSets.unmodifiable(this.glyphs.getProvidedGlyphs());
   }
 
-  public record CustomImageGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent, String emoteString, int codepoint) implements Glyph
+  public record CustomImageGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent, String emoteString, String id) implements Glyph
   {
     @Override
     public float getAdvance() {
@@ -82,8 +82,8 @@ public class CustomImageFont implements Font {
         }
 
         @Override
-        public int getCodepoint() {
-          return codepoint;
+        public String getId() {
+          return id;
         }
       });
     }

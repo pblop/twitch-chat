@@ -109,7 +109,7 @@ public class CustomImageFontStorage extends FontStorage implements AutoCloseable
       if (glyphRenderer == null) continue;
       return glyphRenderer;
     }
-    Identifier identifier = this.id.withSuffixedPath("/" + c.getCodepoint());
+    Identifier identifier = this.id.withSuffixedPath("/" + c.getId());
     boolean bl = c.hasColor();
     TextRenderLayerSet textRenderLayerSet = bl ? TextRenderLayerSet.of(identifier) : TextRenderLayerSet.ofIntensity(identifier);
     GlyphAtlasTexture glyphAtlasTexture2 = new GlyphAtlasTexture(textRenderLayerSet, bl);
