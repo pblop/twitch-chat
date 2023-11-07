@@ -1,5 +1,6 @@
 package eu.pabl.twitchchat.mixin;
 
+import eu.pabl.twitchchat.TwitchChatMod;
 import eu.pabl.twitchchat.emotes.CustomImageManager;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.FontManager;
@@ -28,7 +29,7 @@ public abstract class AddCustomImageFontMixin implements ResourceReloader, AutoC
     at=@At("TAIL")
   )
   private void reload(FontManager.ProviderIndex index, Profiler profiler, CallbackInfo ci) {
-    System.out.println("Added font");
+    TwitchChatMod.LOGGER.info("Added CustomImageFont");
     this.fonts.add(CustomImageManager.getInstance().getCustomImageFont());
     this.fontStorages.put(CustomImageManager.CUSTOM_IMAGE_FONT_IDENTIFIER, CustomImageManager.getInstance().getCustomImageFontStorage());
   }

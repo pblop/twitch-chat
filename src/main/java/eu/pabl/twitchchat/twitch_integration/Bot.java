@@ -60,7 +60,7 @@ public class Bot extends ListenerAdapter {
   }
 
   public void start() {
-    System.out.println("TWITCH BOT STARTED");
+    TwitchChatMod.LOGGER.info("Twitch bot started");
     myExecutor.execute(() -> {
       try {
         ircBot.startBot();
@@ -82,7 +82,7 @@ public class Bot extends ListenerAdapter {
   @Override
   public void onMessage(MessageEvent event) throws Exception {
     String message = event.getMessage();
-    System.out.println("TWITCH MESSAGE: " + message);
+    TwitchChatMod.LOGGER.debug("TWITCH MESSAGE: " + message);
     User user = event.getUser();
     if (user != null) {
       ImmutableMap<String, String> v3Tags = event.getV3Tags();
@@ -108,10 +108,10 @@ public class Bot extends ListenerAdapter {
           TwitchChatMod.addTwitchMessage(formattedTime, nick, message, formattingColor, false);
         }
       } else {
-        System.out.println("Message with no v3tags: " + event.getMessage());
+        TwitchChatMod.LOGGER.warn("Message with no v3tags: " + event.getMessage());
       }
     } else {
-      System.out.println("NON-USER MESSAGE" + event.getMessage());
+      TwitchChatMod.LOGGER.warn("NON-USER MESSAGE" + event.getMessage());
     }
   }
 
@@ -129,21 +129,20 @@ public class Bot extends ListenerAdapter {
           putFormattingColor(getUsername(), formattingColor);
         }
       }
-      default -> {
-        System.out.println("UNKNOWN TWITCH EVENT: " + event.toString());
-      }
+      case "CAP", "ROOMSTATE" -> TwitchChatMod.LOGGER.debug(event.getCommand() + " event: " + event);
+      default -> TwitchChatMod.LOGGER.warn("UNKNOWN TWITCH EVENT: " + event);
     }
   }
 
   @Override
   public void onNotice(NoticeEvent event) {
-    System.out.println("TWITCH NOTICE: " + event.toString());
+    TwitchChatMod.LOGGER.debug("TWITCH NOTICE: " + event.toString());
     TwitchChatMod.addNotification(Text.literal(event.getNotice()));
   }
 
   @Override
   public void onKick(KickEvent event) {
-    System.out.println("TWITCH KICK: " + event.toString());
+    TwitchChatMod.LOGGER.debug("TWITCH KICK: " + event.toString());
     String message = event.getReason();
     TwitchChatMod.addNotification(Text.translatable("text.twitchchat.bot.kicked", message));
   }
@@ -151,7 +150,7 @@ public class Bot extends ListenerAdapter {
   @Override
   public void onDisconnect(DisconnectEvent event) throws Exception {
     super.onDisconnect(event);
-    System.out.println("TWITCH DISCONNECT: " + event.toString());
+    TwitchChatMod.LOGGER.debug("TWITCH DISCONNECT: " + event.toString());
     Exception disconnectException = event.getDisconnectException();
   }
 
@@ -177,7 +176,7 @@ public class Bot extends ListenerAdapter {
         TwitchChatMod.addTwitchMessage(formattedTime, nick, event.getMessage(), formattingColor, true);
       }
     } else {
-      System.out.println("NON-USER ACTION" + event.getMessage());
+      TwitchChatMod.LOGGER.debug("NON-USER ACTION" + event.getMessage());
     }
   }
 
