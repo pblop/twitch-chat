@@ -19,29 +19,29 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.HashMap;
 
-public class EmoteManager {
-  public static final Identifier EMOTE_FONT_IDENTIFIER = Identifier.of(TwitchChatMod.MOD_ID, "emote_font");
+public class CustomImageManager {
+  public static final Identifier CUSTOM_IMAGE_FONT_IDENTIFIER = Identifier.of(TwitchChatMod.MOD_ID, "emote_font");
 
   // I've found this is a pretty good scale factor for 24x24px Twitch emotes.
-  public static final float SCALE_FACTOR = 0.3f;
+  public static final float CUSTOM_IMAGE_SCALE_FACTOR = 0.3f;
   public static final String TMI_CLIENT_ID = "q6batx0epp608isickayubi39itsckt";
 
-  public final EmoteFont emoteFont;
-  public final EmoteFontStorage emoteFontStorage;
-  private static final EmoteManager instance = new EmoteManager();
+  private final CustomImageFont customImageFont;
+  private final CustomImageFontStorage customImageFontStorage;
+  private static final CustomImageManager instance = new CustomImageManager();
 
   private final HashMap<String, Integer> emoteNameToCodepointHashMap;
   private int currentCodepoint;
 
-  private EmoteManager() {
+  private CustomImageManager() {
     this.emoteNameToCodepointHashMap = new HashMap<>();
     this.currentCodepoint = 1;
 
     /// The order is important here. Emote font storage depends on the emote font.
-    this.emoteFont = new EmoteFont();
-    this.emoteFontStorage = new EmoteFontStorage(this.getEmoteFont());
+    this.customImageFont = new CustomImageFont();
+    this.customImageFontStorage = new CustomImageFontStorage(this.getCustomImageFont());
   }
-  public static EmoteManager getInstance() {
+  public static CustomImageManager getInstance() {
     return instance;
   }
 
@@ -101,15 +101,15 @@ public class EmoteManager {
     NativeImage image = NativeImage.read(url.openStream());
     int codepoint = getAndAdvanceCurrentCodepoint();
     // advance is the amount the text is moved forward after the character
-    int advance = (int) (image.getWidth()*SCALE_FACTOR) + 1; // the +1 is to account for the shadow, which is a pixel in length
+    int advance = (int) (image.getWidth()* CUSTOM_IMAGE_SCALE_FACTOR) + 1; // the +1 is to account for the shadow, which is a pixel in length
     // TODO: It would be really cool to be able to add or remove the +1 depending on if we're rendering a shadow or
     //       not. This could be done through a mixin in TextRenderer.Drawer#accept.
     // ascent is the height of the glyph relative to something
-    int ascent = (int) (image.getHeight()*SCALE_FACTOR);
+    int ascent = (int) (image.getHeight()* CUSTOM_IMAGE_SCALE_FACTOR);
     // both advance and ascent seem to correlate pretty well with its scale factor
-    this.getEmoteFont().addGlyph(codepoint,
-      new EmoteFont.EmoteGlyph(SCALE_FACTOR, image, 0, 0, image.getWidth(), image.getHeight(), advance, ascent,
-        twitchEmote.name()));
+    this.getCustomImageFont().addGlyph(
+      new CustomImageFont.CustomImageGlyph(CUSTOM_IMAGE_SCALE_FACTOR, image, 0, 0, image.getWidth(), image.getHeight(), advance, ascent,
+        twitchEmote.name(), codepoint));
     this.emoteNameToCodepointHashMap.put(twitchEmote.name(), codepoint);
 
     TwitchChatMod.LOGGER.debug("Loaded emote {}", twitchEmote.name());
@@ -123,14 +123,15 @@ public class EmoteManager {
     if (currentCodepoint == 32) currentCodepoint++;
     return prevCodepoint;
   }
-  public Integer getCodepoint(String emote) {
-    return this.emoteNameToCodepointHashMap.get(emote);
+
+  public Integer getEmoteCodepoint(String emoteName) {
+    return this.emoteNameToCodepointHashMap.get(emoteName);
   }
-  public EmoteFont getEmoteFont() {
-    return this.emoteFont;
+  public CustomImageFont getCustomImageFont() {
+    return this.customImageFont;
   }
-  public EmoteFontStorage getEmoteFontStorage() {
-    return this.emoteFontStorage;
+  public CustomImageFontStorage getCustomImageFontStorage() {
+    return this.customImageFontStorage;
   }
 
 }

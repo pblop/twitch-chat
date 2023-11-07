@@ -2,7 +2,7 @@ package eu.pabl.twitchchat;
 
 import eu.pabl.twitchchat.commands.TwitchBaseCommand;
 import eu.pabl.twitchchat.config.ModConfig;
-import eu.pabl.twitchchat.emotes.EmoteManager;
+import eu.pabl.twitchchat.emotes.CustomImageManager;
 import eu.pabl.twitchchat.twitch_integration.Bot;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -10,7 +10,6 @@ import java.util.Date;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.slf4j.Logger;
@@ -31,7 +30,7 @@ public class TwitchChatMod implements ModInitializer {
         new TwitchBaseCommand().registerCommands(dispatcher));
 
 //    EmoteManager.getInstance().downloadEmote();
-    EmoteManager.getInstance().downloadEmotePack("https://api.twitch.tv/helix/chat/emotes/global");
+    CustomImageManager.getInstance().downloadEmotePack("https://api.twitch.tv/helix/chat/emotes/global");
 //    MinecraftClient.getInstance().textRenderer
   }
 
@@ -42,12 +41,12 @@ public class TwitchChatMod implements ModInitializer {
     String[] wordArray = plainMessage.split(" ");
     for (int i = 0; i < wordArray.length; i++) {
       String word = wordArray[i];
-      Integer codepoint = EmoteManager.getInstance().getCodepoint(word);
+      Integer codepoint = CustomImageManager.getInstance().getEmoteCodepoint(word);
       if (codepoint != null) {
         emotedMessage.append(
           // Add the space character after this emote
           Text.literal(Character.toString(codepoint))
-            .setStyle(Style.EMPTY.withFont(EmoteManager.EMOTE_FONT_IDENTIFIER)));
+            .setStyle(Style.EMPTY.withFont(CustomImageManager.CUSTOM_IMAGE_FONT_IDENTIFIER)));
       } else {
         emotedMessage.append(Text.of(word));
       }

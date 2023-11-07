@@ -13,12 +13,12 @@ import net.minecraft.client.font.RenderableGlyph;
 import net.minecraft.client.texture.NativeImage;
 import org.jetbrains.annotations.Nullable;
 
-public class EmoteFont implements Font {
+public class CustomImageFont implements Font {
 //  private final NativeImage image;
-  private final GlyphContainer<EmoteGlyph> glyphs;
+  private final GlyphContainer<CustomImageGlyph> glyphs;
 
-  public EmoteFont() {
-    this.glyphs = new GlyphContainer<>(EmoteGlyph[]::new, rows -> new EmoteGlyph[rows][]);
+  public CustomImageFont() {
+    this.glyphs = new GlyphContainer<>(CustomImageGlyph[]::new, rows -> new CustomImageGlyph[rows][]);
   }
 
   @Override
@@ -26,8 +26,8 @@ public class EmoteFont implements Font {
 //    this.image.close();
   }
 
-  public void addGlyph(int codePoint, EmoteGlyph glyph) {
-    this.glyphs.put(codePoint, glyph);
+  public void addGlyph(CustomImageGlyph glyph) {
+    this.glyphs.put(glyph.codepoint(), glyph);
   }
 
   @Override
@@ -41,7 +41,7 @@ public class EmoteFont implements Font {
     return IntSets.unmodifiable(this.glyphs.getProvidedGlyphs());
   }
 
-  record EmoteGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent, String emoteString) implements Glyph
+  public record CustomImageGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent, String emoteString, int codepoint) implements Glyph
   {
     @Override
     public float getAdvance() {
@@ -50,8 +50,7 @@ public class EmoteFont implements Font {
 
     @Override
     public GlyphRenderer bake(Function<RenderableGlyph, GlyphRenderer> function) {
-      return function.apply(new EmoteRenderableGlyph(){
-
+      return function.apply(new CustomImageRenderableGlyph(){
         @Override
         public float getOversample() {
           return 1.0f / scaleFactor;
@@ -69,7 +68,7 @@ public class EmoteFont implements Font {
 
         @Override
         public float getAscent() {
-          return EmoteRenderableGlyph.super.getAscent() + 7.0f - (float)ascent;
+          return CustomImageRenderableGlyph.super.getAscent() + 7.0f - (float)ascent;
         }
 
         @Override
@@ -83,8 +82,8 @@ public class EmoteFont implements Font {
         }
 
         @Override
-        public String getEmoteString() {
-          return emoteString;
+        public int getCodepoint() {
+          return codepoint;
         }
       });
     }

@@ -6,7 +6,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.*;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
@@ -14,7 +13,7 @@ import net.minecraft.util.math.random.Random;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EmoteFontStorage extends FontStorage implements AutoCloseable {
+public class CustomImageFontStorage extends FontStorage implements AutoCloseable {
   private static final Random RANDOM = Random.create();
   private static final float MAX_ADVANCE = 32.0f;
   private final Identifier id;
@@ -24,10 +23,10 @@ public class EmoteFontStorage extends FontStorage implements AutoCloseable {
   private final Int2ObjectMap<IntList> charactersByWidth = new Int2ObjectOpenHashMap<IntList>();
   private final List<GlyphAtlasTexture> glyphAtlases = new ArrayList<>();
 
-  public EmoteFontStorage(EmoteFont emoteFontInstance) {
+  public CustomImageFontStorage(CustomImageFont customImageFontInstance) {
     super(null, null);
-    this.id = EmoteManager.EMOTE_FONT_IDENTIFIER;
-    this.font = emoteFontInstance;
+    this.id = CustomImageManager.CUSTOM_IMAGE_FONT_IDENTIFIER;
+    this.font = customImageFontInstance;
   }
 
   @Override
@@ -69,7 +68,7 @@ public class EmoteFontStorage extends FontStorage implements AutoCloseable {
     Glyph glyph = font.getGlyph(codePoint);
     if (glyph == null)
       return GlyphPair.MISSING;
-    if (EmoteFontStorage.isAdvanceInvalid(glyph))
+    if (CustomImageFontStorage.isAdvanceInvalid(glyph))
       return new GlyphPair(glyph, BuiltinEmptyGlyph.MISSING);
 
     return new GlyphPair(glyph, glyph);
@@ -98,19 +97,19 @@ public class EmoteFontStorage extends FontStorage implements AutoCloseable {
   }
 
   private GlyphRenderer getGlyphRenderer(RenderableGlyph _c) {
-    if (!(_c instanceof EmoteRenderableGlyph)) {
-      // Our font only returns EmoteRenderableGlyphs, so this should never trigger. If it does, there's a big problem.
-      TwitchChatMod.LOGGER.error("RenderableGlyph for emotes is not an EmoteRenderableGlyph.");
+    if (!(_c instanceof CustomImageRenderableGlyph)) {
+      // Our font only returns CustomImageRenderableGlyphs, so this should never trigger. If it does, there's a big problem.
+      TwitchChatMod.LOGGER.error("RenderableGlyph for emotes is not an CustomImageRenderableGlyph.");
       return super.blankGlyphRenderer;
     }
-    EmoteRenderableGlyph c = (EmoteRenderableGlyph) _c;
+    CustomImageRenderableGlyph c = (CustomImageRenderableGlyph) _c;
 
     for (GlyphAtlasTexture glyphAtlasTexture : this.glyphAtlases) {
       GlyphRenderer glyphRenderer = glyphAtlasTexture.getGlyphRenderer(c);
       if (glyphRenderer == null) continue;
       return glyphRenderer;
     }
-    Identifier identifier = this.id.withSuffixedPath("/" + EmoteManager.getInstance().getCodepoint(c.getEmoteString()));
+    Identifier identifier = this.id.withSuffixedPath("/" + c.getCodepoint());
     boolean bl = c.hasColor();
     TextRenderLayerSet textRenderLayerSet = bl ? TextRenderLayerSet.of(identifier) : TextRenderLayerSet.ofIntensity(identifier);
     GlyphAtlasTexture glyphAtlasTexture2 = new GlyphAtlasTexture(textRenderLayerSet, bl);

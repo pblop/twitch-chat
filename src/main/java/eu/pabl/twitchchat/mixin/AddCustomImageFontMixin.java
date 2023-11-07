@@ -1,6 +1,6 @@
 package eu.pabl.twitchchat.mixin;
 
-import eu.pabl.twitchchat.emotes.EmoteManager;
+import eu.pabl.twitchchat.emotes.CustomImageManager;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.FontManager;
 import net.minecraft.client.font.FontStorage;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @Mixin(FontManager.class)
-public abstract class AddEmoteFontMixin implements ResourceReloader, AutoCloseable {
+public abstract class AddCustomImageFontMixin implements ResourceReloader, AutoCloseable {
   @Shadow @Final private List<Font> fonts;
 
   @Shadow @Final private Map<Identifier, FontStorage> fontStorages;
@@ -29,7 +29,7 @@ public abstract class AddEmoteFontMixin implements ResourceReloader, AutoCloseab
   )
   private void reload(FontManager.ProviderIndex index, Profiler profiler, CallbackInfo ci) {
     System.out.println("Added font");
-    this.fonts.add(EmoteManager.getInstance().getEmoteFont());
-    this.fontStorages.put(EmoteManager.EMOTE_FONT_IDENTIFIER, EmoteManager.getInstance().emoteFontStorage);
+    this.fonts.add(CustomImageManager.getInstance().getCustomImageFont());
+    this.fontStorages.put(CustomImageManager.CUSTOM_IMAGE_FONT_IDENTIFIER, CustomImageManager.getInstance().getCustomImageFontStorage());
   }
 }
