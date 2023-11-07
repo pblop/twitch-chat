@@ -15,18 +15,14 @@ public class EmoteManager {
   public final EmoteFontStorage emoteFontStorage;
   private static final EmoteManager instance = new EmoteManager();
 
-  private final HashMap<String, EmoteFont.EmoteGlyph> emoteNameToGlyphHashMap;
   private final HashMap<String, Integer> emoteNameToCodepointHashMap;
   private int currentCodepoint;
 
   private EmoteManager() {
-    this.emoteNameToGlyphHashMap = new HashMap<>();
     this.emoteNameToCodepointHashMap = new HashMap<>();
     this.currentCodepoint = 40;
 
     /// The order is important here. Emote font storage depends on the emote font.
-//    this.emoteFont = null;
-//    this.emoteFontStorage = null;
     this.emoteFont = new EmoteFont();
     this.emoteFontStorage = new EmoteFontStorage(this.getEmoteFont());
   }
@@ -37,11 +33,12 @@ public class EmoteManager {
   public void downloadEmote() {
     Thread t = new Thread(() -> {
       try {
-        URL url = new URL("https://static-cdn.jtvnw.net/emoticons/v2/25/static/light/2.0");
+        URL url = new URL("https://static-cdn.jtvnw.net/emoticons/v2/47/static/light/1.0");
         NativeImage image = NativeImage.read(url.openStream());
+        String emoteName = "Kappa";
         int codepoint = getAndAdvanceCurrentCodepoint();
-        this.getEmoteFont().addGlyph(codepoint, new EmoteFont.EmoteGlyph(1, image, 0, 0, image.getWidth(), image.getHeight(), image.getWidth(), image.getHeight()));
-        this.emoteNameToCodepointHashMap.put("Kappa", codepoint);
+        this.getEmoteFont().addGlyph(codepoint, new EmoteFont.EmoteGlyph(0.5f, image, 0, 0, image.getWidth(), image.getHeight()*2, image.getWidth()/2, image.getWidth()/2, emoteName));
+        this.emoteNameToCodepointHashMap.put(emoteName, codepoint);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

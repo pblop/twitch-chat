@@ -1,6 +1,5 @@
 package eu.pabl.twitchchat.emotes;
 
-import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 
@@ -13,7 +12,6 @@ import net.minecraft.client.font.GlyphRenderer;
 import net.minecraft.client.font.RenderableGlyph;
 import net.minecraft.client.texture.NativeImage;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 public class EmoteFont implements Font {
 //  private final NativeImage image;
@@ -43,7 +41,7 @@ public class EmoteFont implements Font {
     return IntSets.unmodifiable(this.glyphs.getProvidedGlyphs());
   }
 
-  record EmoteGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent) implements Glyph
+  record EmoteGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent, String emoteString) implements Glyph
   {
     @Override
     public float getAdvance() {
@@ -52,7 +50,7 @@ public class EmoteFont implements Font {
 
     @Override
     public GlyphRenderer bake(Function<RenderableGlyph, GlyphRenderer> function) {
-      return function.apply(new RenderableGlyph(){
+      return function.apply(new EmoteRenderableGlyph(){
 
         @Override
         public float getOversample() {
@@ -71,17 +69,22 @@ public class EmoteFont implements Font {
 
         @Override
         public float getAscent() {
-          return RenderableGlyph.super.getAscent() + 7.0f - (float)ascent;
+          return EmoteRenderableGlyph.super.getAscent() + 7.0f - (float)ascent;
         }
 
         @Override
         public void upload(int x, int y) {
-          image.upload(0, x, y, x, y, width, height, false, false);
+          image.upload(0, x, y, 0, 0, width, height, false, false);
         }
 
         @Override
         public boolean hasColor() {
           return image.getFormat().getChannelCount() > 1;
+        }
+
+        @Override
+        public String getEmoteString() {
+          return emoteString;
         }
       });
     }

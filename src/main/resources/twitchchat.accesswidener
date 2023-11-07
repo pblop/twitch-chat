@@ -1,2 +1,4 @@
 accessWidener v2 named
 accessible class net/minecraft/client/font/FontManager$ProviderIndex
+accessible field net/minecraft/client/font/FontStorage blankGlyphRenderer Lnet/minecraft/client/font/GlyphRenderer;
+accessible field net/minecraft/client/font/FontStorage whiteRectangleGlyphRenderer Lnet/minecraft/client/font/GlyphRenderer;

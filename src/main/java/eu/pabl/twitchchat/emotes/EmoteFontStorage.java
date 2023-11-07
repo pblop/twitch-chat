@@ -1,5 +1,6 @@
 package eu.pabl.twitchchat.emotes;
 
+import eu.pabl.twitchchat.TwitchChatMod;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -17,8 +18,6 @@ public class EmoteFontStorage extends FontStorage implements AutoCloseable {
   private static final Random RANDOM = Random.create();
   private static final float MAX_ADVANCE = 32.0f;
   private final Identifier id;
-  private GlyphRenderer blankGlyphRenderer;
-  private GlyphRenderer whiteRectangleGlyphRenderer;
   private final Font font;
   private final GlyphContainer<GlyphRenderer> glyphRendererCache = new GlyphContainer(GlyphRenderer[]::new, rowCount -> new GlyphRenderer[rowCount][]);
   private final GlyphContainer<GlyphPair> glyphCache = new GlyphContainer(GlyphPair[]::new, rowCount -> new GlyphPair[rowCount][]);
@@ -29,9 +28,6 @@ public class EmoteFontStorage extends FontStorage implements AutoCloseable {
     super(null, null);
     this.id = EmoteManager.EMOTE_FONT_IDENTIFIER;
     this.font = emoteFontInstance;
-
-//    this.blankGlyphRenderer = BuiltinEmptyGlyph.MISSING.bake(this::getGlyphRenderer);
-//    this.whiteRectangleGlyphRenderer = BuiltinEmptyGlyph.WHITE.bake(this::getGlyphRenderer);
   }
 
   @Override
@@ -57,11 +53,11 @@ public class EmoteFontStorage extends FontStorage implements AutoCloseable {
 
   private static boolean isAdvanceInvalid(Glyph glyph) {
     float f = glyph.getAdvance(false);
-    if (f < 0.0f || f > 32.0f) {
+    if (f < 0.0f || f > MAX_ADVANCE) {
       return true;
     }
     float g = glyph.getAdvance(true);
-    return g < 0.0f || g > 32.0f;
+    return g < 0.0f || g > MAX_ADVANCE;
   }
 
   /**
@@ -93,7 +89,7 @@ public class EmoteFontStorage extends FontStorage implements AutoCloseable {
     Glyph glyph = font.getGlyph(codePoint);
     if (glyph != null)
       return glyph.bake(this::getGlyphRenderer);
-    return this.blankGlyphRenderer;
+    return super.blankGlyphRenderer;
   }
 
   @Override
@@ -101,20 +97,27 @@ public class EmoteFontStorage extends FontStorage implements AutoCloseable {
     return this.glyphRendererCache.computeIfAbsent(codePoint, this::findGlyphRenderer);
   }
 
-  private GlyphRenderer getGlyphRenderer(RenderableGlyph c) {
+  private GlyphRenderer getGlyphRenderer(RenderableGlyph _c) {
+    if (!(_c instanceof EmoteRenderableGlyph)) {
+      // Our font only returns EmoteRenderableGlyphs, so this should never trigger. If it does, there's a big problem.
+      TwitchChatMod.LOGGER.error("RenderableGlyph for emotes is not an EmoteRenderableGlyph.");
+      return super.blankGlyphRenderer;
+    }
+    EmoteRenderableGlyph c = (EmoteRenderableGlyph) _c;
+
     for (GlyphAtlasTexture glyphAtlasTexture : this.glyphAtlases) {
       GlyphRenderer glyphRenderer = glyphAtlasTexture.getGlyphRenderer(c);
       if (glyphRenderer == null) continue;
       return glyphRenderer;
     }
-    Identifier identifier = this.id.withSuffixedPath("/" + this.glyphAtlases.size());
+    Identifier identifier = this.id.withSuffixedPath("/" + EmoteManager.getInstance().getCodepoint(c.getEmoteString()));
     boolean bl = c.hasColor();
     TextRenderLayerSet textRenderLayerSet = bl ? TextRenderLayerSet.of(identifier) : TextRenderLayerSet.ofIntensity(identifier);
     GlyphAtlasTexture glyphAtlasTexture2 = new GlyphAtlasTexture(textRenderLayerSet, bl);
     this.glyphAtlases.add(glyphAtlasTexture2);
     MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, glyphAtlasTexture2);
     GlyphRenderer glyphRenderer2 = glyphAtlasTexture2.getGlyphRenderer(c);
-    return glyphRenderer2 == null ? this.blankGlyphRenderer : glyphRenderer2;
+    return glyphRenderer2 == null ? super.blankGlyphRenderer : glyphRenderer2;
   }
 
   @Override
@@ -123,12 +126,12 @@ public class EmoteFontStorage extends FontStorage implements AutoCloseable {
     if (intList != null && !intList.isEmpty()) {
       return this.getGlyphRenderer(intList.getInt(RANDOM.nextInt(intList.size())));
     }
-    return this.blankGlyphRenderer;
+    return super.blankGlyphRenderer;
   }
 
   @Override
   public GlyphRenderer getRectangleRenderer() {
-    return this.whiteRectangleGlyphRenderer;
+    return super.whiteRectangleGlyphRenderer;
   }
 
   record GlyphPair(Glyph glyph, Glyph advanceValidatedGlyph) {
