@@ -30,7 +30,8 @@ public class TwitchChatMod implements ModInitializer {
     ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
         new TwitchBaseCommand().registerCommands(dispatcher));
 
-    EmoteManager.getInstance().downloadEmote();
+//    EmoteManager.getInstance().downloadEmote();
+    EmoteManager.getInstance().downloadEmotePack("https://api.twitch.tv/helix/chat/emotes/global");
 //    MinecraftClient.getInstance().textRenderer
   }
 
