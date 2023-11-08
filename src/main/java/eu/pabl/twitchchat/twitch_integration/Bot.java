@@ -206,7 +206,7 @@ public class Bot extends ListenerAdapter {
     return this.getOrComputeUserColour(nick, null);
   }
   private TextColor getOrComputeUserColour(String nick, String hexColour) {
-    return this.formattingColorCache.computeIfAbsent(nick, unusedNick -> this.computeUserColour(nick, hexColour));
+    return this.formattingColorCache.computeIfAbsent(nick.toLowerCase(), unusedNick -> this.computeUserColour(nick, hexColour));
   }
   private TextColor computeUserColour(String nick, String hexColour) {
     if (hexColour != null) {
@@ -215,9 +215,6 @@ public class Bot extends ListenerAdapter {
     } else {
       return TwitchColourCalculator.getDefaultUserColor(nick);
     }
-  }
-  public boolean isFormattingColorCached(String nick) {
-    return formattingColorCache.containsKey(nick.toLowerCase());
   }
 
   public void joinChannel(String channel) {
