@@ -41,7 +41,7 @@ public class CustomImageFont implements Font {
     return IntSets.unmodifiable(this.glyphs.getProvidedGlyphs());
   }
 
-  public record CustomImageGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent, String emoteString, String id) implements Glyph
+  public record CustomImageGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent, String id) implements Glyph
   {
     @Override
     public float getAdvance() {

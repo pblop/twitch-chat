@@ -31,6 +31,7 @@ public class TwitchChatMod implements ModInitializer {
 
 //    EmoteManager.getInstance().downloadEmote();
     CustomImageManager.getInstance().downloadEmotePack("https://api.twitch.tv/helix/chat/emotes/global");
+    CustomImageManager.getInstance().downloadBadges("https://api.twitch.tv/helix/chat/badges/global");
 //    MinecraftClient.getInstance().textRenderer
   }
 
