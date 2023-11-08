@@ -2,6 +2,7 @@ package eu.pabl.twitchchat.mixin;
 
 import eu.pabl.twitchchat.TwitchChatMod;
 import eu.pabl.twitchchat.config.ModConfig;
+import eu.pabl.twitchchat.twitch_integration.Bot;
 import eu.pabl.twitchchat.twitch_integration.CalculateMinecraftColor;
 import java.util.Date;
 import net.fabricmc.fabric.impl.client.indigo.IndigoMixinConfigPlugin;
@@ -31,26 +32,27 @@ public class ChatMixin {
 
       // If the message is a twitch message
       if (text.startsWith(prefix)) {
-        if (TwitchChatMod.bot != null && TwitchChatMod.bot.isConnected()) {
+        Bot bot = TwitchChatMod.bot;
+        if (bot != null && bot.isConnected()) {
           String textWithoutPrefix = text.substring(text.indexOf(prefix) + prefix.length());
-          TwitchChatMod.bot.sendMessage(textWithoutPrefix); // Send the message to the Twitch IRC Chat
+          bot.sendMessage(textWithoutPrefix); // Send the message to the Twitch IRC Chat
 
           Date currentTime = new Date();
           String formattedTime = TwitchChatMod.formatDateTwitch(currentTime);
 
-          String username = TwitchChatMod.bot.getUsername();
+          String username = bot.getUsername();
           TextColor userColor;
-          if (TwitchChatMod.bot.isFormattingColorCached(username)) {
-            userColor = TwitchChatMod.bot.getFormattingColor(username);
+          if (bot.isFormattingColorCached(username)) {
+            userColor = bot.getFormattingColor(username);
           } else {
             userColor = CalculateMinecraftColor.getDefaultUserColor(username);
-            TwitchChatMod.bot.putFormattingColor(username, userColor);
+            bot.putFormattingColor(username, userColor);
           }
 
           boolean isMeMessage = textWithoutPrefix.startsWith("/me");
 
           // Add the message to the Minecraft Chat
-          TwitchChatMod.addTwitchMessage(formattedTime, username, isMeMessage ? textWithoutPrefix.substring(4) : textWithoutPrefix, userColor, isMeMessage);
+          TwitchChatMod.addTwitchMessage(formattedTime, username, isMeMessage ? textWithoutPrefix.substring(4) : textWithoutPrefix, userColor, bot.getUserBadges(), isMeMessage);
           MinecraftClient.getInstance().inGameHud.getChatHud().addToMessageHistory(text);
           info.setReturnValue(true);
         } else {

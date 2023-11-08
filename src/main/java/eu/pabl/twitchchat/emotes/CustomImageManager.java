@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import eu.pabl.twitchchat.TwitchChatMod;
 import eu.pabl.twitchchat.config.ModConfig;
+import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIBadge;
 import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIBadgeSet;
 import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIEmote;
 import net.minecraft.client.texture.NativeImage;
@@ -19,6 +20,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -35,14 +37,14 @@ public class CustomImageManager {
   private static final CustomImageManager instance = new CustomImageManager();
 
   // A map of the badge set name and the badges it contains.
-  private final HashMap<String, BadgeSet> badgeSets;
+  private final HashMap<String, Integer> badgeNameToCodepointHashMap;
   private final HashMap<String, Integer> emoteNameToCodepointHashMap;
   private int currentCodepoint;
 
   private CustomImageManager() {
     this.emoteNameToCodepointHashMap = new HashMap<>();
+    this.badgeNameToCodepointHashMap = new HashMap<>();
     this.currentCodepoint = 1;
-    this.badgeSets = new HashMap<>();
 
     /// The order is important here. Emote font storage depends on the emote font.
     this.customImageFont = new CustomImageFont();
@@ -155,14 +157,11 @@ public class CustomImageManager {
         JsonObject jsonObject = (JsonObject) JsonParser.parseString(res.body());
         Gson gson = new Gson();
 
-        Map<String, BadgeSet> newBadges = jsonObject.getAsJsonArray("data")
+        jsonObject.getAsJsonArray("data")
           .asList()
           .stream()
           .parallel()
           .map(badgeSet -> gson.fromJson(badgeSet, TwitchAPIBadgeSet.class))
-          .map(BadgeSet::fromTwitchAPIBadgeSet)
-          .collect(Collectors.toMap(BadgeSet::getId, Function.identity()));
-        newBadges.values().stream().parallel()
           .forEach(badgeSet -> {
             try {
               downloadBadgeSet(badgeSet);
@@ -170,7 +169,6 @@ public class CustomImageManager {
               throw new RuntimeException(e);
             }
           });
-        this.badgeSets.putAll(newBadges);
 
         TwitchChatMod.LOGGER.info("Loaded badges from url {}", urlStr);
       } catch (IOException | InterruptedException e) {
@@ -180,24 +178,24 @@ public class CustomImageManager {
     t.setDaemon(true);
     t.start();
   }
-  private void downloadBadgeSet(BadgeSet badgeSet) throws IOException {
-    for (var badge : badgeSet.getVersions().values()) {
-      downloadBadge(badgeSet.getId(), badge);
+  private void downloadBadgeSet(TwitchAPIBadgeSet badgeSet) throws IOException {
+    for (var badge : badgeSet.versions()) {
+      downloadBadge(badgeSet.set_id(), badge);
     }
   }
-  private void downloadBadge(String badgeSetId, BadgeSet.Badge badge) throws IOException {
+  private void downloadBadge(String badgeSetId, TwitchAPIBadge badge) throws IOException {
     // I've we've already downloaded the emote, do not download it again.
-    if (badge.isDownloaded())
+    String id = badgeSetId + "/" + badge.id();
+    if (this.badgeNameToCodepointHashMap.containsKey(id))
       return;
 
-
-    String url1x = badge.getImageUrl1x();
+    String url1x = badge.image_url_1x();
     URL url = new URL(url1x);
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
     if (connection.getResponseCode() != 200) {
       TwitchChatMod.LOGGER.warn("Couldn't load badge 1x {} from url {}: status code {}",
-        badge.getId(), url1x, connection.getResponseCode());
+        badge.id(), url1x, connection.getResponseCode());
       return;
     }
 
@@ -205,10 +203,10 @@ public class CustomImageManager {
     int codepoint = getAndAdvanceCurrentCodepoint();
     int advance = (int) (image.getWidth()* CUSTOM_IMAGE_SCALE_FACTOR) + 1;
     int ascent = (int) (image.getHeight()* CUSTOM_IMAGE_SCALE_FACTOR);
-    String id = "badges/" + badgeSetId + "/" + badge.getId();
     this.getCustomImageFont().addGlyph(codepoint,
       new CustomImageFont.CustomImageGlyph(CUSTOM_IMAGE_SCALE_FACTOR, image, 0, 0, image.getWidth(),
-        image.getHeight(), advance, ascent, id));
+        image.getHeight(), advance, ascent, "badges/" + id));
+    this.badgeNameToCodepointHashMap.put(id, codepoint);
 
     TwitchChatMod.LOGGER.debug("Loaded badge {}", id);
   }
@@ -224,6 +222,9 @@ public class CustomImageManager {
 
   public Integer getEmoteCodepoint(String emoteName) {
     return this.emoteNameToCodepointHashMap.get(emoteName);
+  }
+  public Integer getBadgeCodepoint(String badgeIdentifier) {
+    return this.badgeNameToCodepointHashMap.get(badgeIdentifier);
   }
   public CustomImageFont getCustomImageFont() {
     return this.customImageFont;

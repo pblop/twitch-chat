@@ -5,6 +5,7 @@ import eu.pabl.twitchchat.config.ModConfig;
 import java.awt.Color;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,11 +28,13 @@ public class Bot extends ListenerAdapter {
   private String channel;
   private ExecutorService myExecutor;
   private HashMap<String, TextColor> formattingColorCache; // Map of usernames to colors to keep consistency with usernames and colors
+  private String[] userBadges;
 
   public Bot(String username, String oauthKey, String channel) {
     this.channel = channel.toLowerCase();
     this.username = username.toLowerCase();
-    formattingColorCache = new HashMap<>();
+    this.formattingColorCache = new HashMap<>();
+    this.userBadges = new String[0];
 
     Configuration.Builder builder = new Configuration.Builder()
         .setAutoNickChange(false) //Twitch doesn't support multiple users
@@ -105,7 +108,7 @@ public class Bot extends ListenerAdapter {
           }
 
           String formattedTime = TwitchChatMod.formatTMISentTimestamp(v3Tags.get("tmi-sent-ts"));
-          TwitchChatMod.addTwitchMessage(formattedTime, nick, message, formattingColor, false);
+          TwitchChatMod.addTwitchMessage(formattedTime, nick, message, formattingColor, null,false);
         }
       } else {
         TwitchChatMod.LOGGER.warn("Message with no v3tags: " + event.getMessage());
@@ -120,13 +123,22 @@ public class Bot extends ListenerAdapter {
     switch (event.getCommand()) {
       case "USERSTATE" -> {
         // Info about our user. More at https://dev.twitch.tv/docs/irc/commands/#userstate
+
         // Set our correct colour :).
-        String colorTag = event.getTags().get("color");
+        ImmutableMap<String, String> tags = event.getTags();
+        String colorTag = tags.get("color");
         if (colorTag != null) {
           Color userColor = Color.decode(colorTag);
           TextColor formattingColor = TextColor.fromRgb(userColor.getRGB());
 
           putFormattingColor(getUsername(), formattingColor);
+        }
+
+        // Set our correct badges for the current room.
+        String badges = tags.get("badges");
+        if (badges != null) {
+          this.userBadges = badges.split(",");
+          // WIP: Here we would check if the badges exist or not, and add them.
         }
       }
       case "CAP", "ROOMSTATE" -> TwitchChatMod.LOGGER.debug(event.getCommand() + " event: " + event);
@@ -173,7 +185,7 @@ public class Bot extends ListenerAdapter {
           putFormattingColor(nick, formattingColor);
         }
 
-        TwitchChatMod.addTwitchMessage(formattedTime, nick, event.getMessage(), formattingColor, true);
+        TwitchChatMod.addTwitchMessage(formattedTime, nick, event.getMessage(), formattingColor, null, true);
       }
     } else {
       TwitchChatMod.LOGGER.debug("NON-USER ACTION" + event.getMessage());
@@ -226,6 +238,12 @@ public class Bot extends ListenerAdapter {
         ircBot.sendIRC().joinChannel("#" + this.channel); // Join the new channel
         ircBot.sendCAP().request("twitch.tv/membership", "twitch.tv/tags", "twitch.tv/commands"); // Ask for capabilities
       });
+      // We're switching channels, so we have to clear our badges.
+      this.userBadges = new String[0];
     }
+  }
+
+  public String[] getUserBadges() {
+    return this.userBadges;
   }
 }

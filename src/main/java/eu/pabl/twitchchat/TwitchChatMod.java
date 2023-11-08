@@ -35,6 +35,20 @@ public class TwitchChatMod implements ModInitializer {
 //    MinecraftClient.getInstance().textRenderer
   }
 
+  public static MutableText getBadgedUsername(String username, TextColor usernameColour, String[] userBadges) {
+    MutableText badgedUsername = Text.empty();
+    if (userBadges != null) {
+      for (String badge : userBadges) {
+        Integer codepoint = CustomImageManager.getInstance().getBadgeCodepoint(badge);
+        badgedUsername.append(Text
+          .literal(Character.toString(codepoint))
+          .styled(style -> style.withFont(CustomImageManager.CUSTOM_IMAGE_FONT_IDENTIFIER))
+        );
+      }
+    }
+    badgedUsername.append(Text.literal(username).styled(style -> style.withColor(usernameColour)));
+    return badgedUsername;
+  }
   public static MutableText getEmotedMessage(String plainMessage) {
     MutableText emotedMessage = MutableText.of(TextContent.EMPTY);
 
@@ -60,9 +74,9 @@ public class TwitchChatMod implements ModInitializer {
     return emotedMessage;
   }
 
-  public static void addTwitchMessage(String time, String username, String message, TextColor textColor, boolean isMeMessage) {
+  public static void addTwitchMessage(String time, String username, String message, TextColor usernameColour, String[] userBadges, boolean isMeMessage) {
     MutableText timestampText = Text.literal(time);
-    MutableText usernameText = Text.literal(username).styled(style -> style.withColor(textColor));
+    MutableText usernameText = getBadgedUsername(username, usernameColour, userBadges);
     MutableText emotedMessage = getEmotedMessage(message);
     MutableText messageBodyText;
 
@@ -72,7 +86,7 @@ public class TwitchChatMod implements ModInitializer {
       // '/me' messages have the same color as the username in the Twitch website.
       // And thus I set the color of the message to be the same as the username.
       // They also don't have a colon after the username.
-      messageBodyText = Text.literal(" ").append(emotedMessage).styled(style -> style.withColor(textColor));
+      messageBodyText = Text.literal(" ").append(emotedMessage).styled(style -> style.withColor(usernameColour));
 
       // In Minecraft, a '/me' message is marked with a star before the name, like so:
       //
