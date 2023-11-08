@@ -3,7 +3,7 @@ package eu.pabl.twitchchat.mixin;
 import eu.pabl.twitchchat.TwitchChatMod;
 import eu.pabl.twitchchat.config.ModConfig;
 import eu.pabl.twitchchat.twitch_integration.Bot;
-import eu.pabl.twitchchat.twitch_integration.TwitchColourCalculator;
+
 import java.util.Date;
 
 import net.minecraft.client.MinecraftClient;
@@ -45,7 +45,7 @@ public class ChatMixin {
           boolean isMeMessage = textWithoutPrefix.startsWith("/me");
 
           // Add the message to the Minecraft Chat
-          TwitchChatMod.addTwitchMessage(formattedTime, username, isMeMessage ? textWithoutPrefix.substring(4) : textWithoutPrefix, userColor, bot.getUserBadges(), isMeMessage);
+//          TwitchChatMod.addTwitchMessage(formattedTime, username, isMeMessage ? textWithoutPrefix.substring(4) : textWithoutPrefix, emotes, userColor, bot.getUserBadges(), isMeMessage);
           MinecraftClient.getInstance().inGameHud.getChatHud().addToMessageHistory(text);
           info.setReturnValue(true);
         } else {

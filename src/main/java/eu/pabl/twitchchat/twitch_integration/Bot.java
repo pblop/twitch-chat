@@ -6,9 +6,12 @@ import java.awt.Color;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.net.ssl.SSLSocketFactory;
+
+import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIEmoteTagElement;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import org.pircbotx.Channel;
@@ -83,6 +86,7 @@ public class Bot extends ListenerAdapter {
 
   @Override
   public void onMessage(MessageEvent event) throws Exception {
+    try {
     String message = event.getMessage();
     TwitchChatMod.LOGGER.debug("TWITCH MESSAGE: " + message);
     User user = event.getUser();
@@ -92,16 +96,22 @@ public class Bot extends ListenerAdapter {
         String nick = user.getNick();
         if (!ModConfig.getConfig().getIgnoreList().contains(nick)) {
           TextColor formattingColor = this.getOrComputeUserColour(nick, v3Tags.get("color"));
-
           String formattedTime = TwitchChatMod.formatTMISentTimestamp(v3Tags.get("tmi-sent-ts"));
-          TwitchChatMod.addTwitchMessage(formattedTime, nick, message, formattingColor, null,false);
+
+          String emotesString = v3Tags.get("emotes");
+          List<TwitchAPIEmoteTagElement> emotes = null;
+          if (!emotesString.startsWith("\\001ACTION")) {
+            emotes = TwitchAPIEmoteTagElement.fromTagString(emotesString);
+          }
+
+          TwitchChatMod.addTwitchMessage(formattedTime, nick, message, emotes, formattingColor, null,false);
         }
       } else {
         TwitchChatMod.LOGGER.warn("Message with no v3tags: " + event.getMessage());
       }
     } else {
       TwitchChatMod.LOGGER.warn("NON-USER MESSAGE" + event.getMessage());
-    }
+    }} catch (Exception e) {e.printStackTrace();}
   }
 
   @Override
@@ -162,7 +172,7 @@ public class Bot extends ListenerAdapter {
 
         TextColor formattingColor = this.getOrComputeUserColour(nick);
 
-        TwitchChatMod.addTwitchMessage(formattedTime, nick, event.getMessage(), formattingColor, null, true);
+        TwitchChatMod.addTwitchMessage(formattedTime, nick, event.getMessage(), null, formattingColor, null, true);
       }
     } else {
       TwitchChatMod.LOGGER.debug("NON-USER ACTION" + event.getMessage());

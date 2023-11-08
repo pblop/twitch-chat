@@ -10,10 +10,13 @@ import eu.pabl.twitchchat.emotes.minecraft.CustomImageFontStorage;
 import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIBadge;
 import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIBadgeSet;
 import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIEmote;
+import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.util.Identifier;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -36,15 +39,16 @@ public class CustomImageManager {
 
   // A map of the badge set name and the badges it contains.
   private final ConcurrentHashMap<String, Integer> badgeNameToCodepointHashMap;
-  private final ConcurrentHashMap<String, Integer> emoteNameToCodepointHashMap;
+  private final ConcurrentHashMap<String, Integer> emoteIdToCodepointHashMap;
 
   private final ExecutorService downloadExecutor;
   private final HttpClient downloadHttpClient;
 
   private int currentCodepoint;
+  private final int loadingImageCodepoint;
 
   private CustomImageManager() {
-    this.emoteNameToCodepointHashMap = new ConcurrentHashMap<>();
+    this.emoteIdToCodepointHashMap = new ConcurrentHashMap<>();
     this.badgeNameToCodepointHashMap = new ConcurrentHashMap<>();
     this.currentCodepoint = 1;
 
@@ -58,9 +62,31 @@ public class CustomImageManager {
       .connectTimeout(Duration.ofSeconds(20))
       .build();
     this.downloadExecutor = Executors.newCachedThreadPool();
+
+    this.loadingImageCodepoint = this.addLoadingIcon();
   }
   public static CustomImageManager getInstance() {
     return instance;
+  }
+
+  // Returns the loading icon loading character codepoint.
+  private int addLoadingIcon() {
+    try {
+      InputStream is = TwitchChatMod.class.getResourceAsStream("/data/twitchchat/textures/loading.png");
+      if (is == null) {
+        throw new IOException("loading.png InputStream is null");
+      }
+      NativeImage image = NativeImage.read(is);
+      int codepoint = getAndAdvanceCurrentCodepoint();
+      int advance = (int) (image.getWidth() * CUSTOM_IMAGE_SCALE_FACTOR) + 1; // the +1 is to account for the shadow, which is a pixel in length
+      int ascent = (int) (image.getHeight() * CUSTOM_IMAGE_SCALE_FACTOR);
+      this.getCustomImageFont().addGlyph(codepoint,
+        new CustomImageFont.CustomImageGlyph(CUSTOM_IMAGE_SCALE_FACTOR, image, 0, 0, image.getWidth(),
+          image.getHeight(), advance, ascent, "loading"));
+      return codepoint;
+    } catch (IOException e) {
+      throw new RuntimeException("Error loading 'loading.png' texture for font: " + e.getMessage());
+    }
   }
 
   /* These handle emoji downloading, they accept any of the possible urls' return formats.
@@ -93,9 +119,9 @@ public class CustomImageManager {
       TwitchChatMod.LOGGER.info("Loaded emotes from url {}", urlStr);
     });
   }
-  public void downloadEmote(TwitchAPIEmote twitchEmote) throws IOException {
+  private void downloadEmote(TwitchAPIEmote twitchEmote) throws IOException {
     // I've we've already downloaded the emote, do not download it again.
-    if (this.emoteNameToCodepointHashMap.containsKey(twitchEmote.name())) {
+    if (this.emoteIdToCodepointHashMap.containsKey(twitchEmote.id())) {
       return;
     }
 
@@ -121,7 +147,7 @@ public class CustomImageManager {
     this.getCustomImageFont().addGlyph(codepoint,
       new CustomImageFont.CustomImageGlyph(CUSTOM_IMAGE_SCALE_FACTOR, image, 0, 0, image.getWidth(), image.getHeight(), advance, ascent,
         "emotes/" + twitchEmote.id()));
-    this.emoteNameToCodepointHashMap.put(twitchEmote.name(), codepoint);
+    this.emoteIdToCodepointHashMap.put(twitchEmote.id(), codepoint);
 
     TwitchChatMod.LOGGER.debug("Loaded emote {}", twitchEmote.name());
   }
@@ -187,6 +213,13 @@ public class CustomImageManager {
     TwitchChatMod.LOGGER.debug("Loaded badge {}", id);
   }
 
+  public void downloadEmoteSet(String emoteSetId) {
+    this.downloadEmotePack("https://api.twitch.tv/helix/chat/emotes/set?emote_set_id=" + emoteSetId);
+  }
+  public void downloadChannelEmotes(String channelId) {
+    this.downloadEmotePack("https://api.twitch.tv/helix/chat/emotes/emotes?broadcaster_id=" + channelId);
+  }
+
   private void executeRunnable(FailingRunnable r) {
     this.downloadExecutor.execute(r.toRunnable());
   }
@@ -200,11 +233,11 @@ public class CustomImageManager {
     return prevCodepoint;
   }
 
-  public Integer getEmoteCodepoint(String emoteName) {
-    return this.emoteNameToCodepointHashMap.get(emoteName);
+  public Integer getEmoteCodepointFromId(String emoteId) {
+    return this.emoteIdToCodepointHashMap.getOrDefault(emoteId, this.loadingImageCodepoint);
   }
   public Integer getBadgeCodepoint(String badgeIdentifier) {
-    return this.badgeNameToCodepointHashMap.get(badgeIdentifier);
+    return this.badgeNameToCodepointHashMap.getOrDefault(badgeIdentifier, this.loadingImageCodepoint);
   }
   public CustomImageFont getCustomImageFont() {
     return this.customImageFont;

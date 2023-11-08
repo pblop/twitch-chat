@@ -3,9 +3,11 @@ package eu.pabl.twitchchat;
 import eu.pabl.twitchchat.commands.TwitchBaseCommand;
 import eu.pabl.twitchchat.config.ModConfig;
 import eu.pabl.twitchchat.emotes.CustomImageManager;
+import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIEmoteTagElement;
 import eu.pabl.twitchchat.twitch_integration.Bot;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -49,35 +51,37 @@ public class TwitchChatMod implements ModInitializer {
     badgedUsername.append(Text.literal(username).styled(style -> style.withColor(usernameColour)));
     return badgedUsername;
   }
-  public static MutableText getEmotedMessage(String plainMessage) {
+  public static MutableText getEmotedMessage(String plainMessage, List<TwitchAPIEmoteTagElement> emotes) {
     MutableText emotedMessage = MutableText.of(TextContent.EMPTY);
+    int currentPos = 0;
 
-    // Split words and check if any of those is an emote.
-    String[] wordArray = plainMessage.split(" ");
-    for (int i = 0; i < wordArray.length; i++) {
-      String word = wordArray[i];
-      Integer codepoint = CustomImageManager.getInstance().getEmoteCodepoint(word);
-      if (codepoint != null) {
+    if (emotes != null) {
+      for (var emote : emotes) {
+        if (currentPos != emote.startPosition()) {
+          emotedMessage.append(Text.of(plainMessage.substring(currentPos, emote.startPosition())));
+        }
+        Integer codepoint = CustomImageManager.getInstance().getEmoteCodepointFromId(emote.emoteID());
+
         emotedMessage.append(
-          // Add the space character after this emote
           Text.literal(Character.toString(codepoint))
-            .setStyle(Style.EMPTY.withFont(CustomImageManager.CUSTOM_IMAGE_FONT_IDENTIFIER)));
-      } else {
-        emotedMessage.append(Text.of(word));
-      }
+            .styled(style -> style.withFont(CustomImageManager.CUSTOM_IMAGE_FONT_IDENTIFIER))
+        );
 
-      // Add a space after words because split removes it.
-      if (i < (wordArray.length - 1)) {
-        emotedMessage.append(Text.of(" "));
+        // The end position is the exact end position of the emote, so we add one.
+        currentPos = emote.endPosition()+1;
       }
+    }
+
+    if (currentPos != plainMessage.length()) {
+      emotedMessage.append(Text.of(plainMessage.substring(currentPos)));
     }
     return emotedMessage;
   }
 
-  public static void addTwitchMessage(String time, String username, String message, TextColor usernameColour, String[] userBadges, boolean isMeMessage) {
+  public static void addTwitchMessage(String time, String username, String message, List<TwitchAPIEmoteTagElement> emotes, TextColor usernameColour, String[] userBadges, boolean isMeMessage) {
     MutableText timestampText = Text.literal(time);
     MutableText usernameText = getBadgedUsername(username, usernameColour, userBadges);
-    MutableText emotedMessage = getEmotedMessage(message);
+    MutableText emotedMessage = getEmotedMessage(message, emotes);
     MutableText messageBodyText;
 
     if (!isMeMessage) {
