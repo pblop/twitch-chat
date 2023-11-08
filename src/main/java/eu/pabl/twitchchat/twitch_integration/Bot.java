@@ -5,7 +5,6 @@ import eu.pabl.twitchchat.config.ModConfig;
 import java.awt.Color;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -92,20 +91,7 @@ public class Bot extends ListenerAdapter {
       if (v3Tags != null) {
         String nick = user.getNick();
         if (!ModConfig.getConfig().getIgnoreList().contains(nick)) {
-          String colorTag = v3Tags.get("color");
-          TextColor formattingColor;
-          
-          if (isFormattingColorCached(nick)) {
-            formattingColor = getFormattingColor(nick);
-          } else {
-            if (colorTag.equals("")) {
-              formattingColor = CalculateMinecraftColor.getDefaultUserColor(nick);
-            } else {
-              Color userColor = Color.decode(colorTag);
-              formattingColor = TextColor.fromRgb(userColor.getRGB());
-            }
-            putFormattingColor(nick, formattingColor);
-          }
+          TextColor formattingColor = this.getOrComputeUserColour(nick, v3Tags.get("color"));
 
           String formattedTime = TwitchChatMod.formatTMISentTimestamp(v3Tags.get("tmi-sent-ts"));
           TwitchChatMod.addTwitchMessage(formattedTime, nick, message, formattingColor, null,false);
@@ -128,10 +114,7 @@ public class Bot extends ListenerAdapter {
         ImmutableMap<String, String> tags = event.getTags();
         String colorTag = tags.get("color");
         if (colorTag != null) {
-          Color userColor = Color.decode(colorTag);
-          TextColor formattingColor = TextColor.fromRgb(userColor.getRGB());
-
-          putFormattingColor(getUsername(), formattingColor);
+          this.putFormattingColor(getUsername(), this.computeUserColour(getUsername(), colorTag));
         }
 
         // Set our correct badges for the current room.
@@ -177,13 +160,7 @@ public class Bot extends ListenerAdapter {
       if (!ModConfig.getConfig().getIgnoreList().contains(nick.toLowerCase())) {
         String formattedTime = TwitchChatMod.formatTMISentTimestamp(event.getTimestamp());
 
-        TextColor formattingColor;
-        if (isFormattingColorCached(nick)) {
-          formattingColor = getFormattingColor(nick);
-        } else {
-          formattingColor = CalculateMinecraftColor.getDefaultUserColor(nick);
-          putFormattingColor(nick, formattingColor);
-        }
+        TextColor formattingColor = this.getOrComputeUserColour(nick);
 
         TwitchChatMod.addTwitchMessage(formattedTime, nick, event.getMessage(), formattingColor, null, true);
       }
@@ -222,8 +199,22 @@ public class Bot extends ListenerAdapter {
   public void putFormattingColor(String nick, TextColor color) {
     formattingColorCache.put(nick.toLowerCase(), color);
   }
-  public TextColor getFormattingColor(String nick) {
-    return formattingColorCache.get(nick.toLowerCase());
+
+  // Get the user colour from the formatting colour cache, or otherwise, if not found,
+  // calculate it before storing it again.
+  public TextColor getOrComputeUserColour(String nick) {
+    return this.getOrComputeUserColour(nick, null);
+  }
+  private TextColor getOrComputeUserColour(String nick, String hexColour) {
+    return this.formattingColorCache.computeIfAbsent(nick, unusedNick -> this.computeUserColour(nick, hexColour));
+  }
+  private TextColor computeUserColour(String nick, String hexColour) {
+    if (hexColour != null) {
+      Color javaColour = Color.decode(hexColour);
+      return TextColor.fromRgb(javaColour.getRGB());
+    } else {
+      return TwitchColourCalculator.getDefaultUserColor(nick);
+    }
   }
   public boolean isFormattingColorCached(String nick) {
     return formattingColorCache.containsKey(nick.toLowerCase());

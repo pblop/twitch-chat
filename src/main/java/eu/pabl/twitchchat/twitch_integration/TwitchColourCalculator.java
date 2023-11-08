@@ -2,7 +2,7 @@ package eu.pabl.twitchchat.twitch_integration;
 
 import net.minecraft.text.TextColor;
 
-public class CalculateMinecraftColor {
+public class TwitchColourCalculator {
   public static final TextColor[] DEFAULT_COLORS = new TextColor[]{
           TextColor.fromRgb(0xFF0000),
           TextColor.fromRgb(0x0000FF),
@@ -20,6 +20,7 @@ public class CalculateMinecraftColor {
           TextColor.fromRgb(0x8A2BE2),
           TextColor.fromRgb(0x00FF7F)
   };
+
   // Code gotten from here https://discuss.dev.twitch.tv/t/default-user-color-in-chat/385/2 but a little bit adjusted.
   public static TextColor getDefaultUserColor(String username) {
     char firstChar = username.charAt(0);

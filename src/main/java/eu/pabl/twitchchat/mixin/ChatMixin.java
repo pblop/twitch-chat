@@ -3,9 +3,9 @@ package eu.pabl.twitchchat.mixin;
 import eu.pabl.twitchchat.TwitchChatMod;
 import eu.pabl.twitchchat.config.ModConfig;
 import eu.pabl.twitchchat.twitch_integration.Bot;
-import eu.pabl.twitchchat.twitch_integration.CalculateMinecraftColor;
+import eu.pabl.twitchchat.twitch_integration.TwitchColourCalculator;
 import java.util.Date;
-import net.fabricmc.fabric.impl.client.indigo.IndigoMixinConfigPlugin;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.text.Text;
@@ -13,7 +13,6 @@ import net.minecraft.text.TextColor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ChatScreen.class)
@@ -41,13 +40,7 @@ public class ChatMixin {
           String formattedTime = TwitchChatMod.formatDateTwitch(currentTime);
 
           String username = bot.getUsername();
-          TextColor userColor;
-          if (bot.isFormattingColorCached(username)) {
-            userColor = bot.getFormattingColor(username);
-          } else {
-            userColor = CalculateMinecraftColor.getDefaultUserColor(username);
-            bot.putFormattingColor(username, userColor);
-          }
+          TextColor userColor = bot.getOrComputeUserColour(username);
 
           boolean isMeMessage = textWithoutPrefix.startsWith("/me");
 
