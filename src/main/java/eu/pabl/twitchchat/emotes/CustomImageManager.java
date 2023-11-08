@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import eu.pabl.twitchchat.TwitchChatMod;
 import eu.pabl.twitchchat.config.ModConfig;
+import eu.pabl.twitchchat.emotes.minecraft.CustomImageFont;
+import eu.pabl.twitchchat.emotes.minecraft.CustomImageFontStorage;
 import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIBadge;
 import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIBadgeSet;
 import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIEmote;
@@ -19,11 +21,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.concurrent.*;
 
 public class CustomImageManager {
   public static final Identifier CUSTOM_IMAGE_FONT_IDENTIFIER = Identifier.of(TwitchChatMod.MOD_ID, "emote_font");
@@ -37,18 +35,29 @@ public class CustomImageManager {
   private static final CustomImageManager instance = new CustomImageManager();
 
   // A map of the badge set name and the badges it contains.
-  private final HashMap<String, Integer> badgeNameToCodepointHashMap;
-  private final HashMap<String, Integer> emoteNameToCodepointHashMap;
+  private final ConcurrentHashMap<String, Integer> badgeNameToCodepointHashMap;
+  private final ConcurrentHashMap<String, Integer> emoteNameToCodepointHashMap;
+
+  private final ExecutorService downloadExecutor;
+  private final HttpClient downloadHttpClient;
+
   private int currentCodepoint;
 
   private CustomImageManager() {
-    this.emoteNameToCodepointHashMap = new HashMap<>();
-    this.badgeNameToCodepointHashMap = new HashMap<>();
+    this.emoteNameToCodepointHashMap = new ConcurrentHashMap<>();
+    this.badgeNameToCodepointHashMap = new ConcurrentHashMap<>();
     this.currentCodepoint = 1;
 
     /// The order is important here. Emote font storage depends on the emote font.
     this.customImageFont = new CustomImageFont();
     this.customImageFontStorage = new CustomImageFontStorage(this.getCustomImageFont());
+
+    this.downloadHttpClient = HttpClient.newBuilder()
+      .version(HttpClient.Version.HTTP_1_1)
+      .followRedirects(HttpClient.Redirect.NORMAL)
+      .connectTimeout(Duration.ofSeconds(20))
+      .build();
+    this.downloadExecutor = Executors.newCachedThreadPool();
   }
   public static CustomImageManager getInstance() {
     return instance;
@@ -61,20 +70,16 @@ public class CustomImageManager {
      And add the emotes to the CustomImageFont and the HashMap emoteName -> codepoint.
    */
   public void downloadEmotePack(String urlStr) {
-    Thread t = new Thread(() -> {
+    HttpRequest req = HttpRequest.newBuilder()
+      .uri(URI.create(urlStr))
+      .timeout(Duration.ofMinutes(2))
+      .header("Authorization", "Bearer " + ModConfig.getConfig().getOauthKey().replace("oauth:", ""))
+      .header("Client-Id", TMI_CLIENT_ID)
+      .build();
+
+    this.downloadExecutor.execute(() -> {
       try {
-        HttpClient client = HttpClient.newBuilder()
-          .version(HttpClient.Version.HTTP_1_1)
-          .followRedirects(HttpClient.Redirect.NORMAL)
-          .connectTimeout(Duration.ofSeconds(20))
-          .build();
-        HttpRequest req = HttpRequest.newBuilder()
-          .uri(URI.create(urlStr))
-          .timeout(Duration.ofMinutes(2))
-          .header("Authorization", "Bearer " + ModConfig.getConfig().getOauthKey().replace("oauth:", ""))
-          .header("Client-Id", TMI_CLIENT_ID)
-          .build();
-        HttpResponse<String> res = client.send(req, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> res = this.downloadHttpClient.send(req, HttpResponse.BodyHandlers.ofString());
         if (res.statusCode() != 200) {
           TwitchChatMod.LOGGER.warn("Couldn't load emotes from url {}, status code {}", urlStr, res.statusCode());
           return;
@@ -83,23 +88,14 @@ public class CustomImageManager {
         JsonObject jsonObject = (JsonObject) JsonParser.parseString(res.body());
         Gson gson = new Gson();
         jsonObject.getAsJsonArray("data").asList().stream()
-          .parallel()
           .map(emote -> gson.fromJson(emote, TwitchAPIEmote.class))
-          .forEach(twitchEmote -> {
-            try {
-              downloadEmote(twitchEmote);
-            } catch (IOException e) {
-              throw new RuntimeException(e);
-            }
-          });
+          .forEach(twitchEmote -> this.executeRunnable(() -> downloadEmote(twitchEmote)));
 
         TwitchChatMod.LOGGER.info("Loaded emotes from url {}", urlStr);
       } catch (IOException | InterruptedException e) {
         throw new RuntimeException(e);
       };
     });
-    t.setDaemon(true);
-    t.start();
   }
   public void downloadEmote(TwitchAPIEmote twitchEmote) throws IOException {
     // I've we've already downloaded the emote, do not download it again.
@@ -135,20 +131,16 @@ public class CustomImageManager {
   }
 
   public void downloadBadges(String urlStr) {
-    Thread t = new Thread(() -> {
+    HttpRequest req = HttpRequest.newBuilder()
+      .uri(URI.create(urlStr))
+      .timeout(Duration.ofMinutes(2))
+      .header("Authorization", "Bearer " + ModConfig.getConfig().getOauthKey().replace("oauth:", ""))
+      .header("Client-Id", TMI_CLIENT_ID)
+      .build();
+
+    this.downloadExecutor.execute(() -> {
       try {
-        HttpClient client = HttpClient.newBuilder()
-          .version(HttpClient.Version.HTTP_1_1)
-          .followRedirects(HttpClient.Redirect.NORMAL)
-          .connectTimeout(Duration.ofSeconds(20))
-          .build();
-        HttpRequest req = HttpRequest.newBuilder()
-          .uri(URI.create(urlStr))
-          .timeout(Duration.ofMinutes(2))
-          .header("Authorization", "Bearer " + ModConfig.getConfig().getOauthKey().replace("oauth:", ""))
-          .header("Client-Id", TMI_CLIENT_ID)
-          .build();
-        HttpResponse<String> res = client.send(req, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> res = this.downloadHttpClient.send(req, HttpResponse.BodyHandlers.ofString());
         if (res.statusCode() != 200) {
           TwitchChatMod.LOGGER.warn("Couldn't load badgess from url {}, status code {}", urlStr, res.statusCode());
           return;
@@ -162,25 +154,17 @@ public class CustomImageManager {
           .stream()
           .parallel()
           .map(badgeSet -> gson.fromJson(badgeSet, TwitchAPIBadgeSet.class))
-          .forEach(badgeSet -> {
-            try {
-              downloadBadgeSet(badgeSet);
-            } catch (IOException e) {
-              throw new RuntimeException(e);
-            }
-          });
+          .forEach(this::downloadBadgeSet);
 
         TwitchChatMod.LOGGER.info("Loaded badges from url {}", urlStr);
       } catch (IOException | InterruptedException e) {
         throw new RuntimeException(e);
-      };
+      }
     });
-    t.setDaemon(true);
-    t.start();
   }
-  private void downloadBadgeSet(TwitchAPIBadgeSet badgeSet) throws IOException {
+  private void downloadBadgeSet(TwitchAPIBadgeSet badgeSet) {
     for (var badge : badgeSet.versions()) {
-      downloadBadge(badgeSet.set_id(), badge);
+      executeRunnable(() -> downloadBadge(badgeSet.set_id(), badge));
     }
   }
   private void downloadBadge(String badgeSetId, TwitchAPIBadge badge) throws IOException {
@@ -211,7 +195,11 @@ public class CustomImageManager {
     TwitchChatMod.LOGGER.debug("Loaded badge {}", id);
   }
 
-  private int getAndAdvanceCurrentCodepoint() {
+  private void executeRunnable(FailingRunnable r) {
+    this.downloadExecutor.execute(r.toRunnable());
+  }
+
+  private synchronized int getAndAdvanceCurrentCodepoint() {
     int prevCodepoint = currentCodepoint;
     currentCodepoint++;
     // Skip the space (' ') codepoint, because the TextRenderer does weird stuff with the space character
@@ -232,5 +220,4 @@ public class CustomImageManager {
   public CustomImageFontStorage getCustomImageFontStorage() {
     return this.customImageFontStorage;
   }
-
 }

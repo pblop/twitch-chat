@@ -59,7 +59,7 @@ public class Bot extends ListenerAdapter {
         .buildConfiguration();
 
     this.ircBot = new PircBotX(config);
-    this.myExecutor = Executors.newCachedThreadPool();
+    this.myExecutor = Executors.newSingleThreadExecutor();
   }
 
   public void start() {

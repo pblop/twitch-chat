@@ -1,4 +1,4 @@
-package eu.pabl.twitchchat.emotes;
+package eu.pabl.twitchchat.emotes.minecraft;
 
 import net.minecraft.client.font.RenderableGlyph;
 

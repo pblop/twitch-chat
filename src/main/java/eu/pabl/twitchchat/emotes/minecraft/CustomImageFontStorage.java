@@ -1,6 +1,7 @@
-package eu.pabl.twitchchat.emotes;
+package eu.pabl.twitchchat.emotes.minecraft;
 
 import eu.pabl.twitchchat.TwitchChatMod;
+import eu.pabl.twitchchat.emotes.CustomImageManager;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntList;
