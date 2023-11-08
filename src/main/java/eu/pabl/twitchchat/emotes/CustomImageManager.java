@@ -77,24 +77,20 @@ public class CustomImageManager {
       .header("Client-Id", TMI_CLIENT_ID)
       .build();
 
-    this.downloadExecutor.execute(() -> {
-      try {
-        HttpResponse<String> res = this.downloadHttpClient.send(req, HttpResponse.BodyHandlers.ofString());
-        if (res.statusCode() != 200) {
-          TwitchChatMod.LOGGER.warn("Couldn't load emotes from url {}, status code {}", urlStr, res.statusCode());
-          return;
-        }
+    executeRunnable(() -> {
+      HttpResponse<String> res = this.downloadHttpClient.send(req, HttpResponse.BodyHandlers.ofString());
+      if (res.statusCode() != 200) {
+        TwitchChatMod.LOGGER.warn("Couldn't load emotes from url {}, status code {}", urlStr, res.statusCode());
+        return;
+      }
 
-        JsonObject jsonObject = (JsonObject) JsonParser.parseString(res.body());
-        Gson gson = new Gson();
-        jsonObject.getAsJsonArray("data").asList().stream()
-          .map(emote -> gson.fromJson(emote, TwitchAPIEmote.class))
-          .forEach(twitchEmote -> this.executeRunnable(() -> downloadEmote(twitchEmote)));
+      JsonObject jsonObject = (JsonObject) JsonParser.parseString(res.body());
+      Gson gson = new Gson();
+      jsonObject.getAsJsonArray("data").asList().stream()
+        .map(emote -> gson.fromJson(emote, TwitchAPIEmote.class))
+        .forEach(twitchEmote -> this.executeRunnable(() -> downloadEmote(twitchEmote)));
 
-        TwitchChatMod.LOGGER.info("Loaded emotes from url {}", urlStr);
-      } catch (IOException | InterruptedException e) {
-        throw new RuntimeException(e);
-      };
+      TwitchChatMod.LOGGER.info("Loaded emotes from url {}", urlStr);
     });
   }
   public void downloadEmote(TwitchAPIEmote twitchEmote) throws IOException {
@@ -138,28 +134,24 @@ public class CustomImageManager {
       .header("Client-Id", TMI_CLIENT_ID)
       .build();
 
-    this.downloadExecutor.execute(() -> {
-      try {
-        HttpResponse<String> res = this.downloadHttpClient.send(req, HttpResponse.BodyHandlers.ofString());
-        if (res.statusCode() != 200) {
-          TwitchChatMod.LOGGER.warn("Couldn't load badgess from url {}, status code {}", urlStr, res.statusCode());
-          return;
-        }
-
-        JsonObject jsonObject = (JsonObject) JsonParser.parseString(res.body());
-        Gson gson = new Gson();
-
-        jsonObject.getAsJsonArray("data")
-          .asList()
-          .stream()
-          .parallel()
-          .map(badgeSet -> gson.fromJson(badgeSet, TwitchAPIBadgeSet.class))
-          .forEach(this::downloadBadgeSet);
-
-        TwitchChatMod.LOGGER.info("Loaded badges from url {}", urlStr);
-      } catch (IOException | InterruptedException e) {
-        throw new RuntimeException(e);
+    executeRunnable(() -> {
+      HttpResponse<String> res = this.downloadHttpClient.send(req, HttpResponse.BodyHandlers.ofString());
+      if (res.statusCode() != 200) {
+        TwitchChatMod.LOGGER.warn("Couldn't load badgess from url {}, status code {}", urlStr, res.statusCode());
+        return;
       }
+
+      JsonObject jsonObject = (JsonObject) JsonParser.parseString(res.body());
+      Gson gson = new Gson();
+
+      jsonObject.getAsJsonArray("data")
+        .asList()
+        .stream()
+        .parallel()
+        .map(badgeSet -> gson.fromJson(badgeSet, TwitchAPIBadgeSet.class))
+        .forEach(this::downloadBadgeSet);
+
+      TwitchChatMod.LOGGER.info("Loaded badges from url {}", urlStr);
     });
   }
   private void downloadBadgeSet(TwitchAPIBadgeSet badgeSet) {
