@@ -70,7 +70,8 @@ public class Bot extends ListenerAdapter {
     TwitchChatMod.LOGGER.info("Twitch bot started");
     myExecutor.execute(() -> {
       try {
-        ircBot.startBot();      } catch (IOException | IrcException e) {
+        ircBot.startBot();
+      } catch (IOException | IrcException e) {
         e.printStackTrace();
       }
     });
@@ -109,7 +110,13 @@ public class Bot extends ListenerAdapter {
               .collect(Collectors.toList());
           }
 
-          TwitchChatMod.addTwitchMessage(formattedTime, nick, message, emotes, formattingColor, null,false);
+          String badges = v3Tags.get("badges");
+          if (badges != null) {
+            this.userBadges = badges.split(",");
+            // WIP: Here we would check if the badges exist or not, and add them.
+          }
+
+          TwitchChatMod.addTwitchMessage(formattedTime, nick, message, emotes, formattingColor, userBadges,false);
         }
       } else {
         TwitchChatMod.LOGGER.warn("Message with no v3tags: " + event.getMessage());
@@ -175,9 +182,10 @@ public class Bot extends ListenerAdapter {
       if (!ModConfig.getConfig().getIgnoreList().contains(nick.toLowerCase())) {
         String formattedTime = TwitchChatMod.formatTMISentTimestamp(event.getTimestamp());
 
-        TextColor formattingColor = this.getOrComputeUserColour(nick);
+        ImmutableMap<String, String> tags = event.getTags();
+        TextColor formattingColor = this.getOrComputeUserColour(nick, tags.get("color"));
 
-        String emotesString = event.getTags().get("emotes");
+        String emotesString = tags.get("emotes");
         List<TwitchAPIEmoteTagElement> emotes = null;
         if (!emotesString.startsWith("\\001ACTION")) {
           emotes = Arrays.stream(emotesString.split("/"))
@@ -185,7 +193,12 @@ public class Bot extends ListenerAdapter {
             .collect(Collectors.toList());
         }
 
-        TwitchChatMod.addTwitchMessage(formattedTime, nick, event.getMessage(), emotes, formattingColor, null, true);
+        String badges = tags.get("badges");
+        if (badges != null) {
+          this.userBadges = badges.split(",");
+        }
+
+        TwitchChatMod.addTwitchMessage(formattedTime, nick, event.getMessage(), emotes, formattingColor, userBadges, true);
       }
     } else {
       TwitchChatMod.LOGGER.debug("NON-USER ACTION" + event.getMessage());
@@ -232,25 +245,30 @@ public class Bot extends ListenerAdapter {
     return this.formattingColorCache.computeIfAbsent(nick.toLowerCase(), unusedNick -> this.computeUserColour(nick, hexColour));
   }
   private TextColor computeUserColour(String nick, String hexColour) {
-    if (hexColour != null) {
+    if (hexColour == null || hexColour.isBlank()) {
+      return TwitchColourCalculator.getDefaultUserColor(nick);
+    } else {
       Color javaColour = Color.decode(hexColour);
       return TextColor.fromRgb(javaColour.getRGB());
-    } else {
-      return TwitchColourCalculator.getDefaultUserColor(nick);
     }
   }
 
   public void joinChannel(String channel) {
-    String oldChannel = this.channel;
-    this.channel = channel.toLowerCase();
-    if (ircBot.isConnected()) {
-      myExecutor.execute(() -> {
-        ircBot.sendRaw().rawLine("PART #" + oldChannel); // Leave the channel
-        ircBot.sendIRC().joinChannel("#" + this.channel); // Join the new channel
-        ircBot.sendCAP().request("twitch.tv/membership", "twitch.tv/tags", "twitch.tv/commands"); // Ask for capabilities
-      });
-      // We're switching channels, so we have to clear our badges.
-      this.userBadges = new String[0];
+    try {
+      String oldChannel = this.channel;
+      this.channel = channel.toLowerCase();
+      if (ircBot.isConnected()) {
+        myExecutor.execute(() -> {
+          ircBot.sendRaw().rawLine("PART #" + oldChannel); // Leave the channel
+          ircBot.sendIRC().joinChannel("#" + this.channel); // Join the new channel
+          ircBot.sendCAP().request("twitch.tv/membership", "twitch.tv/tags", "twitch.tv/commands"); // Ask for capabilities
+        });
+
+        // We're switching channels, so we have to clear our badges.
+        this.userBadges = new String[0];
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 
