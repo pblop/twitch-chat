@@ -59,6 +59,8 @@ public class TwitchChatMod implements ModInitializer {
     int currentPos = 0;
 
     // The emotes count in offsets by codepoints. So... we're doing the same.
+    // (thus substringCodepoints, which does the same as substring, but treating codepoint indexes instead of
+    // character indexes).
     if (emotes != null) {
       for (var emote : emotes) {
         if (currentPos != emote.startPosition()) {
@@ -82,6 +84,41 @@ public class TwitchChatMod implements ModInitializer {
     return emotedMessage;
   }
 
+  // The difference between the method on top of this one and this one is the method on top uses the emote tags in the
+  // IRC message (basically the emotes parsed by Twitch), while this one checks for the keywords on its own. I do not
+  // know which is better or faster. I could probably remove the one on top and use this for everything.
+  public static MutableText getEmotedMessageLocal(String plainMessage) {
+    MutableText emotedMessage = MutableText.of(TextContent.EMPTY);
+
+    // Split words and check if any of those is an emote.
+    String[] wordArray = plainMessage.split(" ");
+    for (int i = 0; i < wordArray.length; i++) {
+      String word = wordArray[i];
+      // TODO: Maybe only let user use emotes that they have in their emote sets. This could be achieved by only
+      //       having the CustomImageManager#emoteNameToIdHashMap be playerEmoteNameToIdHashMap, and only add emotes
+      //       if the player has them in their emote list.
+      //       Or maybe we could have a list of user emotes somewhere that we check against first, and if the message is
+      //       sent by the user and the user doesn't have the emote, we don't enter in the if below. (This would allow
+      //       us to maybe use this method for getting emoted messages for other users, which, as outlined in the comment
+      //       above, could be faster, maybe).
+      String emoteId = CustomImageManager.getInstance().getEmoteIdFromName(word);
+      if (emoteId != null) {
+        emotedMessage.append(Text.literal(
+          Character.toString(CustomImageManager.getInstance().getEmoteCodepointFromId(emoteId)))
+          .setStyle(Style.EMPTY.withFont(CustomImageManager.CUSTOM_IMAGE_FONT_IDENTIFIER)
+          ));
+      } else {
+        emotedMessage.append(Text.of(word));
+      }
+
+      // Add a space after words because split removes it.
+      if (i < (wordArray.length - 1)) {
+        emotedMessage.append(Text.of(" "));
+      }
+    }
+    return emotedMessage;
+  }
+
   private static String substringCodepoints(String str, int idx, int len) {
     int start = str.offsetByCodePoints(0, idx);
     int end = str.offsetByCodePoints(start, len-idx);
@@ -95,7 +132,7 @@ public class TwitchChatMod implements ModInitializer {
   public static void addTwitchMessage(String time, String username, String message, List<TwitchAPIEmoteTagElement> emotes, TextColor usernameColour, String[] userBadges, boolean isMeMessage) {
     MutableText timestampText = Text.literal(time);
     MutableText usernameText = getBadgedUsername(username, usernameColour, userBadges);
-    MutableText emotedMessage = getEmotedMessage(message, emotes);
+    MutableText emotedMessage = emotes == null ? getEmotedMessageLocal(message) : getEmotedMessage(message, emotes);
     MutableText messageBodyText;
 
     if (!isMeMessage) {

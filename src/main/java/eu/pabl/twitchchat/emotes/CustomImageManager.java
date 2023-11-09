@@ -41,6 +41,8 @@ public class CustomImageManager {
   private final ConcurrentHashMap<String, Integer> badgeNameToCodepointHashMap;
   private final ConcurrentHashMap<String, Integer> emoteIdToCodepointHashMap;
 
+  private final ConcurrentHashMap<String, String> emoteNameToIdHashMap;
+
   private final ExecutorService downloadExecutor;
   private final HttpClient downloadHttpClient;
 
@@ -50,6 +52,7 @@ public class CustomImageManager {
   private CustomImageManager() {
     this.emoteIdToCodepointHashMap = new ConcurrentHashMap<>();
     this.badgeNameToCodepointHashMap = new ConcurrentHashMap<>();
+    this.emoteNameToIdHashMap = new ConcurrentHashMap<>();
     this.currentCodepoint = 1;
 
     /// The order is important here. Emote font storage depends on the emote font.
@@ -124,6 +127,9 @@ public class CustomImageManager {
     if (this.emoteIdToCodepointHashMap.containsKey(twitchEmote.id())) {
       return;
     }
+    // Do this earlier, so that if the emotes take long to load, at least we can show the user that the
+    // emote hasn't loaded.
+    this.emoteNameToIdHashMap.put(twitchEmote.name(), twitchEmote.name());
 
     String url1x = twitchEmote.images().get("url_1x");
     URL url = new URL(url1x);
@@ -233,6 +239,9 @@ public class CustomImageManager {
     return prevCodepoint;
   }
 
+  public String getEmoteIdFromName(String emoteName) {
+    return this.emoteNameToIdHashMap.get(emoteName);
+  }
   public Integer getEmoteCodepointFromId(String emoteId) {
     return this.emoteIdToCodepointHashMap.getOrDefault(emoteId, this.loadingImageCodepoint);
   }

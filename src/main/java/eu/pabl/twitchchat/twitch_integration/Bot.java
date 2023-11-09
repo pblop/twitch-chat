@@ -178,7 +178,15 @@ public class Bot extends ListenerAdapter {
 
         TextColor formattingColor = this.getOrComputeUserColour(nick);
 
-        TwitchChatMod.addTwitchMessage(formattedTime, nick, event.getMessage(), null, formattingColor, null, true);
+        String emotesString = event.getTags().get("emotes");
+        List<TwitchAPIEmoteTagElement> emotes = null;
+        if (!emotesString.startsWith("\\001ACTION")) {
+          emotes = Arrays.stream(emotesString.split("/"))
+            .flatMap(singleEmote -> TwitchAPIEmoteTagElement.fromTagString(singleEmote).stream())
+            .collect(Collectors.toList());
+        }
+
+        TwitchChatMod.addTwitchMessage(formattedTime, nick, event.getMessage(), emotes, formattingColor, null, true);
       }
     } else {
       TwitchChatMod.LOGGER.debug("NON-USER ACTION" + event.getMessage());
