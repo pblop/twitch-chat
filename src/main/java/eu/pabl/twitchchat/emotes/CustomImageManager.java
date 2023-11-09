@@ -129,7 +129,7 @@ public class CustomImageManager {
     }
     // Do this earlier, so that if the emotes take long to load, at least we can show the user that the
     // emote hasn't loaded.
-    this.emoteNameToIdHashMap.put(twitchEmote.name(), twitchEmote.name());
+    this.emoteNameToIdHashMap.put(twitchEmote.name(), twitchEmote.id());
 
     String url1x = twitchEmote.images().get("url_1x");
     URL url = new URL(url1x);
