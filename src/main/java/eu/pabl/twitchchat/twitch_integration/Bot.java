@@ -63,15 +63,14 @@ public class Bot extends ListenerAdapter {
         .buildConfiguration();
 
     this.ircBot = new PircBotX(config);
-    this.myExecutor = Executors.newSingleThreadExecutor();
+    this.myExecutor = Executors.newCachedThreadPool();
   }
 
   public void start() {
     TwitchChatMod.LOGGER.info("Twitch bot started");
     myExecutor.execute(() -> {
       try {
-        ircBot.startBot();
-      } catch (IOException | IrcException e) {
+        ircBot.startBot();      } catch (IOException | IrcException e) {
         e.printStackTrace();
       }
     });
