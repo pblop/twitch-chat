@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import javax.net.ssl.SSLSocketFactory;
 
+import eu.pabl.twitchchat.emotes.CustomImageManager;
 import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIEmoteTagElement;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
@@ -110,13 +111,13 @@ public class Bot extends ListenerAdapter {
               .collect(Collectors.toList());
           }
 
-          String badges = v3Tags.get("badges");
-          if (badges != null) {
-            this.userBadges = badges.split(",");
-            // WIP: Here we would check if the badges exist or not, and add them.
+          String badgesStr = v3Tags.get("badges");
+          String[] badges = null;
+          if (!badgesStr.isEmpty()) {
+            badges = badgesStr.split(",");
           }
 
-          TwitchChatMod.addTwitchMessage(formattedTime, nick, message, emotes, formattingColor, userBadges,false);
+          TwitchChatMod.addTwitchMessage(formattedTime, nick, message, emotes, formattingColor, badges,false);
         }
       } else {
         TwitchChatMod.LOGGER.warn("Message with no v3tags: " + event.getMessage());
@@ -145,8 +146,18 @@ public class Bot extends ListenerAdapter {
           this.userBadges = badges.split(",");
           // WIP: Here we would check if the badges exist or not, and add them.
         }
+
+        for (String emoteSetId : tags.get("emote-sets").split(",")) {
+          CustomImageManager.getInstance().downloadEmoteSet(emoteSetId);
+        }
       }
-      case "CAP", "ROOMSTATE" -> TwitchChatMod.LOGGER.debug(event.getCommand() + " event: " + event);
+      case "CAP" -> TwitchChatMod.LOGGER.debug(event.getCommand() + " event: " + event);
+      case "ROOMSTATE" -> {
+        String roomId = event.getTags().get("room-id");
+        CustomImageManager.getInstance().downloadChannelEmotes(roomId);
+        CustomImageManager.getInstance().downloadChannelBadges(roomId);
+        TwitchChatMod.LOGGER.debug(event.getCommand() + " event: " + event);
+      }
       default -> TwitchChatMod.LOGGER.warn("UNKNOWN TWITCH EVENT: " + event);
     }
   }
@@ -193,12 +204,13 @@ public class Bot extends ListenerAdapter {
             .collect(Collectors.toList());
         }
 
-        String badges = tags.get("badges");
-        if (badges != null) {
-          this.userBadges = badges.split(",");
+        String badgesStr = tags.get("badges");
+        String[] badges = null;
+        if (!badgesStr.isEmpty()) {
+          badges = badgesStr.split(",");
         }
 
-        TwitchChatMod.addTwitchMessage(formattedTime, nick, event.getMessage(), emotes, formattingColor, userBadges, true);
+        TwitchChatMod.addTwitchMessage(formattedTime, nick, event.getMessage(), emotes, formattingColor, badges, true);
       }
     } else {
       TwitchChatMod.LOGGER.debug("NON-USER ACTION" + event.getMessage());

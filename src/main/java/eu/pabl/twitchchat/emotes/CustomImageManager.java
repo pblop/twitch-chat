@@ -223,7 +223,10 @@ public class CustomImageManager {
     this.downloadEmotePack("https://api.twitch.tv/helix/chat/emotes/set?emote_set_id=" + emoteSetId);
   }
   public void downloadChannelEmotes(String channelId) {
-    this.downloadEmotePack("https://api.twitch.tv/helix/chat/emotes/emotes?broadcaster_id=" + channelId);
+    this.downloadEmotePack("https://api.twitch.tv/helix/chat/emotes?broadcaster_id=" + channelId);
+  }
+  public void downloadChannelBadges(String channelId) {
+    this.downloadBadges("https://api.twitch.tv/helix/chat/badges?broadcaster_id=" + channelId);
   }
 
   private void executeRunnable(FailingRunnable r) {
