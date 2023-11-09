@@ -5,9 +5,12 @@ import eu.pabl.twitchchat.config.ModConfig;
 import eu.pabl.twitchchat.emotes.CustomImageManager;
 import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIEmoteTagElement;
 import eu.pabl.twitchchat.twitch_integration.Bot;
+
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -55,10 +58,11 @@ public class TwitchChatMod implements ModInitializer {
     MutableText emotedMessage = MutableText.of(TextContent.EMPTY);
     int currentPos = 0;
 
+    // The emotes count in offsets by codepoints. So... we're doing the same.
     if (emotes != null) {
       for (var emote : emotes) {
         if (currentPos != emote.startPosition()) {
-          emotedMessage.append(Text.of(plainMessage.substring(currentPos, emote.startPosition())));
+          emotedMessage.append(Text.of(substringCodepoints(plainMessage, currentPos, emote.startPosition())));
         }
         Integer codepoint = CustomImageManager.getInstance().getEmoteCodepointFromId(emote.emoteID());
 
@@ -68,14 +72,24 @@ public class TwitchChatMod implements ModInitializer {
         );
 
         // The end position is the exact end position of the emote, so we add one.
-        currentPos = emote.endPosition()+1;
+        currentPos = emote.endPosition() + 1;
       }
     }
 
     if (currentPos != plainMessage.length()) {
-      emotedMessage.append(Text.of(plainMessage.substring(currentPos)));
+      emotedMessage.append(Text.of(substringCodepoints(plainMessage, currentPos)));
     }
     return emotedMessage;
+  }
+
+  private static String substringCodepoints(String str, int idx, int len) {
+    int start = str.offsetByCodePoints(0, idx);
+    int end = str.offsetByCodePoints(start, len-idx);
+    return str.substring(start, end);
+  }
+  private static String substringCodepoints(String str, int idx) {
+    int start = str.offsetByCodePoints(0, idx);
+    return str.substring(start);
   }
 
   public static void addTwitchMessage(String time, String username, String message, List<TwitchAPIEmoteTagElement> emotes, TextColor usernameColour, String[] userBadges, boolean isMeMessage) {

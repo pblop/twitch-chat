@@ -5,10 +5,12 @@ import eu.pabl.twitchchat.config.ModConfig;
 import java.awt.Color;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 import javax.net.ssl.SSLSocketFactory;
 
 import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIEmoteTagElement;
@@ -100,8 +102,12 @@ public class Bot extends ListenerAdapter {
 
           String emotesString = v3Tags.get("emotes");
           List<TwitchAPIEmoteTagElement> emotes = null;
+          // The twitch documentation is a bit lackluster. Here's some better info.
+          // https://discuss.dev.twitch.com/t/message-tags-parse-emotes/1637/3
           if (!emotesString.startsWith("\\001ACTION")) {
-            emotes = TwitchAPIEmoteTagElement.fromTagString(emotesString);
+            emotes = Arrays.stream(emotesString.split("/"))
+              .flatMap(singleEmote -> TwitchAPIEmoteTagElement.fromTagString(singleEmote).stream())
+              .collect(Collectors.toList());
           }
 
           TwitchChatMod.addTwitchMessage(formattedTime, nick, message, emotes, formattingColor, null,false);
