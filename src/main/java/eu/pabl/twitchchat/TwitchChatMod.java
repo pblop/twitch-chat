@@ -6,11 +6,9 @@ import eu.pabl.twitchchat.emotes.CustomImageManager;
 import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIEmoteTagElement;
 import eu.pabl.twitchchat.twitch_integration.Bot;
 
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -36,7 +34,7 @@ public class TwitchChatMod implements ModInitializer {
 
 //    EmoteManager.getInstance().downloadEmote();
     CustomImageManager.getInstance().downloadEmotePack("https://api.twitch.tv/helix/chat/emotes/global");
-    CustomImageManager.getInstance().downloadBadges("https://api.twitch.tv/helix/chat/badges/global");
+    CustomImageManager.getInstance().downloadBadgePack("https://api.twitch.tv/helix/chat/badges/global");
 //    MinecraftClient.getInstance().textRenderer
   }
 

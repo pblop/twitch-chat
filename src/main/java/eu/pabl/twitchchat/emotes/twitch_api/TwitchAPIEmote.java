@@ -9,4 +9,4 @@ public record TwitchAPIEmote(
   String[] format,
   String[] scale,
   String[] theme_mode
-) { }
+) implements TwitchAPIObject { }

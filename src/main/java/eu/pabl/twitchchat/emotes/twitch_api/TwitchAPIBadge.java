@@ -9,4 +9,4 @@ public record TwitchAPIBadge (
   String description,
   String click_action,
   String click_url
-) { }
+) implements TwitchAPIObject { }

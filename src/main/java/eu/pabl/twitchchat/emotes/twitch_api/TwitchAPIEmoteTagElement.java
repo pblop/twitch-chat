@@ -7,7 +7,7 @@ public record TwitchAPIEmoteTagElement(
   String emoteID,
   int startPosition,
   int endPosition
-) {
+) implements TwitchAPIObject {
 
   // As per: https://dev.twitch.tv/docs/irc/tags/#privmsg-tags
   public static List<TwitchAPIEmoteTagElement> fromTagString(String emotesString) {

@@ -12,7 +12,8 @@ public interface FailingRunnable {
       try {
         this.run();
       } catch (Exception e) {
-        TwitchChatMod.LOGGER.error(e.toString());
+        TwitchChatMod.LOGGER.error("FailingRunnable:" + e);
+        e.printStackTrace();
       }
     };
   }

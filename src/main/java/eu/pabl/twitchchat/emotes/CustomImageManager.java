@@ -10,13 +10,12 @@ import eu.pabl.twitchchat.emotes.minecraft.CustomImageFontStorage;
 import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIBadge;
 import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIBadgeSet;
 import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIEmote;
-import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.util.Identifier;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -40,10 +39,11 @@ public class CustomImageManager {
   // A map of the badge set name and the badges it contains.
   private final ConcurrentHashMap<String, Integer> badgeNameToCodepointHashMap;
   private final ConcurrentHashMap<String, Integer> emoteIdToCodepointHashMap;
-
   private final ConcurrentHashMap<String, String> emoteNameToIdHashMap;
+  private final LinkedBlockingQueue<FailedDownload> failedDownloads;
 
   private final ExecutorService downloadExecutor;
+  private final ScheduledExecutorService scheduledExecutor;
   private final HttpClient downloadHttpClient;
 
   private int currentCodepoint;
@@ -65,8 +65,26 @@ public class CustomImageManager {
       .connectTimeout(Duration.ofSeconds(20))
       .build();
     this.downloadExecutor = Executors.newCachedThreadPool();
+    this.scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 
     this.loadingImageCodepoint = this.addLoadingIcon();
+    this.failedDownloads = new LinkedBlockingQueue<>();
+
+    this.scheduledExecutor.scheduleWithFixedDelay(() -> {
+      try {
+        FailedDownload take = this.failedDownloads.take();
+        executeRunnable(() -> {
+          switch (take.failedDownloadType()) {
+            case BADGE_PACK -> downloadBadgePack(take.string());
+            case EMOTE_PACK -> downloadEmotePack(take.string());
+            case BADGE -> downloadBadge(take.string(), (TwitchAPIBadge) take.object());
+            case EMOTE -> downloadEmote((TwitchAPIEmote) take.object());
+          }
+        });
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }, 0, 1, TimeUnit.SECONDS);
   }
   public static CustomImageManager getInstance() {
     return instance;
@@ -107,19 +125,22 @@ public class CustomImageManager {
       .build();
 
     executeRunnable(() -> {
-      HttpResponse<String> res = this.downloadHttpClient.send(req, HttpResponse.BodyHandlers.ofString());
-      if (res.statusCode() != 200) {
-        TwitchChatMod.LOGGER.warn("Couldn't load emotes from url {}, status code {}", urlStr, res.statusCode());
-        return;
+      try {
+        HttpResponse<String> res = this.downloadHttpClient.send(req, HttpResponse.BodyHandlers.ofString());
+        if (res.statusCode() != 200) {
+          TwitchChatMod.LOGGER.warn("Couldn't load emotes from string {}, status code {}", urlStr, res.statusCode());
+          return;
+        }
+        JsonObject jsonObject = (JsonObject) JsonParser.parseString(res.body());
+        Gson gson = new Gson();
+        jsonObject.getAsJsonArray("data").asList().stream()
+          .map(emote -> gson.fromJson(emote, TwitchAPIEmote.class))
+          .forEach(twitchEmote -> this.executeRunnable(() -> downloadEmote(twitchEmote)));
+
+      } catch (ConnectException e) {
+        TwitchChatMod.LOGGER.warn("Couldn't load emotes from string {}. {}", urlStr, e);
+        this.failedDownloads.add(new FailedDownload(null, urlStr, FailedDownload.FailedDownloadType.EMOTE_PACK));
       }
-
-      JsonObject jsonObject = (JsonObject) JsonParser.parseString(res.body());
-      Gson gson = new Gson();
-      jsonObject.getAsJsonArray("data").asList().stream()
-        .map(emote -> gson.fromJson(emote, TwitchAPIEmote.class))
-        .forEach(twitchEmote -> this.executeRunnable(() -> downloadEmote(twitchEmote)));
-
-      TwitchChatMod.LOGGER.info("Loaded emotes from url {}", urlStr);
     });
   }
   private void downloadEmote(TwitchAPIEmote twitchEmote) throws IOException {
@@ -133,32 +154,40 @@ public class CustomImageManager {
 
     String url1x = twitchEmote.images().get("url_1x");
     URL url = new URL(url1x);
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-    if (connection.getResponseCode() != 200) {
-      TwitchChatMod.LOGGER.warn("Couldn't load emote 1x {} from url {}: status code {}",
-        twitchEmote.name(), url1x, connection.getResponseCode());
-      return;
+    try {
+      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+      if (connection.getResponseCode() != 200) {
+        TwitchChatMod.LOGGER.warn("Couldn't load emote 1x {} from string {}: status code {}",
+          twitchEmote.name(), url1x, connection.getResponseCode());
+        return;
+      }
+
+      NativeImage image = NativeImage.read(url.openStream());
+      int codepoint = getAndAdvanceCurrentCodepoint();
+      // advance is the amount the text is moved forward after the character
+      int advance = (int) (image.getWidth() * CUSTOM_IMAGE_SCALE_FACTOR) + 1; // the +1 is to account for the shadow, which is a pixel in length
+      // TODO: It would be really cool to be able to add or remove the +1 depending on if we're rendering a shadow or
+      //       not. This could be done through a mixin in TextRenderer.Drawer#accept.
+      // ascent is the height of the glyph relative to something
+      int ascent = (int) (image.getHeight() * CUSTOM_IMAGE_SCALE_FACTOR);
+      // both advance and ascent seem to correlate pretty well with its scale factor
+      this.getCustomImageFont().addGlyph(codepoint,
+        new CustomImageFont.CustomImageGlyph(CUSTOM_IMAGE_SCALE_FACTOR, image, 0, 0, image.getWidth(), image.getHeight(), advance, ascent,
+          "emotes/" + twitchEmote.id()));
+      this.emoteIdToCodepointHashMap.put(twitchEmote.id(), codepoint);
+
+      TwitchChatMod.LOGGER.debug("Loaded emote {}", twitchEmote.name());
+    } catch (ConnectException e) {
+      //TODO: Add to the rest.
+      TwitchChatMod.LOGGER.warn("Couldn't load emote 1x {} from string {}: error {}",
+        twitchEmote.name(), url1x, e);
+      this.failedDownloads.add(new FailedDownload(twitchEmote, null, FailedDownload.FailedDownloadType.EMOTE));
     }
-
-    NativeImage image = NativeImage.read(url.openStream());
-    int codepoint = getAndAdvanceCurrentCodepoint();
-    // advance is the amount the text is moved forward after the character
-    int advance = (int) (image.getWidth()* CUSTOM_IMAGE_SCALE_FACTOR) + 1; // the +1 is to account for the shadow, which is a pixel in length
-    // TODO: It would be really cool to be able to add or remove the +1 depending on if we're rendering a shadow or
-    //       not. This could be done through a mixin in TextRenderer.Drawer#accept.
-    // ascent is the height of the glyph relative to something
-    int ascent = (int) (image.getHeight()* CUSTOM_IMAGE_SCALE_FACTOR);
-    // both advance and ascent seem to correlate pretty well with its scale factor
-    this.getCustomImageFont().addGlyph(codepoint,
-      new CustomImageFont.CustomImageGlyph(CUSTOM_IMAGE_SCALE_FACTOR, image, 0, 0, image.getWidth(), image.getHeight(), advance, ascent,
-        "emotes/" + twitchEmote.id()));
-    this.emoteIdToCodepointHashMap.put(twitchEmote.id(), codepoint);
-
-    TwitchChatMod.LOGGER.debug("Loaded emote {}", twitchEmote.name());
   }
 
-  public void downloadBadges(String urlStr) {
+  public void downloadBadgePack(String urlStr) {
     HttpRequest req = HttpRequest.newBuilder()
       .uri(URI.create(urlStr))
       .timeout(Duration.ofMinutes(2))
@@ -167,23 +196,28 @@ public class CustomImageManager {
       .build();
 
     executeRunnable(() -> {
-      HttpResponse<String> res = this.downloadHttpClient.send(req, HttpResponse.BodyHandlers.ofString());
-      if (res.statusCode() != 200) {
-        TwitchChatMod.LOGGER.warn("Couldn't load badgess from url {}, status code {}", urlStr, res.statusCode());
-        return;
+      try {
+        HttpResponse<String> res = this.downloadHttpClient.send(req, HttpResponse.BodyHandlers.ofString());
+        if (res.statusCode() != 200) {
+          TwitchChatMod.LOGGER.warn("Couldn't load badges from string {}, status code {}", urlStr, res.statusCode());
+          return;
+        }
+
+        JsonObject jsonObject = (JsonObject) JsonParser.parseString(res.body());
+        Gson gson = new Gson();
+
+        jsonObject.getAsJsonArray("data")
+          .asList()
+          .stream()
+          .parallel()
+          .map(badgeSet -> gson.fromJson(badgeSet, TwitchAPIBadgeSet.class))
+          .forEach(this::downloadBadgeSet);
+
+//        TwitchChatMod.LOGGER.info("Loaded badges from string {}", urlStr);
+      } catch (ConnectException e) {
+        TwitchChatMod.LOGGER.warn("Couldn't load badges from string {}. {}", urlStr, e);
+        this.failedDownloads.add(new FailedDownload(null, urlStr, FailedDownload.FailedDownloadType.BADGE_PACK));
       }
-
-      JsonObject jsonObject = (JsonObject) JsonParser.parseString(res.body());
-      Gson gson = new Gson();
-
-      jsonObject.getAsJsonArray("data")
-        .asList()
-        .stream()
-        .parallel()
-        .map(badgeSet -> gson.fromJson(badgeSet, TwitchAPIBadgeSet.class))
-        .forEach(this::downloadBadgeSet);
-
-      TwitchChatMod.LOGGER.info("Loaded badges from url {}", urlStr);
     });
   }
   private void downloadBadgeSet(TwitchAPIBadgeSet badgeSet) {
@@ -199,24 +233,30 @@ public class CustomImageManager {
 
     String url1x = badge.image_url_1x();
     URL url = new URL(url1x);
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    try {
+      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-    if (connection.getResponseCode() != 200) {
-      TwitchChatMod.LOGGER.warn("Couldn't load badge 1x {} from url {}: status code {}",
-        badge.id(), url1x, connection.getResponseCode());
-      return;
+      if (connection.getResponseCode() != 200) {
+        TwitchChatMod.LOGGER.warn("Couldn't load badge 1x {} from string {}: status code {}",
+          badge.id(), url1x, connection.getResponseCode());
+        return;
+      }
+
+      NativeImage image = NativeImage.read(url.openStream());
+      int codepoint = getAndAdvanceCurrentCodepoint();
+      int advance = (int) (image.getWidth() * CUSTOM_IMAGE_SCALE_FACTOR) + 1;
+      int ascent = (int) (image.getHeight() * CUSTOM_IMAGE_SCALE_FACTOR);
+      this.getCustomImageFont().addGlyph(codepoint,
+        new CustomImageFont.CustomImageGlyph(CUSTOM_IMAGE_SCALE_FACTOR, image, 0, 0, image.getWidth(),
+          image.getHeight(), advance, ascent, "badges/" + id));
+      this.badgeNameToCodepointHashMap.put(id, codepoint);
+
+      TwitchChatMod.LOGGER.debug("Loaded badge {}", id);
+    } catch (ConnectException e) {
+      TwitchChatMod.LOGGER.warn("Couldn't load badge 1x {} from string {}: error {}",
+        id, url1x, e);
+      this.failedDownloads.add(new FailedDownload(badge, null, FailedDownload.FailedDownloadType.BADGE));
     }
-
-    NativeImage image = NativeImage.read(url.openStream());
-    int codepoint = getAndAdvanceCurrentCodepoint();
-    int advance = (int) (image.getWidth()* CUSTOM_IMAGE_SCALE_FACTOR) + 1;
-    int ascent = (int) (image.getHeight()* CUSTOM_IMAGE_SCALE_FACTOR);
-    this.getCustomImageFont().addGlyph(codepoint,
-      new CustomImageFont.CustomImageGlyph(CUSTOM_IMAGE_SCALE_FACTOR, image, 0, 0, image.getWidth(),
-        image.getHeight(), advance, ascent, "badges/" + id));
-    this.badgeNameToCodepointHashMap.put(id, codepoint);
-
-    TwitchChatMod.LOGGER.debug("Loaded badge {}", id);
   }
 
   public void downloadEmoteSet(String emoteSetId) {
@@ -226,7 +266,7 @@ public class CustomImageManager {
     this.downloadEmotePack("https://api.twitch.tv/helix/chat/emotes?broadcaster_id=" + channelId);
   }
   public void downloadChannelBadges(String channelId) {
-    this.downloadBadges("https://api.twitch.tv/helix/chat/badges?broadcaster_id=" + channelId);
+    this.downloadBadgePack("https://api.twitch.tv/helix/chat/badges?broadcaster_id=" + channelId);
   }
 
   private void executeRunnable(FailingRunnable r) {
