@@ -26,6 +26,7 @@ public class ModConfig {
   public static final boolean DEFAULT_TWITCH_WATCH_SUGGESTIONS = false;
   public static final boolean DEFAULT_BROADCAST = false;
   public static final String DEFAULT_BROADCAST_PREFIX = "[Twitch] ";
+  public static final boolean DEFAULT_EMOTES_ENABLED = true;
 
   private static ModConfig SINGLE_INSTANCE = null;
   private final File configFile;
@@ -39,6 +40,7 @@ public class ModConfig {
   private boolean twitchWatchSuggestions;
   private boolean broadcast;
   private String broadcastPrefix;
+  private boolean emotesEnabled;
 
   public ModConfig() {
     this.configFile = FabricLoader
@@ -55,6 +57,7 @@ public class ModConfig {
     this.twitchWatchSuggestions = DEFAULT_TWITCH_WATCH_SUGGESTIONS;
     this.broadcast = DEFAULT_BROADCAST;
     this.broadcastPrefix = DEFAULT_BROADCAST_PREFIX;
+    this.emotesEnabled = DEFAULT_EMOTES_ENABLED;
   }
 
   public static ModConfig getConfig() {
@@ -105,6 +108,10 @@ public class ModConfig {
         this.broadcastPrefix = jsonObject.has("broadcastPrefix")
                 ? jsonObject.getAsJsonPrimitive("broadcastPrefix").getAsString()
                 : DEFAULT_BROADCAST_PREFIX;
+
+        this.emotesEnabled = jsonObject.has("emotesEnabled")
+          ? jsonObject.getAsJsonPrimitive("emotesEnabled").getAsBoolean()
+          : DEFAULT_EMOTES_ENABLED;
       }
     } catch (IOException e) {
       // Do nothing, we have no file and thus we have to keep everything as default
@@ -128,6 +135,7 @@ public class ModConfig {
     jsonObject.addProperty("twitchWatchSuggestions", this.twitchWatchSuggestions);
     jsonObject.addProperty("broadcast", this.broadcast);
     jsonObject.addProperty("broadcastPrefix", this.broadcastPrefix);
+    jsonObject.addProperty("emotesEnabled", this.emotesEnabled);
     try (PrintWriter out = new PrintWriter(configFile)) {
        out.println(jsonObject.toString());
     } catch (FileNotFoundException e) {
@@ -206,5 +214,13 @@ public class ModConfig {
 
   public void setBroadcastPrefix(String broadcastPrefix) {
     this.broadcastPrefix = broadcastPrefix;
+  }
+
+  public boolean isEmotesEnabled() {
+    return emotesEnabled;
+  }
+
+  public void setEmotesEnabled(boolean emotesEnabled) {
+    this.emotesEnabled = emotesEnabled;
   }
 }

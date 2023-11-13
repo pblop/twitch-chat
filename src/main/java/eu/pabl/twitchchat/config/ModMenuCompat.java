@@ -50,6 +50,12 @@ public class ModMenuCompat implements ModMenuApi {
               .setTooltip(Text.translatable("config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_TWITCH_WATCH_SUGGESTIONS)
               .build());
+      cosmeticsCategory.addEntry(entryBuilder
+        .startBooleanToggle(Text.translatable("config.twitchchat.cosmetics.enableEmotes"), ModConfig.getConfig().isEmotesEnabled())
+        .setSaveConsumer((b -> ModConfig.getConfig().setEmotesEnabled(b)))
+        .setTooltip(Text.translatable("config.twitchchat.cosmetics.enableEmotes.tooltip"))
+        .setDefaultValue(ModConfig.DEFAULT_EMOTES_ENABLED)
+        .build());
 
       ConfigCategory broadcastCategory = builder.getOrCreateCategory(Text.translatable("config.twitchchat.category.broadcast"));
       broadcastCategory.addEntry(entryBuilder

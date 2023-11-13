@@ -163,9 +163,11 @@ public class Bot extends ListenerAdapter {
       }
       case "CAP" -> TwitchChatMod.LOGGER.debug(event.getCommand() + " event: " + event);
       case "ROOMSTATE" -> {
-        String roomId = event.getTags().get("room-id");
-        CustomImageManager.getInstance().downloadChannelEmotes(roomId);
-        CustomImageManager.getInstance().downloadChannelBadges(roomId);
+        if (ModConfig.getConfig().isEmotesEnabled()) {
+          String roomId = event.getTags().get("room-id");
+          CustomImageManager.getInstance().downloadChannelEmotes(roomId);
+          CustomImageManager.getInstance().downloadChannelBadges(roomId);
+        }
         TwitchChatMod.LOGGER.debug(event.getCommand() + " event: " + event);
       }
       default -> TwitchChatMod.LOGGER.warn("UNKNOWN TWITCH EVENT: " + event);

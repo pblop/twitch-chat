@@ -32,10 +32,10 @@ public class TwitchChatMod implements ModInitializer {
     ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
         new TwitchBaseCommand().registerCommands(dispatcher));
 
-//    EmoteManager.getInstance().downloadEmote();
-    CustomImageManager.getInstance().downloadEmotePack("https://api.twitch.tv/helix/chat/emotes/global");
-    CustomImageManager.getInstance().downloadBadgePack("https://api.twitch.tv/helix/chat/badges/global");
-//    MinecraftClient.getInstance().textRenderer
+    if (ModConfig.getConfig().isEmotesEnabled()) {
+      CustomImageManager.getInstance().downloadEmotePack("https://api.twitch.tv/helix/chat/emotes/global");
+      CustomImageManager.getInstance().downloadBadgePack("https://api.twitch.tv/helix/chat/badges/global");
+    }
   }
 
   public static MutableText getBadgedUsername(String username, TextColor usernameColour, String[] userBadges) {
@@ -129,8 +129,12 @@ public class TwitchChatMod implements ModInitializer {
 
   public static void addTwitchMessage(String time, String username, String message, List<TwitchAPIEmoteTagElement> emotes, TextColor usernameColour, String[] userBadges, boolean isMeMessage) {
     MutableText timestampText = Text.literal(time);
-    MutableText usernameText = getBadgedUsername(username, usernameColour, userBadges);
-    MutableText emotedMessage = emotes == null ? getEmotedMessageLocal(message) : getEmotedMessage(message, emotes);
+    MutableText usernameText = ModConfig.getConfig().isEmotesEnabled()
+      ? getBadgedUsername(username, usernameColour, userBadges)
+      : Text.literal(username).styled(style -> style.withColor(usernameColour));
+    MutableText emotedMessage = ModConfig.getConfig().isEmotesEnabled()
+      ? emotes == null ? getEmotedMessageLocal(message) : getEmotedMessage(message, emotes)
+      : Text.literal(message);
     MutableText messageBodyText;
 
     if (!isMeMessage) {
