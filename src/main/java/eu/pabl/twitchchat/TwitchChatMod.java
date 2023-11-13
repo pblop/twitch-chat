@@ -33,8 +33,8 @@ public class TwitchChatMod implements ModInitializer {
         new TwitchBaseCommand().registerCommands(dispatcher));
 
     if (ModConfig.getConfig().isEmotesEnabled()) {
-      CustomImageManager.getInstance().downloadEmotePack("https://api.twitch.tv/helix/chat/emotes/global");
-      CustomImageManager.getInstance().downloadBadgePack("https://api.twitch.tv/helix/chat/badges/global");
+      CustomImageManager.getInstance().downloadImagePack("https://api.twitch.tv/helix/chat/emotes/global", CustomImageManager.ImageTypes.EMOTE);
+      CustomImageManager.getInstance().downloadImagePack("https://api.twitch.tv/helix/chat/badges/global", CustomImageManager.ImageTypes.BADGE);
     }
   }
 

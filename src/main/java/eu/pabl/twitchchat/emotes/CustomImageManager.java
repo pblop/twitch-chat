@@ -1,6 +1,7 @@
 package eu.pabl.twitchchat.emotes;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import eu.pabl.twitchchat.TwitchChatMod;
@@ -22,6 +23,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.concurrent.*;
+import java.util.stream.Stream;
 
 public class CustomImageManager {
   public static final Identifier CUSTOM_IMAGE_FONT_IDENTIFIER = Identifier.of(TwitchChatMod.MOD_ID, "emote_font");
@@ -111,7 +113,7 @@ public class CustomImageManager {
                     - /char/emotes/set?emote_set_id
      And add the emotes to the CustomImageFont and the HashMap emoteName -> codepoint.
    */
-  public void downloadEmotePack(String urlStr) {
+  public void downloadImagePack(String urlStr, ImageTypes type) {
     HttpRequest req = HttpRequest.newBuilder()
       .uri(URI.create(urlStr))
       .timeout(Duration.ofMinutes(2))
@@ -123,21 +125,30 @@ public class CustomImageManager {
       try {
         HttpResponse<String> res = this.downloadHttpClient.send(req, HttpResponse.BodyHandlers.ofString());
         if (res.statusCode() != 200) {
-          TwitchChatMod.LOGGER.warn("Couldn't load emotes from string {}: status code {}", urlStr, res.statusCode());
+          TwitchChatMod.LOGGER.warn("Couldn't load image from url {}: status code {}", urlStr, res.statusCode());
           return;
         }
+
         JsonObject jsonObject = (JsonObject) JsonParser.parseString(res.body());
         Gson gson = new Gson();
-        jsonObject.getAsJsonArray("data").asList().stream()
-          .map(emote -> gson.fromJson(emote, TwitchAPIEmote.class))
-          .forEach(twitchEmote -> this.executeRunnable(() -> downloadEmote(twitchEmote)));
-
+        Stream<JsonElement> data = jsonObject.getAsJsonArray("data")
+          .asList()
+          .stream();
+        if (type == ImageTypes.EMOTE) {
+          data.map(emote -> gson.fromJson(emote, TwitchAPIEmote.class))
+            .forEach(twitchEmote -> this.executeRunnable(() -> downloadEmote(twitchEmote)));
+        } else if (type == ImageTypes.BADGE) {
+          data.parallel()
+            .map(badgeSet -> gson.fromJson(badgeSet, TwitchAPIBadgeSet.class))
+            .forEach(this::downloadBadgeSet);
+        }
       } catch (SocketException e) {
-        TwitchChatMod.LOGGER.warn("Couldn't load emotes from string {}: error {}", urlStr, e);
-        this.scheduleRunnable(() -> downloadEmotePack(urlStr), 30, TimeUnit.SECONDS);
+        TwitchChatMod.LOGGER.warn("Couldn't load images from url {}: error {}", urlStr, e);
+        this.scheduleRunnable(() -> downloadImagePack(urlStr, type), 30, TimeUnit.SECONDS);
       }
     });
   }
+
   private void downloadEmote(TwitchAPIEmote twitchEmote) throws IOException {
     String emoteId = EMOTE_ID_PREFIX + twitchEmote.id();
     // I've we've already downloaded the emote, do not download it again.
@@ -171,39 +182,6 @@ public class CustomImageManager {
     }
   }
 
-  public void downloadBadgePack(String urlStr) {
-    HttpRequest req = HttpRequest.newBuilder()
-      .uri(URI.create(urlStr))
-      .timeout(Duration.ofMinutes(2))
-      .header("Authorization", "Bearer " + ModConfig.getConfig().getOauthKey().replace("oauth:", ""))
-      .header("Client-Id", TMI_CLIENT_ID)
-      .build();
-
-    executeRunnable(() -> {
-      try {
-        HttpResponse<String> res = this.downloadHttpClient.send(req, HttpResponse.BodyHandlers.ofString());
-        if (res.statusCode() != 200) {
-          TwitchChatMod.LOGGER.warn("Couldn't load badges from string {}: status code {}", urlStr, res.statusCode());
-          return;
-        }
-
-        JsonObject jsonObject = (JsonObject) JsonParser.parseString(res.body());
-        Gson gson = new Gson();
-
-        jsonObject.getAsJsonArray("data")
-          .asList()
-          .stream()
-          .parallel()
-          .map(badgeSet -> gson.fromJson(badgeSet, TwitchAPIBadgeSet.class))
-          .forEach(this::downloadBadgeSet);
-
-//        TwitchChatMod.LOGGER.info("Loaded badges from string {}", urlStr);
-      } catch (SocketException e) {
-        TwitchChatMod.LOGGER.warn("Couldn't load badges from string {}: error {}", urlStr, e);
-        this.scheduleRunnable(() -> downloadBadgePack(urlStr), 30, TimeUnit.SECONDS);
-      }
-    });
-  }
   private void downloadBadgeSet(TwitchAPIBadgeSet badgeSet) {
     for (var badge : badgeSet.versions()) {
       executeRunnable(() -> downloadBadge(badgeSet.set_id(), badge));
@@ -258,13 +236,13 @@ public class CustomImageManager {
   }
 
   public void downloadEmoteSet(String emoteSetId) {
-    this.downloadEmotePack("https://api.twitch.tv/helix/chat/emotes/set?emote_set_id=" + emoteSetId);
+    this.downloadImagePack("https://api.twitch.tv/helix/chat/emotes/set?emote_set_id=" + emoteSetId, ImageTypes.EMOTE);
   }
   public void downloadChannelEmotes(String channelId) {
-    this.downloadEmotePack("https://api.twitch.tv/helix/chat/emotes?broadcaster_id=" + channelId);
+    this.downloadImagePack("https://api.twitch.tv/helix/chat/emotes?broadcaster_id=" + channelId, ImageTypes.EMOTE);
   }
   public void downloadChannelBadges(String channelId) {
-    this.downloadBadgePack("https://api.twitch.tv/helix/chat/badges?broadcaster_id=" + channelId);
+    this.downloadImagePack("https://api.twitch.tv/helix/chat/badges?broadcaster_id=" + channelId, ImageTypes.BADGE);
   }
 
   private void executeRunnable(FailingRunnable r) {
@@ -300,5 +278,10 @@ public class CustomImageManager {
   }
   public Integer getBadgeCodepointFromId(String badgeSubId) {
     return this.getCodepoint("badges/" + badgeSubId);
+  }
+
+  public enum ImageTypes {
+    BADGE,
+    EMOTE
   }
 }
