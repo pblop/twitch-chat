@@ -13,6 +13,7 @@ import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIEmote;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.util.Identifier;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.*;
@@ -28,14 +29,15 @@ public class CustomImageManager {
   // I've found this is a pretty good scale factor for 24x24px Twitch emotes.
   public static final float CUSTOM_IMAGE_SCALE_FACTOR = 0.3f;
   public static final String TMI_CLIENT_ID = "q6batx0epp608isickayubi39itsckt";
+  public static final String EMOTE_ID_PREFIX = "emotes/";
+  public static final String BADGE_ID_PREFIX = "badges/";
 
   private final CustomImageFont customImageFont;
   private final CustomImageFontStorage customImageFontStorage;
   private static final CustomImageManager instance = new CustomImageManager();
 
   // A map of the badge set name and the badges it contains.
-  private final ConcurrentHashMap<String, Integer> badgeNameToCodepointHashMap;
-  private final ConcurrentHashMap<String, Integer> emoteIdToCodepointHashMap;
+  private final ConcurrentHashMap<String, Integer> idToCodepointHashMap;
   private final ConcurrentHashMap<String, String> emoteNameToIdHashMap;
 
   private final ExecutorService downloadExecutor;
@@ -46,8 +48,7 @@ public class CustomImageManager {
   private final int loadingImageCodepoint;
 
   private CustomImageManager() {
-    this.emoteIdToCodepointHashMap = new ConcurrentHashMap<>();
-    this.badgeNameToCodepointHashMap = new ConcurrentHashMap<>();
+    this.idToCodepointHashMap = new ConcurrentHashMap<>();
     this.emoteNameToIdHashMap = new ConcurrentHashMap<>();
     this.currentCodepoint = 1;
 
@@ -65,6 +66,7 @@ public class CustomImageManager {
     this.scheduledExecutor = Executors.newScheduledThreadPool(1);
 
     this.loadingImageCodepoint = this.addLoadingIcon();
+    this.loadCache();
   }
   public static CustomImageManager getInstance() {
     return instance;
@@ -87,6 +89,19 @@ public class CustomImageManager {
       return codepoint;
     } catch (IOException e) {
       throw new RuntimeException("Error loading 'loading.png' texture for font: " + e.getMessage());
+    }
+  }
+
+  public void loadCache() {
+    try {
+      CustomImageCache.CacheEntry[] allCachedFiles = CustomImageCache.getInstance().getAllCachedFiles();
+      for (var entry : allCachedFiles) {
+        InputStream is = new FileInputStream(entry.path().toFile());
+        addImage(is, entry.id(), false);
+      }
+    } catch (IOException e) {
+      TwitchChatMod.LOGGER.error("Couldn't load cache due to error {}", e);
+      throw new RuntimeException(e);
     }
   }
 
@@ -124,13 +139,15 @@ public class CustomImageManager {
     });
   }
   private void downloadEmote(TwitchAPIEmote twitchEmote) throws IOException {
+    String emoteId = EMOTE_ID_PREFIX + twitchEmote.id();
     // I've we've already downloaded the emote, do not download it again.
-    if (this.emoteIdToCodepointHashMap.containsKey(twitchEmote.id())) {
+    if (this.idToCodepointHashMap.containsKey(emoteId)) {
       return;
     }
+
     // Do this earlier, so that if the emotes take long to load, at least we can show the user that the
     // emote hasn't loaded.
-    this.emoteNameToIdHashMap.put(twitchEmote.name(), twitchEmote.id());
+    this.emoteNameToIdHashMap.put(twitchEmote.name(), emoteId);
 
     String url1x = twitchEmote.images().get("url_1x");
     URL url = new URL(url1x);
@@ -144,19 +161,7 @@ public class CustomImageManager {
         return;
       }
 
-      NativeImage image = NativeImage.read(url.openStream());
-      int codepoint = getAndAdvanceCurrentCodepoint();
-      // advance is the amount the text is moved forward after the character
-      int advance = (int) (image.getWidth() * CUSTOM_IMAGE_SCALE_FACTOR) + 1; // the +1 is to account for the shadow, which is a pixel in length
-      // TODO: It would be really cool to be able to add or remove the +1 depending on if we're rendering a shadow or
-      //       not. This could be done through a mixin in TextRenderer.Drawer#accept.
-      // ascent is the height of the glyph relative to something
-      int ascent = (int) (image.getHeight() * CUSTOM_IMAGE_SCALE_FACTOR);
-      // both advance and ascent seem to correlate pretty well with its scale factor
-      this.getCustomImageFont().addGlyph(codepoint,
-        new CustomImageFont.CustomImageGlyph(CUSTOM_IMAGE_SCALE_FACTOR, image, 0, 0, image.getWidth(), image.getHeight(), advance, ascent,
-          "emotes/" + twitchEmote.id()));
-      this.emoteIdToCodepointHashMap.put(twitchEmote.id(), codepoint);
+      addImage(url.openStream(), emoteId, true);
 
       TwitchChatMod.LOGGER.info("Loaded emote {}", twitchEmote.name());
     } catch (SocketException e) {
@@ -206,8 +211,8 @@ public class CustomImageManager {
   }
   private void downloadBadge(String badgeSetId, TwitchAPIBadge badge) throws IOException {
     // I've we've already downloaded the emote, do not download it again.
-    String id = badgeSetId + "/" + badge.id();
-    if (this.badgeNameToCodepointHashMap.containsKey(id))
+    String badgeId = BADGE_ID_PREFIX + badgeSetId + "/" + badge.id();
+    if (this.idToCodepointHashMap.containsKey(badgeId))
       return;
 
     String url1x = badge.image_url_1x();
@@ -221,21 +226,35 @@ public class CustomImageManager {
         return;
       }
 
-      NativeImage image = NativeImage.read(url.openStream());
-      int codepoint = getAndAdvanceCurrentCodepoint();
-      int advance = (int) (image.getWidth() * CUSTOM_IMAGE_SCALE_FACTOR) + 1;
-      int ascent = (int) (image.getHeight() * CUSTOM_IMAGE_SCALE_FACTOR);
-      this.getCustomImageFont().addGlyph(codepoint,
-        new CustomImageFont.CustomImageGlyph(CUSTOM_IMAGE_SCALE_FACTOR, image, 0, 0, image.getWidth(),
-          image.getHeight(), advance, ascent, "badges/" + id));
-      this.badgeNameToCodepointHashMap.put(id, codepoint);
+      addImage(url.openStream(), badgeId, true);
 
-      TwitchChatMod.LOGGER.debug("Loaded badge {}", id);
+      TwitchChatMod.LOGGER.debug("Loaded badge {}", badgeId);
     } catch (SocketException e) {
       TwitchChatMod.LOGGER.warn("Couldn't load badge 1x {} from string {}: error {}",
-        id, url1x, e);
+        badgeId, url1x, e);
       this.scheduleRunnable(() -> downloadBadge(badgeSetId, badge), 30, TimeUnit.SECONDS);
     }
+  }
+
+  private void addImage(InputStream stream, String id, boolean writeToDisk) throws IOException {
+    NativeImage image = NativeImage.read(stream);
+    if (writeToDisk)
+      image.writeTo(CustomImageCache.getInstance().getPngFile(id));
+
+    int codepoint = getAndAdvanceCurrentCodepoint();
+    // advance is the amount the text is moved forward after the character
+    int advance = (int) (image.getWidth() * CUSTOM_IMAGE_SCALE_FACTOR) + 1; // the +1 is to account for the shadow, which is a pixel in length
+    // TODO: It would be really cool to be able to add or remove the +1 depending on if we're rendering a shadow or
+    //       not. This could be done through a mixin in TextRenderer.Drawer#accept.
+    // ascent is the height of the glyph relative to something
+    int ascent = (int) (image.getHeight() * CUSTOM_IMAGE_SCALE_FACTOR);
+    // both advance and ascent seem to correlate pretty well with its scale factor
+    this.getCustomImageFont().addGlyph(codepoint,
+      new CustomImageFont.CustomImageGlyph(CUSTOM_IMAGE_SCALE_FACTOR, image, 0, 0, image.getWidth(),
+        image.getHeight(), advance, ascent, id));
+
+    this.idToCodepointHashMap.put(id, codepoint);
+    TwitchChatMod.LOGGER.info("Added image with id {}", id);
   }
 
   public void downloadEmoteSet(String emoteSetId) {
@@ -267,16 +286,19 @@ public class CustomImageManager {
   public String getEmoteIdFromName(String emoteName) {
     return this.emoteNameToIdHashMap.get(emoteName);
   }
-  public Integer getEmoteCodepointFromId(String emoteId) {
-    return this.emoteIdToCodepointHashMap.getOrDefault(emoteId, this.loadingImageCodepoint);
-  }
-  public Integer getBadgeCodepoint(String badgeIdentifier) {
-    return this.badgeNameToCodepointHashMap.getOrDefault(badgeIdentifier, this.loadingImageCodepoint);
+  public Integer getCodepoint(String id) {
+    return this.idToCodepointHashMap.getOrDefault(id, this.loadingImageCodepoint);
   }
   public CustomImageFont getCustomImageFont() {
     return this.customImageFont;
   }
   public CustomImageFontStorage getCustomImageFontStorage() {
     return this.customImageFontStorage;
+  }
+  public Integer getEmoteCodepointFromId(String emoteSubId) {
+    return this.getCodepoint("emotes/" + emoteSubId);
+  }
+  public Integer getBadgeCodepointFromId(String badgeSubId) {
+    return this.getCodepoint("badges/" + badgeSubId);
   }
 }

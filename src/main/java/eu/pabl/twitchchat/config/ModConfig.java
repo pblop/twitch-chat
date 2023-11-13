@@ -42,7 +42,7 @@ public class ModConfig {
   private String broadcastPrefix;
   private boolean emotesEnabled;
 
-  public ModConfig() {
+  private ModConfig() {
     this.configFile = FabricLoader
         .getInstance()
         .getConfigDir()

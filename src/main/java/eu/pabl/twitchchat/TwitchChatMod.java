@@ -42,7 +42,7 @@ public class TwitchChatMod implements ModInitializer {
     MutableText badgedUsername = Text.empty();
     if (userBadges != null) {
       for (String badge : userBadges) {
-        Integer codepoint = CustomImageManager.getInstance().getBadgeCodepoint(badge);
+        Integer codepoint = CustomImageManager.getInstance().getBadgeCodepointFromId(badge);
         badgedUsername.append(Text
           .literal(Character.toString(codepoint))
           .styled(style -> style.withFont(CustomImageManager.CUSTOM_IMAGE_FONT_IDENTIFIER))
