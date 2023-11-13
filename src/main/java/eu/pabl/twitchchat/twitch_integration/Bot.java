@@ -91,6 +91,16 @@ public class Bot extends ListenerAdapter {
   public void onMessage(MessageEvent event) throws Exception {
     try {
     String message = event.getMessage();
+
+    // Twitch sometimes sends weird characters for some reason. After a bit of tinkering, I found out the weird
+    // character ends in \uDC00. After some googling, I found this. This other developer replaces these in every message
+    // received.
+    // Got this from: https://github.com/zordaxe234/TwitchChatFrequencyMapper/blob/8c351326a4fa752de2aa2f2d14609274c3638a7f/MainWindow.xaml.cs#L130
+    // This line I got from the link above as well, but it's just to join multiple spaces into one.
+    message = message.replaceAll("\\s+", " ");
+    // This is the actually replacing weird characters.
+    message = message.replaceAll("\u0020\udb40\udc00+", " ");
+
     TwitchChatMod.LOGGER.debug("TWITCH MESSAGE: " + message);
     User user = event.getUser();
     if (user != null) {
