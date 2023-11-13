@@ -15,10 +15,7 @@ import net.minecraft.util.Identifier;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.ConnectException;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
+import java.net.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -40,7 +37,6 @@ public class CustomImageManager {
   private final ConcurrentHashMap<String, Integer> badgeNameToCodepointHashMap;
   private final ConcurrentHashMap<String, Integer> emoteIdToCodepointHashMap;
   private final ConcurrentHashMap<String, String> emoteNameToIdHashMap;
-  private final LinkedBlockingQueue<FailedDownload> failedDownloads;
 
   private final ExecutorService downloadExecutor;
   private final ScheduledExecutorService scheduledExecutor;
@@ -64,27 +60,11 @@ public class CustomImageManager {
       .followRedirects(HttpClient.Redirect.NORMAL)
       .connectTimeout(Duration.ofSeconds(20))
       .build();
+
     this.downloadExecutor = Executors.newCachedThreadPool();
-    this.scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
+    this.scheduledExecutor = Executors.newScheduledThreadPool(1);
 
     this.loadingImageCodepoint = this.addLoadingIcon();
-    this.failedDownloads = new LinkedBlockingQueue<>();
-
-    this.scheduledExecutor.scheduleWithFixedDelay(() -> {
-      try {
-        FailedDownload take = this.failedDownloads.take();
-        executeRunnable(() -> {
-          switch (take.failedDownloadType()) {
-            case BADGE_PACK -> downloadBadgePack(take.string());
-            case EMOTE_PACK -> downloadEmotePack(take.string());
-            case BADGE -> downloadBadge(take.string(), (TwitchAPIBadge) take.object());
-            case EMOTE -> downloadEmote((TwitchAPIEmote) take.object());
-          }
-        });
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-    }, 0, 1, TimeUnit.SECONDS);
   }
   public static CustomImageManager getInstance() {
     return instance;
@@ -128,7 +108,7 @@ public class CustomImageManager {
       try {
         HttpResponse<String> res = this.downloadHttpClient.send(req, HttpResponse.BodyHandlers.ofString());
         if (res.statusCode() != 200) {
-          TwitchChatMod.LOGGER.warn("Couldn't load emotes from string {}, status code {}", urlStr, res.statusCode());
+          TwitchChatMod.LOGGER.warn("Couldn't load emotes from string {}: status code {}", urlStr, res.statusCode());
           return;
         }
         JsonObject jsonObject = (JsonObject) JsonParser.parseString(res.body());
@@ -137,9 +117,9 @@ public class CustomImageManager {
           .map(emote -> gson.fromJson(emote, TwitchAPIEmote.class))
           .forEach(twitchEmote -> this.executeRunnable(() -> downloadEmote(twitchEmote)));
 
-      } catch (ConnectException e) {
-        TwitchChatMod.LOGGER.warn("Couldn't load emotes from string {}. {}", urlStr, e);
-        this.failedDownloads.add(new FailedDownload(null, urlStr, FailedDownload.FailedDownloadType.EMOTE_PACK));
+      } catch (SocketException e) {
+        TwitchChatMod.LOGGER.warn("Couldn't load emotes from string {}: error {}", urlStr, e);
+        this.scheduleRunnable(() -> downloadEmotePack(urlStr), 30, TimeUnit.SECONDS);
       }
     });
   }
@@ -178,12 +158,11 @@ public class CustomImageManager {
           "emotes/" + twitchEmote.id()));
       this.emoteIdToCodepointHashMap.put(twitchEmote.id(), codepoint);
 
-      TwitchChatMod.LOGGER.debug("Loaded emote {}", twitchEmote.name());
-    } catch (ConnectException e) {
-      //TODO: Add to the rest.
+      TwitchChatMod.LOGGER.info("Loaded emote {}", twitchEmote.name());
+    } catch (SocketException e) {
       TwitchChatMod.LOGGER.warn("Couldn't load emote 1x {} from string {}: error {}",
         twitchEmote.name(), url1x, e);
-      this.failedDownloads.add(new FailedDownload(twitchEmote, null, FailedDownload.FailedDownloadType.EMOTE));
+      this.scheduleRunnable(() -> downloadEmote(twitchEmote), 30, TimeUnit.SECONDS);
     }
   }
 
@@ -199,7 +178,7 @@ public class CustomImageManager {
       try {
         HttpResponse<String> res = this.downloadHttpClient.send(req, HttpResponse.BodyHandlers.ofString());
         if (res.statusCode() != 200) {
-          TwitchChatMod.LOGGER.warn("Couldn't load badges from string {}, status code {}", urlStr, res.statusCode());
+          TwitchChatMod.LOGGER.warn("Couldn't load badges from string {}: status code {}", urlStr, res.statusCode());
           return;
         }
 
@@ -214,9 +193,9 @@ public class CustomImageManager {
           .forEach(this::downloadBadgeSet);
 
 //        TwitchChatMod.LOGGER.info("Loaded badges from string {}", urlStr);
-      } catch (ConnectException e) {
-        TwitchChatMod.LOGGER.warn("Couldn't load badges from string {}. {}", urlStr, e);
-        this.failedDownloads.add(new FailedDownload(null, urlStr, FailedDownload.FailedDownloadType.BADGE_PACK));
+      } catch (SocketException e) {
+        TwitchChatMod.LOGGER.warn("Couldn't load badges from string {}: error {}", urlStr, e);
+        this.scheduleRunnable(() -> downloadBadgePack(urlStr), 30, TimeUnit.SECONDS);
       }
     });
   }
@@ -252,10 +231,10 @@ public class CustomImageManager {
       this.badgeNameToCodepointHashMap.put(id, codepoint);
 
       TwitchChatMod.LOGGER.debug("Loaded badge {}", id);
-    } catch (ConnectException e) {
+    } catch (SocketException e) {
       TwitchChatMod.LOGGER.warn("Couldn't load badge 1x {} from string {}: error {}",
         id, url1x, e);
-      this.failedDownloads.add(new FailedDownload(badge, null, FailedDownload.FailedDownloadType.BADGE));
+      this.scheduleRunnable(() -> downloadBadge(badgeSetId, badge), 30, TimeUnit.SECONDS);
     }
   }
 
@@ -271,6 +250,9 @@ public class CustomImageManager {
 
   private void executeRunnable(FailingRunnable r) {
     this.downloadExecutor.execute(r.toRunnable());
+  }
+  private void scheduleRunnable(FailingRunnable r, long delay, TimeUnit timeunit)  {
+    this.scheduledExecutor.schedule(r.toRunnable(), delay, timeunit);
   }
 
   private synchronized int getAndAdvanceCurrentCodepoint() {
