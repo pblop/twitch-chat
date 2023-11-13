@@ -3,6 +3,7 @@ package eu.pabl.twitchchat;
 import eu.pabl.twitchchat.commands.TwitchBaseCommand;
 import eu.pabl.twitchchat.config.ModConfig;
 import eu.pabl.twitchchat.emotes.CustomImageManager;
+import eu.pabl.twitchchat.emotes.DownloadableImage;
 import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIEmoteTagElement;
 import eu.pabl.twitchchat.twitch_integration.Bot;
 
@@ -33,8 +34,8 @@ public class TwitchChatMod implements ModInitializer {
         new TwitchBaseCommand().registerCommands(dispatcher));
 
     if (ModConfig.getConfig().isEmotesEnabled()) {
-      CustomImageManager.getInstance().downloadImagePack("https://api.twitch.tv/helix/chat/emotes/global", CustomImageManager.ImageTypes.EMOTE);
-      CustomImageManager.getInstance().downloadImagePack("https://api.twitch.tv/helix/chat/badges/global", CustomImageManager.ImageTypes.BADGE);
+      CustomImageManager.getInstance().downloadImagePack("https://api.twitch.tv/helix/chat/emotes/global", DownloadableImage.ImageTypes.EMOTE);
+      CustomImageManager.getInstance().downloadImagePack("https://api.twitch.tv/helix/chat/badges/global", DownloadableImage.ImageTypes.BADGE);
     }
   }
 

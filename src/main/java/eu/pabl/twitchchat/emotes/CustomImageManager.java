@@ -1,16 +1,15 @@
 package eu.pabl.twitchchat.emotes;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import eu.pabl.twitchchat.TwitchChatMod;
 import eu.pabl.twitchchat.config.ModConfig;
 import eu.pabl.twitchchat.emotes.minecraft.CustomImageFont;
 import eu.pabl.twitchchat.emotes.minecraft.CustomImageFontStorage;
-import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIBadge;
 import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIBadgeSet;
 import eu.pabl.twitchchat.emotes.twitch_api.TwitchAPIEmote;
+import eu.pabl.twitchchat.emotes.DownloadableImage.ImageTypes;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.util.Identifier;
 
@@ -23,7 +22,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.concurrent.*;
-import java.util.stream.Stream;
 
 public class CustomImageManager {
   public static final Identifier CUSTOM_IMAGE_FONT_IDENTIFIER = Identifier.of(TwitchChatMod.MOD_ID, "emote_font");
@@ -31,8 +29,6 @@ public class CustomImageManager {
   // I've found this is a pretty good scale factor for 24x24px Twitch emotes.
   public static final float CUSTOM_IMAGE_SCALE_FACTOR = 0.3f;
   public static final String TMI_CLIENT_ID = "q6batx0epp608isickayubi39itsckt";
-  public static final String EMOTE_ID_PREFIX = "emotes/";
-  public static final String BADGE_ID_PREFIX = "badges/";
 
   private final CustomImageFont customImageFont;
   private final CustomImageFontStorage customImageFontStorage;
@@ -131,86 +127,60 @@ public class CustomImageManager {
 
         JsonObject jsonObject = (JsonObject) JsonParser.parseString(res.body());
         Gson gson = new Gson();
-        Stream<JsonElement> data = jsonObject.getAsJsonArray("data")
+
+        jsonObject.getAsJsonArray("data")
           .asList()
-          .stream();
-        if (type == ImageTypes.EMOTE) {
-          data.map(emote -> gson.fromJson(emote, TwitchAPIEmote.class))
-            .forEach(twitchEmote -> this.executeRunnable(() -> downloadEmote(twitchEmote)));
-        } else if (type == ImageTypes.BADGE) {
-          data.parallel()
-            .map(badgeSet -> gson.fromJson(badgeSet, TwitchAPIBadgeSet.class))
-            .forEach(this::downloadBadgeSet);
-        }
+          .stream()
+          .map(element -> switch (type) {
+            case EMOTE -> gson.fromJson(element, TwitchAPIEmote.class);
+            case BADGE -> gson.fromJson(element, TwitchAPIBadgeSet.class);
+          }).forEach(element -> {
+            switch (type) {
+              case EMOTE -> {
+                TwitchAPIEmote emote = (TwitchAPIEmote) element;
+                this.executeRunnable(() ->
+                  downloadImage(DownloadableImage.fromTwitchAPIElement(emote))
+                );
+              }
+              case BADGE -> {
+                TwitchAPIBadgeSet badgeSet = (TwitchAPIBadgeSet) element;
+                for (var badge : badgeSet.versions()) {
+                  this.executeRunnable(() ->
+                    downloadImage(DownloadableImage.fromTwitchAPIElement(badgeSet.set_id(), badge))
+                  );
+                }
+              }
+            }
+          });
       } catch (SocketException e) {
         TwitchChatMod.LOGGER.warn("Couldn't load images from url {}: error {}", urlStr, e);
         this.scheduleRunnable(() -> downloadImagePack(urlStr, type), 30, TimeUnit.SECONDS);
       }
     });
   }
-
-  private void downloadEmote(TwitchAPIEmote twitchEmote) throws IOException {
-    String emoteId = EMOTE_ID_PREFIX + twitchEmote.id();
-    // I've we've already downloaded the emote, do not download it again.
-    if (this.idToCodepointHashMap.containsKey(emoteId)) {
+  private void downloadImage(DownloadableImage element) throws IOException {
+    if (this.idToCodepointHashMap.containsKey(element.getId()))
       return;
-    }
 
-    // Do this earlier, so that if the emotes take long to load, at least we can show the user that the
-    // emote hasn't loaded.
-    this.emoteNameToIdHashMap.put(twitchEmote.name(), emoteId);
+    if (element.getImageType() == ImageTypes.EMOTE)
+      this.emoteNameToIdHashMap.put(element.getEmoteName(), element.getId());
 
-    String url1x = twitchEmote.images().get("url_1x");
-    URL url = new URL(url1x);
+    URL url = new URL(element.getUrl());
 
     try {
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
       if (connection.getResponseCode() != 200) {
-        TwitchChatMod.LOGGER.warn("Couldn't load emote 1x {} from string {}: status code {}",
-          twitchEmote.name(), url1x, connection.getResponseCode());
+        TwitchChatMod.LOGGER.warn("Couldn't load image {} from url {}: status code {}",
+          element.getId(), url, connection.getResponseCode());
         return;
       }
-
-      addImage(url.openStream(), emoteId, true);
-
-      TwitchChatMod.LOGGER.info("Loaded emote {}", twitchEmote.name());
+      addImage(url.openStream(), element.getId(), true);
+      TwitchChatMod.LOGGER.info("Loaded image {}", element.getId());
     } catch (SocketException e) {
-      TwitchChatMod.LOGGER.warn("Couldn't load emote 1x {} from string {}: error {}",
-        twitchEmote.name(), url1x, e);
-      this.scheduleRunnable(() -> downloadEmote(twitchEmote), 30, TimeUnit.SECONDS);
-    }
-  }
-
-  private void downloadBadgeSet(TwitchAPIBadgeSet badgeSet) {
-    for (var badge : badgeSet.versions()) {
-      executeRunnable(() -> downloadBadge(badgeSet.set_id(), badge));
-    }
-  }
-  private void downloadBadge(String badgeSetId, TwitchAPIBadge badge) throws IOException {
-    // I've we've already downloaded the emote, do not download it again.
-    String badgeId = BADGE_ID_PREFIX + badgeSetId + "/" + badge.id();
-    if (this.idToCodepointHashMap.containsKey(badgeId))
-      return;
-
-    String url1x = badge.image_url_1x();
-    URL url = new URL(url1x);
-    try {
-      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-      if (connection.getResponseCode() != 200) {
-        TwitchChatMod.LOGGER.warn("Couldn't load badge 1x {} from string {}: status code {}",
-          badge.id(), url1x, connection.getResponseCode());
-        return;
-      }
-
-      addImage(url.openStream(), badgeId, true);
-
-      TwitchChatMod.LOGGER.debug("Loaded badge {}", badgeId);
-    } catch (SocketException e) {
-      TwitchChatMod.LOGGER.warn("Couldn't load badge 1x {} from string {}: error {}",
-        badgeId, url1x, e);
-      this.scheduleRunnable(() -> downloadBadge(badgeSetId, badge), 30, TimeUnit.SECONDS);
+      TwitchChatMod.LOGGER.warn("Couldn't load image {} from url {}: error {}. Retrying in 30 seconds.",
+        element.getId(), element.getUrl(), e);
+      this.scheduleRunnable(() -> downloadImage(element), 30, TimeUnit.SECONDS);
     }
   }
 
@@ -274,14 +244,10 @@ public class CustomImageManager {
     return this.customImageFontStorage;
   }
   public Integer getEmoteCodepointFromId(String emoteSubId) {
-    return this.getCodepoint("emotes/" + emoteSubId);
+    return this.getCodepoint(DownloadableImage.EMOTE_ID_PREFIX + emoteSubId);
   }
   public Integer getBadgeCodepointFromId(String badgeSubId) {
-    return this.getCodepoint("badges/" + badgeSubId);
+    return this.getCodepoint(DownloadableImage.BADGE_ID_PREFIX + badgeSubId);
   }
 
-  public enum ImageTypes {
-    BADGE,
-    EMOTE
-  }
 }
