@@ -17,8 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ChatScreen.class)
 public class ChatMixin {
-	@Inject(at = @At("HEAD"), method = "sendMessage(Ljava/lang/String;Z)Z", cancellable = true)
-	private void sendMessage(String text, boolean addToHistory, CallbackInfoReturnable<Boolean> info) {
+	@Inject(at = @At("HEAD"), method = "sendMessage", cancellable = true)
+	private void sendMessage(String text, boolean addToHistory, CallbackInfo info) {
       ModConfig config = ModConfig.getConfig();
 
 
@@ -52,7 +52,7 @@ public class ChatMixin {
           // Add the message to the Minecraft Chat
           TwitchChatMod.addTwitchMessage(formattedTime, username, isMeMessage ? textWithoutPrefix.substring(4) : textWithoutPrefix, userColor, isMeMessage);
           MinecraftClient.getInstance().inGameHud.getChatHud().addToMessageHistory(text);
-          info.setReturnValue(true);
+          info.cancel();
         } else {
           TwitchChatMod.addNotification(Text.translatable("text.twitchchat.chat.integration_disabled"));
         }
