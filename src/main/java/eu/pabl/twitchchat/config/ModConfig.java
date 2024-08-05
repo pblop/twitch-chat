@@ -24,6 +24,8 @@ public class ModConfig {
   public static final String DEFAULT_DATE_FORMAT = "[H:mm] ";
   public static final List<String> DEFAULT_IGNORE_LIST = new ArrayList<>();
   public static final boolean DEFAULT_TWITCH_WATCH_SUGGESTIONS = false;
+  public static final boolean DEFAULT_PSEUDO_COLOR_BOOLEAN = true;
+  public static final int DEFAULT_PSEUDO_COLOR = 0x000000;
   public static final boolean DEFAULT_BROADCAST = false;
   public static final String DEFAULT_BROADCAST_PREFIX = "[Twitch] ";
 
@@ -37,6 +39,8 @@ public class ModConfig {
   private String dateFormat;
   private List<String> ignoreList;
   private boolean twitchWatchSuggestions;
+  private boolean pseudoColorBoolean;
+  private int pseudoColor;
   private boolean broadcast;
   private String broadcastPrefix;
 
@@ -53,6 +57,8 @@ public class ModConfig {
     this.dateFormat = DEFAULT_DATE_FORMAT;
     this.ignoreList = new ArrayList<>(DEFAULT_IGNORE_LIST);
     this.twitchWatchSuggestions = DEFAULT_TWITCH_WATCH_SUGGESTIONS;
+    this.pseudoColorBoolean = DEFAULT_PSEUDO_COLOR_BOOLEAN;
+    this.pseudoColor = DEFAULT_PSEUDO_COLOR;
     this.broadcast = DEFAULT_BROADCAST;
     this.broadcastPrefix = DEFAULT_BROADCAST_PREFIX;
   }
@@ -98,6 +104,13 @@ public class ModConfig {
                 ? jsonObject.getAsJsonPrimitive("twitchWatchSuggestions").getAsBoolean()
                 : DEFAULT_TWITCH_WATCH_SUGGESTIONS;
 
+        this.pseudoColorBoolean = jsonObject.has("pseudoColorBoolean")
+                ? jsonObject.getAsJsonPrimitive("pseudoColorBoolean").getAsBoolean()
+                : DEFAULT_PSEUDO_COLOR_BOOLEAN;
+        this.pseudoColor = jsonObject.has("pseudoColor")
+                ? jsonObject.getAsJsonPrimitive("pseudoColor").getAsInt()
+                : DEFAULT_PSEUDO_COLOR;
+
         this.broadcast = jsonObject.has("broadcast")
                 ? jsonObject.getAsJsonPrimitive("broadcast").getAsBoolean()
                 : DEFAULT_BROADCAST;
@@ -126,6 +139,8 @@ public class ModConfig {
     jsonObject.add("ignoreList", ignoreListJsonArray);
 
     jsonObject.addProperty("twitchWatchSuggestions", this.twitchWatchSuggestions);
+    jsonObject.addProperty("pseudoColorBoolean", this.pseudoColorBoolean);
+    jsonObject.addProperty("pseudoColor", this.pseudoColor);
     jsonObject.addProperty("broadcast", this.broadcast);
     jsonObject.addProperty("broadcastPrefix", this.broadcastPrefix);
     try (PrintWriter out = new PrintWriter(configFile)) {
@@ -190,6 +205,22 @@ public class ModConfig {
 
   public void setTwitchWatchSuggestions(boolean twitchWatchSuggestions) {
     this.twitchWatchSuggestions = twitchWatchSuggestions;
+  }
+
+  public boolean isPseudoColorEnabled() {
+    return pseudoColorBoolean;
+  }
+
+  public void setPseudoColorBoolean(boolean pseudoColorBoolean) {
+    this.pseudoColorBoolean = pseudoColorBoolean;
+  }
+
+  public int getPseudoColor() {
+    return pseudoColor;
+  }
+
+  public void setPseudoColor(int pseudoColor) {
+    this.pseudoColor = pseudoColor;
   }
 
   public boolean isBroadcastEnabled() {

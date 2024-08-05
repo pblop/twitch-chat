@@ -40,11 +40,15 @@ public class ChatMixin {
 
           String username = TwitchChatMod.bot.getUsername();
           TextColor userColor;
-          if (TwitchChatMod.bot.isFormattingColorCached(username)) {
-            userColor = TwitchChatMod.bot.getFormattingColor(username);
+          if (ModConfig.getConfig().isPseudoColorEnabled()) {
+              if (TwitchChatMod.bot.isFormattingColorCached(username)) {
+                  userColor = TwitchChatMod.bot.getFormattingColor(username);
+              } else {
+                  userColor = CalculateMinecraftColor.getDefaultUserColor(username);
+                  TwitchChatMod.bot.putFormattingColor(username, userColor);
+              }
           } else {
-            userColor = CalculateMinecraftColor.getDefaultUserColor(username);
-            TwitchChatMod.bot.putFormattingColor(username, userColor);
+              userColor = TextColor.fromRgb(ModConfig.getConfig().getPseudoColor());
           }
 
           boolean isMeMessage = textWithoutPrefix.startsWith("/me");

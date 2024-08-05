@@ -91,17 +91,21 @@ public class Bot extends ListenerAdapter {
         if (!ModConfig.getConfig().getIgnoreList().contains(nick)) {
           String colorTag = v3Tags.get("color");
           TextColor formattingColor;
-          
-          if (isFormattingColorCached(nick)) {
-            formattingColor = getFormattingColor(nick);
-          } else {
-            if (colorTag.equals("")) {
-              formattingColor = CalculateMinecraftColor.getDefaultUserColor(nick);
+
+          if (ModConfig.getConfig().isPseudoColorEnabled()) {
+            if (isFormattingColorCached(nick)) {
+              formattingColor = getFormattingColor(nick);
             } else {
-              Color userColor = Color.decode(colorTag);
-              formattingColor = TextColor.fromRgb(userColor.getRGB());
+              if (colorTag.equals("")) {
+                formattingColor = CalculateMinecraftColor.getDefaultUserColor(nick);
+              } else {
+                Color userColor = Color.decode(colorTag);
+                formattingColor = TextColor.fromRgb(userColor.getRGB());
+              }
+              putFormattingColor(nick, formattingColor);
             }
-            putFormattingColor(nick, formattingColor);
+          } else {
+            formattingColor = TextColor.fromRgb(ModConfig.getConfig().getPseudoColor());
           }
 
           String formattedTime = TwitchChatMod.formatTMISentTimestamp(v3Tags.get("tmi-sent-ts"));
@@ -167,11 +171,15 @@ public class Bot extends ListenerAdapter {
         String formattedTime = TwitchChatMod.formatTMISentTimestamp(event.getTimestamp());
 
         TextColor formattingColor;
-        if (isFormattingColorCached(nick)) {
-          formattingColor = getFormattingColor(nick);
+        if (ModConfig.getConfig().isPseudoColorEnabled()) {
+          if (isFormattingColorCached(nick)) {
+            formattingColor = getFormattingColor(nick);
+          } else {
+            formattingColor = CalculateMinecraftColor.getDefaultUserColor(nick);
+            putFormattingColor(nick, formattingColor);
+          }
         } else {
-          formattingColor = CalculateMinecraftColor.getDefaultUserColor(nick);
-          putFormattingColor(nick, formattingColor);
+          formattingColor = TextColor.fromRgb(ModConfig.getConfig().getPseudoColor());
         }
 
         TwitchChatMod.addTwitchMessage(formattedTime, nick, event.getMessage(), formattingColor, true);

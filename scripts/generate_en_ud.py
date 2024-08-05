@@ -26,7 +26,7 @@ def upsidedown(s: str) -> str:
 
 def main() -> None:
   print("Loading en_us.json...")
-  with open("./src/main/resources/assets/twitchchat/lang/en_us.json", "r") as en_us_f:
+  with open("../src/main/resources/assets/twitchchat/lang/en_us.json", "r") as en_us_f:
     en_us = json.load(en_us_f)
 
   print("Generating en_ud.json...")
@@ -36,7 +36,7 @@ def main() -> None:
     en_ud[k] = upsidedown(v)
 
   print("Saving en_ud.json...")
-  with open("./src/main/resources/assets/twitchchat/lang/en_ud.json", "w") as en_ud_f:
+  with open("../src/main/resources/assets/twitchchat/lang/en_ud.json", "w") as en_ud_f:
     json.dump(en_ud, en_ud_f, sort_keys=True, indent=2)
 
   print("Done.")
