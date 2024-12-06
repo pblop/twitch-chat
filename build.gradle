@@ -11,10 +11,12 @@ base {
 }
 
 repositories {
-    maven { url = 'https://minecraft.curseforge.com/api/maven' }
-    maven { url = 'https://maven.shedaniel.me/' }
 	maven { url = 'https://maven.terraformersmc.com/'}
 	maven { url 'https://jitpack.io' }
+	maven {
+		name 'Xander Maven'
+		url 'https://maven.isxander.dev/releases'
+	}
 }
 
 dependencies {
@@ -23,34 +25,17 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-	// You may need to force-disable transitiveness on them.
-
-    // Config
-	modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
-		exclude(group: "net.fabricmc.fabric-api")
-	}
-
-    // Config jar-in-jar
-    include "me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}"
-
-    // not required, but we want to see our config screen
+    // ModMenu integration
 	modImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
 
-    // irc
+	// YACL
+	modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}"
+
+    // IRC Library
     implementation "com.github.pircbotx:pircbotx:${project.pircbotx_version}"
     include "com.github.pircbotx:pircbotx:${project.pircbotx_version}"
-
-//	 pircbotx needs this 🤷‍
-//	include group: 'org.slf4j', name: 'slf4j-api', version: '1.7.13'
-//	implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.13'
-
-	//	Uncomment this to get more log info from pircbotx.
-	//	include group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.13'
-	//	implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.13'
 }
 
 processResources {
