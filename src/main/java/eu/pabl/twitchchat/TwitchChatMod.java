@@ -13,8 +13,11 @@ import net.minecraft.text.Text;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TwitchChatMod implements ModInitializer {
+  public final static Logger LOGGER = LoggerFactory.getLogger(TwitchChatMod.class);
   public static Bot bot;
 
   @Override
