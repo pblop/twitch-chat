@@ -50,6 +50,18 @@ public class ModMenuCompat implements ModMenuApi {
               .setTooltip(Text.translatable("config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip"))
               .setDefaultValue(ModConfig.DEFAULT_TWITCH_WATCH_SUGGESTIONS)
               .build());
+      cosmeticsCategory.addEntry(entryBuilder
+              .startBooleanToggle(Text.translatable("config.twitchchat.cosmetics.pseudoColorBoolean"), ModConfig.getConfig().isPseudoColorEnabled())
+              .setSaveConsumer((b -> ModConfig.getConfig().setPseudoColorBoolean(b)))
+              .setTooltip(Text.translatable("config.twitchchat.cosmetics.pseudoColorBoolean.tooltip"))
+              .setDefaultValue(ModConfig.DEFAULT_PSEUDO_COLOR_BOOLEAN)
+              .build());
+        cosmeticsCategory.addEntry(entryBuilder
+              .startColorField(Text.translatable("config.twitchchat.cosmetics.pseudoColor"), ModConfig.getConfig().getPseudoColor())
+              .setSaveConsumer((i -> ModConfig.getConfig().setPseudoColor(i)))
+              .setTooltip(Text.translatable("config.twitchchat.cosmetics.pseudoColor.tooltip"))
+              .setDefaultValue(ModConfig.DEFAULT_PSEUDO_COLOR)
+              .build());
 
       ConfigCategory broadcastCategory = builder.getOrCreateCategory(Text.translatable("config.twitchchat.category.broadcast"));
       broadcastCategory.addEntry(entryBuilder
