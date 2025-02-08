@@ -3,16 +3,18 @@ plugins {
 	id 'maven-publish'
 }
 
-archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
+
+base {
+	archivesName = project.archives_base_name
+}
 
 repositories {
     maven { url = 'https://minecraft.curseforge.com/api/maven' }
     maven { url = 'https://maven.shedaniel.me/' }
 	maven { url = 'https://maven.terraformersmc.com/'}
 	maven { url 'https://jitpack.io' }
-
 }
 
 dependencies {
