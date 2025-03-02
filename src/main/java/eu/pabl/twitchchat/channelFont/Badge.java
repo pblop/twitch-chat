@@ -94,6 +94,13 @@ public class Badge {
                 .orElse(Badge.EMPTY);
     }
 
+    public static int codePoint(String name) throws IllegalArgumentException {
+        for (Int2ObjectMap.Entry<Badge> entry : badges.int2ObjectEntrySet()) {
+            if (entry.getValue().name.equals(name)) return entry.getIntKey();
+        }
+        throw new IllegalArgumentException("badge named '" + name + "' does not exist");
+    }
+
     public static Badge add(int codePoint, String name) throws IOException {
         return add(codePoint, new Badge(name));
     }
