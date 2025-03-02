@@ -2,18 +2,14 @@ package eu.pabl.twitchchat.channelFont;
 
 import eu.pabl.twitchchat.TwitchChatMod;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.BitmapFont;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.FontFilterType;
 import net.minecraft.client.font.Glyph;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.TextureContents;
-import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.util.List;
 
 public class ChannelFont implements Font {
@@ -29,31 +25,9 @@ public class ChannelFont implements Font {
     @Nullable
     @Override
     public Glyph getGlyph(int codePoint) {
-
-        ResourceManager resourceManager = MinecraftClient.getInstance().getResourceManager();
-        NativeImage image;
-
-        // reload font storage
-        //FontStorage fontStorage = new FontStorage(MinecraftClient.getInstance().getTextureManager(), CHANNEL_ICON_FONT_STORAGE);
-        //fontStorage.setFonts(CHANNEL_ICON_FONT_FILTER, null);
-        //TwitchChatMod.LOGGER.info("triggered set fonts");
-
-        String badgeName = switch (codePoint) {
-            case 33 -> "broadcaster";
-            case 34 -> "moderator";
-            case 35 -> "partner";
-            case 36 -> "vip";
-            default ->  null;
-        };
-        if (badgeName == null) {
-            TwitchChatMod.LOGGER.error("unknown code point '" + codePoint + "' in badges font!");
-            return Font.super.getGlyph(codePoint);
-        }
-
-        try {
-            image = TextureContents.load(resourceManager, Identifier.of("twitchchat", "textures/badge/" + badgeName + ".png")).image();
-        } catch (IOException e) {
-            TwitchChatMod.LOGGER.error("couldn't load texture contents for '" + badgeName + "' badge: " + e);
+        NativeImage image = Badge.get(codePoint).image();
+        if (image == null) {
+            TwitchChatMod.LOGGER.error("No badge exists for code point '" + codePoint + "'");
             return Font.super.getGlyph(codePoint);
         }
 
@@ -64,7 +38,6 @@ public class ChannelFont implements Font {
 
     @Override
     public IntSet getProvidedGlyphs() {
-        IntSet set = IntSet.of(33, 34, 35, 36);
-        return set;
+        return Badge.codePoints();
     }
 }
