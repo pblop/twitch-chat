@@ -1,7 +1,7 @@
 package eu.pabl.twitchchat;
 
-import eu.pabl.twitchchat.channelFont.Badge;
-import eu.pabl.twitchchat.channelFont.ChannelFont;
+import eu.pabl.twitchchat.badge.Badge;
+import eu.pabl.twitchchat.badge.BadgeFont;
 import eu.pabl.twitchchat.commands.TwitchBaseCommand;
 import eu.pabl.twitchchat.config.ModConfig;
 import eu.pabl.twitchchat.twitch_integration.Bot;
@@ -38,7 +38,7 @@ public class TwitchChatMod implements ModInitializer {
     for (String badgeName : badges) {
       Badge badge = Badge.get(badgeName);
       if (badge.image() == null) continue;
-      badgesText.append(Text.literal(Character.toString((char) Badge.codePoint(badgeName))).styled(style -> style.withFont(ChannelFont.IDENTIFIER)));
+      badgesText.append(Text.literal(Character.toString((char) Badge.codePoint(badgeName))).styled(style -> style.withFont(BadgeFont.IDENTIFIER)));
     }
     MutableText messageBodyText;
 

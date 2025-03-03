@@ -1,4 +1,4 @@
-package eu.pabl.twitchchat.channelFont;
+package eu.pabl.twitchchat.badge;
 
 import eu.pabl.twitchchat.TwitchChatMod;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -10,10 +10,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class ChannelFont implements Font {
-    public static final Identifier IDENTIFIER = Identifier.of("twitchchat", "channel_icon2");
+public class BadgeFont implements Font {
+    public static final Identifier IDENTIFIER = Identifier.of("twitchchat", "badge");
     public static FontStorage fontStorage;
-    public static final List<Font.FontFilterPair> CHANNEL_ICON_FONT_FILTER = List.of(new Font.FontFilterPair(new ChannelFont(), FontFilterType.FilterMap.NO_FILTER));
+    public static final List<Font.FontFilterPair> FONT_FILTERS = List.of(new Font.FontFilterPair(new BadgeFont(), FontFilterType.FilterMap.NO_FILTER));
     private static final int BADGE_SIZE = 8;
 
     @Override
@@ -43,7 +43,7 @@ public class ChannelFont implements Font {
     public static FontStorage newFontStorage(TextureManager textureManager) {
         Badge.loadBadges();
         fontStorage = new FontStorage(textureManager, IDENTIFIER);
-        fontStorage.setFonts(CHANNEL_ICON_FONT_FILTER, null);
+        fontStorage.setFonts(FONT_FILTERS, null);
         return fontStorage;
     }
 }

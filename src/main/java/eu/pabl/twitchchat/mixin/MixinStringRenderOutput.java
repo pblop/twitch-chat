@@ -1,7 +1,7 @@
 package eu.pabl.twitchchat.mixin;
 
 import eu.pabl.twitchchat.TwitchChatMod;
-import eu.pabl.twitchchat.channelFont.ChannelFont;
+import eu.pabl.twitchchat.badge.BadgeFont;
 import net.minecraft.client.font.FontManager;
 import net.minecraft.client.font.FontStorage;
 import net.minecraft.client.texture.TextureManager;
@@ -29,8 +29,8 @@ public class MixinStringRenderOutput {
     @Inject(method="reload", at=@At("RETURN"))
     public CompletableFuture<Void> afterReload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Executor prepareExecutor, Executor applyExecutor, CallbackInfoReturnable<CompletableFuture<Void>> ci) {
         return ci.getReturnValue().thenRun(() -> {
-            fontStorages.put(ChannelFont.IDENTIFIER, ChannelFont.newFontStorage(this.textureManager));
-            TwitchChatMod.LOGGER.info("Added custom channel icon font: " + ChannelFont.IDENTIFIER);
+            fontStorages.put(BadgeFont.IDENTIFIER, BadgeFont.newFontStorage(this.textureManager));
+            TwitchChatMod.LOGGER.info("Added badge font: " + BadgeFont.IDENTIFIER);
         });
     }
 }

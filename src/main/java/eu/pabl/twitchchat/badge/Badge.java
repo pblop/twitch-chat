@@ -1,4 +1,4 @@
-package eu.pabl.twitchchat.channelFont;
+package eu.pabl.twitchchat.badge;
 
 import eu.pabl.twitchchat.TwitchChatMod;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -110,7 +110,9 @@ public class Badge {
         badge = badges.put(codePoint, badge);
 
         // reload font
-        ChannelFont.fontStorage.setFonts(ChannelFont.CHANNEL_ICON_FONT_FILTER, null);
+        BadgeFont.fontStorage.setFonts(BadgeFont.FONT_FILTERS, null);
+
+        TwitchChatMod.LOGGER.info("triggered set fonts");
 
         return badge;
     }
