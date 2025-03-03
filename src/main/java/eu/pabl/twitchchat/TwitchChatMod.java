@@ -38,7 +38,7 @@ public class TwitchChatMod implements ModInitializer {
     for (String badgeName : badges) {
       Badge badge = Badge.get(badgeName);
       if (badge.image() == null) continue;
-      badgesText.append(Text.literal(Character.toString((char) Badge.codePoint(badgeName))).styled(style -> style.withFont(ChannelFont.CHANNEL_ICON_FONT_STORAGE)));
+      badgesText.append(Text.literal(Character.toString((char) Badge.codePoint(badgeName))).styled(style -> style.withFont(ChannelFont.IDENTIFIER)));
     }
     MutableText messageBodyText;
 

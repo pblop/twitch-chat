@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.FontStorage;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.TextureContents;
 import net.minecraft.resource.ResourceManager;
@@ -109,6 +108,9 @@ public class Badge {
     }
     public static Badge add(int codePoint, Badge badge) {
         badge = badges.put(codePoint, badge);
+
+        // reload font
+        ChannelFont.fontStorage.setFonts(ChannelFont.CHANNEL_ICON_FONT_FILTER, null);
 
         return badge;
     }
