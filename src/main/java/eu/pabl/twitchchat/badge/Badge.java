@@ -107,13 +107,6 @@ public class Badge {
         return add(codePoint, new Badge(name, image));
     }
     public static Badge add(int codePoint, Badge badge) {
-        badge = badges.put(codePoint, badge);
-
-        // reload font
-        BadgeFont.fontStorage.setFonts(BadgeFont.FONT_FILTERS, null);
-
-        TwitchChatMod.LOGGER.info("triggered set fonts");
-
-        return badge;
+        return badges.put(codePoint, badge);
     }
 }

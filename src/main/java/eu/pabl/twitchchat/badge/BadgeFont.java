@@ -1,5 +1,6 @@
 package eu.pabl.twitchchat.badge;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import eu.pabl.twitchchat.TwitchChatMod;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.client.font.*;
@@ -45,5 +46,16 @@ public class BadgeFont implements Font {
         fontStorage = new FontStorage(textureManager, IDENTIFIER);
         fontStorage.setFonts(FONT_FILTERS, null);
         return fontStorage;
+    }
+
+    public static void reload() {
+        if (RenderSystem.isOnRenderThread()) {
+            reloadFontStorage();
+        } else {
+            RenderSystem.recordRenderCall(BadgeFont::reloadFontStorage);
+        }
+    }
+    private static void reloadFontStorage() {
+        BadgeFont.fontStorage.setFonts(BadgeFont.FONT_FILTERS, null);
     }
 }
