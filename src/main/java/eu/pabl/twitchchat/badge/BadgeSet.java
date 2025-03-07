@@ -5,8 +5,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 public class BadgeSet {
   private final Int2ObjectMap<Badge> badges = new Int2ObjectOpenHashMap<>();
 
@@ -32,7 +30,7 @@ public class BadgeSet {
    */
   public Badge get(String name) throws IllegalArgumentException {
     return badges.values().stream()
-        .filter(badge -> badge.toString().equals(name))
+        .filter(badge -> badge.getName().equals(name))
         .findFirst()
         .orElseThrow(() -> new IllegalArgumentException("badge named '" + name + "' does not exist"));
   }
@@ -74,7 +72,7 @@ public class BadgeSet {
    * @throws IllegalArgumentException If the given name is not a global badge.
    */
   public String getChar(String name) throws IllegalArgumentException {
-    return get(name).toString();
+    return get(name).getChar();
   }
 
   /**
@@ -86,7 +84,7 @@ public class BadgeSet {
    * @throws IllegalArgumentException If the given name is neither a channel badge nor a global badge.
    */
   public String getChar(String channelID, String name) throws IllegalArgumentException {
-    return get(channelID, name).toString();
+    return get(channelID, name).getChar();
   }
 
   /**
@@ -113,6 +111,6 @@ public class BadgeSet {
       parentBadge = new Badge(badge);
       add(codePoint, badge);
     }
-    parentBadge.setChannelOverride(channelID, badge.image());
+    parentBadge.setChannelOverride(channelID, codePoint, badge.image());
   }
 }

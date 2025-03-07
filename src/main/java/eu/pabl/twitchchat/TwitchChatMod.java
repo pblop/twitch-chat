@@ -1,7 +1,6 @@
 package eu.pabl.twitchchat;
 
 import eu.pabl.twitchchat.badge.Badge;
-import eu.pabl.twitchchat.badge.BadgeFont;
 import eu.pabl.twitchchat.badge.BadgeSet;
 import eu.pabl.twitchchat.commands.TwitchBaseCommand;
 import eu.pabl.twitchchat.config.ModConfig;
@@ -45,7 +44,7 @@ public class TwitchChatMod implements ModInitializer {
       } catch (IllegalArgumentException e) {
         continue;
       }
-      badgesText.append(Text.literal(BADGES.getChar(badgeName)).styled(style -> style.withFont(BadgeFont.IDENTIFIER)));
+      badgesText.append(badge.toText());
     }
     MutableText messageBodyText;
 

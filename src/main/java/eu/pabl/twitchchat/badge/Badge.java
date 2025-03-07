@@ -5,6 +5,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.TextureContents;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,10 +16,14 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Badge {
     private final String name;
+    private MutableText displayName;
+    private Text description;
     Map<String, ChannelOverride> channelOverrides = new HashMap<>();
+    private int codepoint;
     private NativeImage image;
 
     /**
@@ -45,6 +53,10 @@ public class Badge {
      */
     Badge(Badge badge) {
         this.name = badge.name;
+        this.displayName = badge.displayName;
+        this.description = badge.description;
+        this.channelOverrides = badge.channelOverrides;
+        this.codepoint = badge.codepoint;
         this.image = badge.image;
     }
 
@@ -69,9 +81,9 @@ public class Badge {
      * @throws IllegalStateException when this badge is not allowed to have channel overrides e.g. it is already a
      * channel override.
      */
-    public void setChannelOverride(@NotNull String channelID, NativeImage image) throws IllegalStateException {
+    public void setChannelOverride(@NotNull String channelID, int codepoint, NativeImage image) throws IllegalStateException {
         if (channelOverrides == null) throw new IllegalStateException("This badge cant have overrides (is it an channel override?");
-        this.channelOverrides.put(channelID, new ChannelOverride(channelID, image));
+        this.channelOverrides.put(channelID, new ChannelOverride(channelID, codepoint, image));
     }
 
     /**
@@ -92,12 +104,91 @@ public class Badge {
     }
 
     /**
-     * @return The name of the badge
+     * @return The display text of the badge.
      */
-    @Override
-    public String toString() {
-            return name;
+    public MutableText getDisplayName() {
+        return displayName;
+    }
+
+    /**
+     * @param displayName The updated display text.
+     */
+    public void setDisplayName(MutableText displayName) {
+        this.displayName = displayName;
+    }
+
+    /**
+     * @param displayName The updated display text.
+     */
+    public void setDisplayName(String displayName) {
+        setDisplayName(Text.literal(displayName));
+    }
+
+    /**
+     * @return Whether the badge has a display name.
+     */
+    public boolean hasDisplayName() {
+        return this.getDisplayName() != null && !Objects.equals(this.getDisplayName().getLiteralString(), "");
+    }
+
+    /**
+     * @return The description of the badge.
+     */
+    public Text getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description The updated description text.
+     */
+    public void setDescription(String description) {
+        this.description = Text.literal(description).styled(style -> style.withColor(Formatting.GRAY).withItalic(true));
+    }
+
+    /**
+     * @return Whether the badge has a description.
+     */
+    public boolean hasDescription() {
+        return this.getDescription() != null && !Objects.equals(this.getDescription().getLiteralString(), "");
+    }
+
+    public HoverEvent getHoverEvent() {
+        MutableText hoverText = Text.literal(this.name);
+        if (this.hasDisplayName()) {
+            hoverText.append(getDisplayName());
         }
+        if (this.hasDescription()) {
+            hoverText.append("\n").append(this.getDescription());
+        }
+        hoverText.append(Text.literal("\n" + this.name).styled(style -> style
+            .withColor(Formatting.DARK_GRAY)
+        ));
+        return new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText);
+    }
+
+    /**
+     * @return The code point to use this badge in a text.
+     */
+    public String getChar() {
+        return Character.toString((char) this.codepoint);
+    }
+
+    /**
+     * @param codepoint The new code point.
+     */
+    void setCodepoint(int codepoint) {
+        this.codepoint = codepoint;
+    }
+
+    /**
+     * @return The ready to use text component of the badge.
+     */
+    public Text toText() {
+        return Text.literal(this.getChar()).styled(style -> style
+            .withFont(BadgeFont.IDENTIFIER)
+            .withHoverEvent(this.getHoverEvent())
+        );
+    }
 
     /**
      * Currently loads the hardcoded default badges.
@@ -116,10 +207,12 @@ public class Badge {
 
     public class ChannelOverride {
         final String channelID;
+        private final int codepoint;
         final NativeImage image;
 
-        private ChannelOverride(String channelID, NativeImage image) {
+        private ChannelOverride(String channelID, int codepoint, NativeImage image) {
             this.channelID = channelID;
+            this.codepoint = codepoint;
             this.image = image;
         }
 
@@ -139,6 +232,7 @@ public class Badge {
         Badge toBadge() {
             Badge badge = new Badge(Badge.this);
             badge.channelOverrides = null;
+            badge.codepoint = this.codepoint;
             badge.image = this.image;
             return badge;
         }
