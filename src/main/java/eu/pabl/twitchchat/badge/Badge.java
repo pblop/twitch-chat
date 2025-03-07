@@ -77,11 +77,12 @@ public class Badge {
     /**
      * Adds or replaces an override for the given channel.
      * @param channelID The channel ID to add the override for.
+     * @param codepoint The codepoint to use this override in a text.
      * @param image The image to use for that channel.
      * @throws IllegalStateException when this badge is not allowed to have channel overrides e.g. it is already a
      * channel override.
      */
-    public void setChannelOverride(@NotNull String channelID, int codepoint, NativeImage image) throws IllegalStateException {
+    void setChannelOverride(@NotNull String channelID, int codepoint, NativeImage image) throws IllegalStateException {
         if (channelOverrides == null) throw new IllegalStateException("This badge cant have overrides (is it an channel override?");
         this.channelOverrides.put(channelID, new ChannelOverride(channelID, codepoint, image));
     }
@@ -169,6 +170,13 @@ public class Badge {
     /**
      * @return The code point to use this badge in a text.
      */
+    int getCodepoint() {
+        return this.codepoint;
+    }
+
+    /**
+     * @return The code point to use this badge in a text.
+     */
     public String getChar() {
         return Character.toString((char) this.codepoint);
     }
@@ -195,10 +203,10 @@ public class Badge {
      */
     public static void loadBadges() {
         try {
-            TwitchChatMod.BADGES.add(33, new Badge("broadcaster"));
-            TwitchChatMod.BADGES.add(34, new Badge("moderator"));
-            TwitchChatMod.BADGES.add(35, new Badge("partner"));
-            TwitchChatMod.BADGES.add(36, new Badge("vip"));
+            TwitchChatMod.BADGES.add(new Badge("broadcaster"));
+            TwitchChatMod.BADGES.add(new Badge("moderator"));
+            TwitchChatMod.BADGES.add(new Badge("partner"));
+            TwitchChatMod.BADGES.add(new Badge("vip"));
         } catch (IOException e) {
             TwitchChatMod.LOGGER.error("Error loading hardcoded badges: " + e);
         }
@@ -221,6 +229,13 @@ public class Badge {
          */
         public String getChannelID() {
             return channelID;
+        }
+
+        /**
+         * @return The code point to use this badge in a text.
+         */
+        int getCodepoint() {
+            return this.codepoint;
         }
 
         /**

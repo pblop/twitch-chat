@@ -6,6 +6,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import org.jetbrains.annotations.NotNull;
 
 public class BadgeSet {
+  private static final char MIN_CHAR = ' ' + 1;
+  private char allCodePoint;
   private final Int2ObjectMap<Badge> badges = new Int2ObjectOpenHashMap<>();
 
   public IntSet codePoints() {
@@ -58,10 +60,10 @@ public class BadgeSet {
    * @return The badge for the name.
    * @throws IllegalArgumentException If the given name is neither a channel badge nor a global badges.
    */
-  public Badge getChannelOnly(String channelID, String name) {
+  public Badge.ChannelOverride getChannelOnly(String channelID, String name) {
     Badge.ChannelOverride override = get(name).getChannelOverride(channelID);
     if (override == null) throw new IllegalArgumentException("badge named '" + name + "' does not exist for channel '" + channelID + "'");
-    return override.toBadge();
+    return override;
   }
 
   /**
@@ -88,28 +90,48 @@ public class BadgeSet {
   }
 
   /**
-   * Adds a new global badge. Use {@link BadgeSet#add(String channelID, int codepoint, Badge badge)} to add a channel
-   * specific badge instead.
    * @param codePoint The code point to access the badge later.
    * @param badge The badge to add as a global badge.
    */
-  public void add(int codePoint, @NotNull Badge badge) {
+  private void add(int codePoint, @NotNull Badge badge) {
+    badge.setCodepoint(codePoint);
     badges.put(codePoint, badge);
   }
 
   /**
-   * Adds a new channel specific badge. Use {@link BadgeSet#add(int, Badge)} to add a global badge instead.
-   * @param channelID The channel ID to add this badge to.
-   * @param codePoint The code point to access the badge later.
+   * Adds a new global badge. Use {@link BadgeSet#add(String channelID, Badge badge)} to add a channel specific badge
+   * instead.
    * @param badge The badge to add as a global badge.
    */
-  public void add(String channelID, int codePoint, @NotNull Badge badge) {
+  public void add(@NotNull Badge badge) {
+    int codePoint;
+    try {
+      codePoint = get(badge.getName()).getCodepoint();
+    } catch (IllegalArgumentException ignored){
+      codePoint = (allCodePoint++) + MIN_CHAR;
+    }
+    add(codePoint, badge);
+  }
+
+  /**
+   * Adds a new channel specific badge. Use {@link BadgeSet#add(Badge)} to add a global badge instead.
+   * @param channelID The channel ID to add this badge to.
+   * @param badge The badge to add as a global badge.
+   */
+  public void add(String channelID, @NotNull Badge badge) {
     Badge parentBadge;
     try {
       parentBadge = get(badge.getName());
     } catch (IllegalArgumentException ignored) {
       parentBadge = new Badge(badge);
-      add(codePoint, badge);
+      add(badge);
+    }
+
+    int codePoint;
+    try {
+      codePoint = getChannelOnly(channelID, badge.getName()).getCodepoint();
+    } catch (IllegalArgumentException ignored) {
+      codePoint = (allCodePoint++) + MIN_CHAR;
     }
     parentBadge.setChannelOverride(channelID, codePoint, badge.image());
   }
