@@ -1,21 +1,22 @@
 package eu.pabl.twitchchat.badge;
 
 import eu.pabl.twitchchat.TwitchChatMod;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.TextureContents;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Badge {
     private final String name;
-    private final NativeImage image;
-    private static final Int2ObjectMap<Badge> badges = new Int2ObjectOpenHashMap<>();
+    Map<String, ChannelOverride> channelOverrides = new HashMap<>();
+    private NativeImage image;
 
     /**
      * An empty badge with a name set to "" and null image.
@@ -39,10 +40,55 @@ public class Badge {
     }
 
     /**
+     * A clone constructor to clone a badge.
+     * @param badge the badge to clone
+     */
+    Badge(Badge badge) {
+        this.name = badge.name;
+        this.image = badge.image;
+    }
+
+    /**
      * @return The image of the badge
      */
     public NativeImage image() {
         return image;
+    }
+
+    /**
+     * @return The name of the badge
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Adds or replaces an override for the given channel.
+     * @param channelID The channel ID to add the override for.
+     * @param image The image to use for that channel.
+     * @throws IllegalStateException when this badge is not allowed to have channel overrides e.g. it is already a
+     * channel override.
+     */
+    public void setChannelOverride(@NotNull String channelID, NativeImage image) throws IllegalStateException {
+        if (channelOverrides == null) throw new IllegalStateException("This badge cant have overrides (is it an channel override?");
+        this.channelOverrides.put(channelID, new ChannelOverride(channelID, image));
+    }
+
+    /**
+     * Gets the {@link ChannelOverride} for a channel.
+     * @param channelID The channelID to get the override from
+     * @return The override for the given channel, or null if this badge contains no override for the channel.
+     */
+    public @Nullable ChannelOverride getChannelOverride(@NotNull String channelID) {
+        if (this.channelOverrides == null) return null;
+        return this.channelOverrides.get(channelID);
+    }
+
+    /**
+     * Clears all channel overrides of this badge, if any.
+     */
+    public void clearChannelOverrides() {
+        this.channelOverrides.clear();
     }
 
     /**
@@ -58,55 +104,43 @@ public class Badge {
      */
     public static void loadBadges() {
         try {
-            badges.put(33, new Badge("broadcaster"));
-            badges.put(34, new Badge("moderator"));
-            badges.put(35, new Badge("partner"));
-            badges.put(36, new Badge("vip"));
+            TwitchChatMod.BADGES.add(33, new Badge("broadcaster"));
+            TwitchChatMod.BADGES.add(34, new Badge("moderator"));
+            TwitchChatMod.BADGES.add(35, new Badge("partner"));
+            TwitchChatMod.BADGES.add(36, new Badge("vip"));
         } catch (IOException e) {
             TwitchChatMod.LOGGER.error("Error loading hardcoded badges: " + e);
         }
-        TwitchChatMod.LOGGER.info("Loaded " + badges.size() + " default badges!");
+        TwitchChatMod.LOGGER.info("Loaded default badges!");
     }
 
-    public static IntSet codePoints() {
-        return badges.keySet();
-    }
+    public class ChannelOverride {
+        final String channelID;
+        final NativeImage image;
 
-    /**
-     * Access the Badge for the given code point.
-     * @param codePoint The code point to search the badge for.
-     * @return The badge for the code point or empty badge.
-     */
-    public static Badge get(int codePoint) {
-        return badges.getOrDefault(codePoint, Badge.EMPTY);
-    }
-
-    /**
-     * Access the Badge for the given name.
-     * @param name The name to search the badge for.
-     * @return The badge for the name or empty badge.
-     */
-    public static Badge get(String name) {
-        return badges.values().stream()
-                .filter(badge -> badge.toString().equals(name))
-                .findFirst()
-                .orElse(Badge.EMPTY);
-    }
-
-    public static int codePoint(String name) throws IllegalArgumentException {
-        for (Int2ObjectMap.Entry<Badge> entry : badges.int2ObjectEntrySet()) {
-            if (entry.getValue().name.equals(name)) return entry.getIntKey();
+        private ChannelOverride(String channelID, NativeImage image) {
+            this.channelID = channelID;
+            this.image = image;
         }
-        throw new IllegalArgumentException("badge named '" + name + "' does not exist");
-    }
 
-    public static Badge add(int codePoint, String name) throws IOException {
-        return add(codePoint, new Badge(name));
-    }
-    public static Badge add (int codePoint, String name, NativeImage image) {
-        return add(codePoint, new Badge(name, image));
-    }
-    public static Badge add(int codePoint, Badge badge) {
-        return badges.put(codePoint, badge);
+        /**
+         * @return The name of the badge
+         */
+        public String getChannelID() {
+            return channelID;
+        }
+
+        /**
+         * Turn this override into an actual badge to use.
+         * <p> The returned badge cant have channel overrides. Trying to set a channel override on this badge will throw
+         * an {@link IllegalStateException}.
+         * @return the badge representation of this override.
+         */
+        Badge toBadge() {
+            Badge badge = new Badge(Badge.this);
+            badge.channelOverrides = null;
+            badge.image = this.image;
+            return badge;
+        }
     }
 }

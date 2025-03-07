@@ -2,6 +2,7 @@ package eu.pabl.twitchchat;
 
 import eu.pabl.twitchchat.badge.Badge;
 import eu.pabl.twitchchat.badge.BadgeFont;
+import eu.pabl.twitchchat.badge.BadgeSet;
 import eu.pabl.twitchchat.commands.TwitchBaseCommand;
 import eu.pabl.twitchchat.config.ModConfig;
 import eu.pabl.twitchchat.twitch_integration.Bot;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 public class TwitchChatMod implements ModInitializer {
   public final static Logger LOGGER = LoggerFactory.getLogger(TwitchChatMod.class);
   public static Bot bot;
+  public static final BadgeSet BADGES = new BadgeSet();
 
   @Override
   public void onInitialize() {
@@ -35,10 +37,15 @@ public class TwitchChatMod implements ModInitializer {
     MutableText timestampText = Text.literal(time);
     MutableText usernameText = Text.literal(username).styled(style -> style.withColor(textColor));
     MutableText badgesText = Text.literal("");
+    String channel = ModConfig.getConfig().getChannel();
     for (String badgeName : badges) {
-      Badge badge = Badge.get(badgeName);
-      if (badge.image() == null) continue;
-      badgesText.append(Text.literal(Character.toString((char) Badge.codePoint(badgeName))).styled(style -> style.withFont(BadgeFont.IDENTIFIER)));
+      Badge badge;
+      try {
+        badge = BADGES.get(channel, badgeName);
+      } catch (IllegalArgumentException e) {
+        continue;
+      }
+      badgesText.append(Text.literal(BADGES.getChar(badgeName)).styled(style -> style.withFont(BadgeFont.IDENTIFIER)));
     }
     MutableText messageBodyText;
 

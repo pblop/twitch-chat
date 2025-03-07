@@ -25,7 +25,7 @@ public class BadgeFont implements Font {
     @Nullable
     @Override
     public Glyph getGlyph(int codePoint) {
-        NativeImage image = Badge.get(codePoint).image();
+        NativeImage image = TwitchChatMod.BADGES.get(codePoint).image();
         if (image == null) {
             TwitchChatMod.LOGGER.error("No badge exists for code point '" + codePoint + "'");
             return Font.super.getGlyph(codePoint);
@@ -38,7 +38,7 @@ public class BadgeFont implements Font {
 
     @Override
     public IntSet getProvidedGlyphs() {
-        return Badge.codePoints();
+        return TwitchChatMod.BADGES.codePoints();
     }
 
     public static FontStorage newFontStorage(TextureManager textureManager) {
