@@ -3,7 +3,8 @@ package eu.pabl.twitchchat.badge;
 import eu.pabl.twitchchat.TwitchChatMod;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.TextureContents;
+import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
@@ -17,30 +18,22 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Badge {
     private final String name;
     private MutableText displayName;
     private Text description;
     Map<String, ChannelOverride> channelOverrides = new HashMap<>();
-    private int codepoint;
-    private NativeImage image;
+    int codepoint;
+    NativeImage image;
+    NativeImage resourcePackOverrideImage;
 
     /**
      * An empty badge with a name set to "" and null image.
      */
     public static final Badge EMPTY = new Badge("", null);
-
-    Badge(String name) throws IOException {
-        this.name = name;
-
-        ResourceManager resourceManager = MinecraftClient.getInstance().getResourceManager();
-        try {
-            image = TextureContents.load(resourceManager, Identifier.of("twitchchat", "textures/badge/" + this.name + ".png")).image();
-        } catch (IOException e) {
-            throw new IOException("badge texture for '" + this.name + "' badge: " + e);
-        }
-    }
 
     Badge(String name, NativeImage image) {
         this.name = name;
@@ -58,13 +51,7 @@ public class Badge {
         this.channelOverrides = badge.channelOverrides;
         this.codepoint = badge.codepoint;
         this.image = badge.image;
-    }
-
-    /**
-     * @return The image of the badge
-     */
-    public NativeImage image() {
-        return image;
+        this.resourcePackOverrideImage = badge.resourcePackOverrideImage;
     }
 
     /**
@@ -199,24 +186,69 @@ public class Badge {
     }
 
     /**
-     * Currently loads the hardcoded default badges.
+     * @return The image of the badge
+     */
+    public NativeImage image() {
+        return hasResourcePackOverride() ? this.resourcePackOverrideImage : this.image;
+    }
+
+    public boolean hasResourcePackOverride() {
+        return this.resourcePackOverrideImage != null;
+    }
+
+    public void unsetResourcePackOverride() {
+        this.resourcePackOverrideImage = null;
+    }
+
+    /**
+     * Loads the badges from the applied resource packs
      */
     public static void loadBadges() {
-        try {
-            TwitchChatMod.BADGES.add(new Badge("broadcaster"));
-            TwitchChatMod.BADGES.add(new Badge("moderator"));
-            TwitchChatMod.BADGES.add(new Badge("partner"));
-            TwitchChatMod.BADGES.add(new Badge("vip"));
-        } catch (IOException e) {
-            TwitchChatMod.LOGGER.error("Error loading hardcoded badges: " + e);
+        String startingPath = "textures/badge";
+        ResourceManager resourceManager = MinecraftClient.getInstance().getResourceManager();
+        ResourceFinder finder = new ResourceFinder(startingPath, ".png");
+
+        Map<Identifier, Resource> resources = finder.findResources(resourceManager);
+
+        if (resources.isEmpty()) {
+            return;
         }
-        TwitchChatMod.LOGGER.info("Loaded default badges!");
+
+        final String regex = startingPath + "/(?:global|channel/(?<channelName>[a-z0-1_]+))/(?<badgeName>[a-z0-1_]+)\\.png";
+        final Pattern pattern = Pattern.compile(regex);
+        resources.forEach((identifier, resource) -> {
+            if (!identifier.getNamespace().equals(BadgeFont.IDENTIFIER.getNamespace())) return;
+            Matcher matcher = pattern.matcher(identifier.getPath());
+            if (!matcher.matches()) return;
+
+            String channelID = null;
+            try {
+                channelID = matcher.group("channelName");
+            } catch (IllegalArgumentException ignored) {}
+
+            NativeImage image;
+            try {
+                image = NativeImage.read(resource.getInputStream());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            String name = matcher.group("badgeName");
+            Badge badge = new Badge(name, null);
+            badge.resourcePackOverrideImage = image;
+            if (channelID == null) {
+                TwitchChatMod.BADGES.add(badge);
+            } else {
+                TwitchChatMod.BADGES.add(channelID, badge);
+            }
+        });
     }
 
     public class ChannelOverride {
         final String channelID;
         private final int codepoint;
         final NativeImage image;
+        NativeImage resourcePackOverrideImage;
 
         private ChannelOverride(String channelID, int codepoint, NativeImage image) {
             this.channelID = channelID;
@@ -239,6 +271,27 @@ public class Badge {
         }
 
         /**
+         * @return The image of the channel specific override
+         */
+        public NativeImage image() {
+            if (this.resourcePackOverrideImage != null) {
+                return this.resourcePackOverrideImage;
+            } else if (Badge.this.resourcePackOverrideImage != null) {
+                return Badge.this.resourcePackOverrideImage;
+            } else {
+                return this.image;
+            }
+        }
+
+        public boolean hasResourcePackOverride() {
+            return this.resourcePackOverrideImage != null || Badge.this.hasResourcePackOverride();
+        }
+
+        public void unsetResourcePackOverride() {
+            this.resourcePackOverrideImage = null;
+        }
+
+        /**
          * Turn this override into an actual badge to use.
          * <p> The returned badge cant have channel overrides. Trying to set a channel override on this badge will throw
          * an {@link IllegalStateException}.
@@ -249,6 +302,7 @@ public class Badge {
             badge.channelOverrides = null;
             badge.codepoint = this.codepoint;
             badge.image = this.image;
+            badge.resourcePackOverrideImage = this.resourcePackOverrideImage;
             return badge;
         }
     }

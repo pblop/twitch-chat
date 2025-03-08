@@ -89,13 +89,10 @@ public class BadgeSet {
     return get(channelID, name).getChar();
   }
 
-  /**
-   * @param codePoint The code point to access the badge later.
-   * @param badge The badge to add as a global badge.
-   */
-  private void add(int codePoint, @NotNull Badge badge) {
-    badge.setCodepoint(codePoint);
-    badges.put(codePoint, badge);
+  public void clearResourcePackOverrides() {
+    badges.values().stream()
+        .filter(Badge::hasResourcePackOverride)
+        .forEach(Badge::unsetResourcePackOverride);
   }
 
   /**
@@ -104,13 +101,14 @@ public class BadgeSet {
    * @param badge The badge to add as a global badge.
    */
   public void add(@NotNull Badge badge) {
-    int codePoint;
+    Badge badgeBefore;
     try {
-      codePoint = get(badge.getName()).getCodepoint();
+      badgeBefore = get(badge.getName());
     } catch (IllegalArgumentException ignored){
-      codePoint = (allCodePoint++) + MIN_CHAR;
+      put(badge);
+      return;
     }
-    add(codePoint, badge);
+    put(badge, badgeBefore);
   }
 
   /**
@@ -119,6 +117,10 @@ public class BadgeSet {
    * @param badge The badge to add as a global badge.
    */
   public void add(String channelID, @NotNull Badge badge) {
+    if (channelID == null) {
+      add(badge);
+      return;
+    }
     Badge parentBadge;
     try {
       parentBadge = get(badge.getName());
@@ -134,5 +136,37 @@ public class BadgeSet {
       codePoint = (allCodePoint++) + MIN_CHAR;
     }
     parentBadge.setChannelOverride(channelID, codePoint, badge.image());
+  }
+
+  /**
+   * @param badge The badge to add.
+   */
+  private void put(@NotNull Badge badge) {
+    int codePoint = (allCodePoint++) + MIN_CHAR;
+    badge.codepoint = codePoint;
+    badges.put(codePoint, badge);
+  }
+
+  /**
+   * @param badge The badge to add.
+   * @param badgeBefore The badge to replace (same name, same channel)
+   */
+  private void put(@NotNull Badge badge, Badge badgeBefore) {
+    if (badgeBefore == null) {
+      put(badge);
+      return;
+    }
+
+    if (badge.image == null) {
+      badge.image = badgeBefore.image;
+    }
+    if (!badge.hasResourcePackOverride()) {
+      badge.resourcePackOverrideImage = badgeBefore.resourcePackOverrideImage;
+    }
+    if (!badge.hasDisplayName()) {
+      badge.setDisplayName(badgeBefore.getDisplayName());
+    }
+    badge.codepoint = badgeBefore.codepoint;
+    badges.put(badge.codepoint, badge);
   }
 }

@@ -10,7 +10,9 @@ import java.util.Date;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.text.Text;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.TextColor;
@@ -30,6 +32,10 @@ public class TwitchChatMod implements ModInitializer {
     // Register commands
     ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
         new TwitchBaseCommand().registerCommands(dispatcher));
+
+    // Register reload listener
+    ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES)
+        .registerReloadListener(new TwitchChatResourceReloadListener());
   }
 
   public static void addTwitchMessage(String time, String username, String message, TextColor textColor, String[] badges, boolean isMeMessage) {
