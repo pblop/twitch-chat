@@ -3,7 +3,9 @@ package eu.pabl.twitchchat.badge;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class BadgeSet {
   private static final char MIN_CHAR = ' ' + 1;
@@ -11,16 +13,24 @@ public class BadgeSet {
   private final Int2ObjectMap<Badge> badges = new Int2ObjectOpenHashMap<>();
 
   public IntSet codePoints() {
-    return badges.keySet();
+    return IntSets.fromTo(MIN_CHAR, MIN_CHAR+allCodePoint);
   }
 
   /**
    * Access the badge for the given code point.
    * @param codePoint The code point to search the badge for.
-   * @return The badge for the code point or empty badge.
+   * @return The badge for the code point, or null if no badge exists for that code point.
    */
-  public Badge get(int codePoint) {
-    return badges.getOrDefault(codePoint, Badge.EMPTY);
+  public @Nullable Badge get(int codePoint) {
+    Badge badge = badges.get(codePoint);
+    if (badge != null) return badge;
+    for (Badge b : badges.values()) {
+      Badge.ChannelOverride override = b.getChannelOverride(codePoint);
+      if (override != null) {
+        return override.toBadge();
+      }
+    }
+    return null;
   }
 
   /**
@@ -129,11 +139,12 @@ public class BadgeSet {
       add(badge);
     }
 
+    Badge.ChannelOverride override = parentBadge.getChannelOverride(channelID);
     int codePoint;
-    try {
-      codePoint = getChannelOnly(channelID, badge.getName()).getCodepoint();
-    } catch (IllegalArgumentException ignored) {
+    if (override == null) {
       codePoint = (allCodePoint++) + MIN_CHAR;
+    } else {
+      codePoint = override.getCodepoint();
     }
     parentBadge.setChannelOverride(channelID, codePoint, badge.image());
   }
@@ -165,6 +176,9 @@ public class BadgeSet {
     }
     if (!badge.hasDisplayName()) {
       badge.setDisplayName(badgeBefore.getDisplayName());
+    }
+    if (badge.channelOverrides != null && badgeBefore.channelOverrides != null && !badgeBefore.channelOverrides.isEmpty()) {
+      badge.channelOverrides.putAll(badgeBefore.channelOverrides);
     }
     badge.codepoint = badgeBefore.codepoint;
     badges.put(badge.codepoint, badge);

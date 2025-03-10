@@ -25,15 +25,19 @@ public class BadgeFont implements Font {
     @Nullable
     @Override
     public Glyph getGlyph(int codePoint) {
-        NativeImage image = TwitchChatMod.BADGES.get(codePoint).image();
-        if (image == null) {
-            TwitchChatMod.LOGGER.error("No badge exists for code point '" + codePoint + "'");
+        Badge badge = TwitchChatMod.BADGES.get(codePoint);
+        if (badge == null) {
             return Font.super.getGlyph(codePoint);
         }
 
-        float scaleFactor = (float) BADGE_SIZE / image.getWidth();
-        BitmapFont.BitmapFontGlyph glyph = new BitmapFont.BitmapFontGlyph(scaleFactor, image, 0, 0, image.getWidth(), image.getHeight(), BADGE_SIZE+1, BADGE_SIZE);
-        return glyph;
+        float scaleFactor = (float) BADGE_SIZE / badge.image().getWidth();
+        return new BitmapFont.BitmapFontGlyph(
+            scaleFactor,
+            badge.image(),
+            0, 0,
+            badge.image().getWidth(), badge.image().getHeight(),
+            BADGE_SIZE+1,
+            BADGE_SIZE);
     }
 
     @Override

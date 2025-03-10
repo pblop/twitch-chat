@@ -85,6 +85,19 @@ public class Badge {
     }
 
     /**
+     * Gets the {@link ChannelOverride} for a channel.
+     * @param codePoint The code point to search the override for.
+     * @return The override for the given channel, or null if this badge contains no override for the channel.
+     */
+    public @Nullable ChannelOverride getChannelOverride(int codePoint) {
+        if (this.channelOverrides == null) return null;
+        for (ChannelOverride override : this.channelOverrides.values()) {
+            if (override.getCodepoint() == codePoint) return override;
+        }
+        return null;
+    }
+
+    /**
      * Clears all channel overrides of this badge, if any.
      */
     public void clearChannelOverrides() {
