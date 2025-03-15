@@ -156,12 +156,12 @@ public class Badge {
     public HoverEvent getHoverEvent() {
         MutableText hoverText = Text.literal(this.name);
         if (this.hasDisplayName()) {
-            hoverText.append(getDisplayName());
+            hoverText = getDisplayName();
         }
         if (this.hasDescription()) {
             hoverText.append("\n").append(this.getDescription());
         }
-        hoverText.append(Text.literal("\n" + this.name).styled(style -> style
+        hoverText.append(Text.literal("\ntwitchchat:" + this.name).styled(style -> style
             .withColor(Formatting.DARK_GRAY)
         ));
         return new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText);
