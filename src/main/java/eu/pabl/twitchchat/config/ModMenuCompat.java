@@ -2,85 +2,159 @@ package eu.pabl.twitchchat.config;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-
-import java.util.ArrayList;
-
-import me.shedaniel.clothconfig2.api.ConfigBuilder;
-import me.shedaniel.clothconfig2.api.ConfigCategory;
-import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
+import dev.isxander.yacl3.api.*;
+import dev.isxander.yacl3.api.controller.StringControllerBuilder;
+import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class ModMenuCompat implements ModMenuApi {
-  @Override
-  public ConfigScreenFactory<?> getModConfigScreenFactory() {
-    return (ConfigScreenFactory<Screen>) screen -> {
-      ConfigBuilder builder = ConfigBuilder.create();
-      builder.setTitle(Text.translatable("config.twitchchat.title"));
-      builder.setSavingRunnable(() -> ModConfig.getConfig().save());
-
-
-      ConfigEntryBuilder entryBuilder = ConfigEntryBuilder.create();
-
-      ConfigCategory cosmeticsCategory = builder.getOrCreateCategory(Text.translatable("config.twitchchat.category.cosmetics"));
-      cosmeticsCategory.addEntry(entryBuilder
-              .startStrField(Text.translatable("config.twitchchat.cosmetics.prefix"), ModConfig.getConfig().getPrefix())
-              .setSaveConsumer((s -> ModConfig.getConfig().setPrefix(s)))
-              .setTooltip(Text.translatable("config.twitchchat.cosmetics.prefix.tooltip"))
-              .setDefaultValue(ModConfig.DEFAULT_PREFIX)
-              .build());
-      cosmeticsCategory.addEntry(entryBuilder
-              .startStrField(Text.translatable("config.twitchchat.cosmetics.dateFormat"), ModConfig.getConfig().getDateFormat())
-              .setSaveConsumer((s -> ModConfig.getConfig().setDateFormat(s)))
-              .setTooltip(Text.translatable("config.twitchchat.cosmetics.dateFormat.tooltip"))
-              .setDefaultValue(ModConfig.DEFAULT_DATE_FORMAT)
-              .build());
-      cosmeticsCategory.addEntry(entryBuilder
-              .startStrList(Text.translatable("config.twitchchat.cosmetics.ignorelist"), ModConfig.getConfig().getIgnoreList())
-              .setSaveConsumer((l -> ModConfig.getConfig().setIgnoreList(new ArrayList<>(l))))
-              .setTooltip(Text.translatable("config.twitchchat.cosmetics.ignorelist.tooltip"))
-              .setDefaultValue(ModConfig.DEFAULT_IGNORE_LIST)
-              .build());
-      cosmeticsCategory.addEntry(entryBuilder
-              .startBooleanToggle(Text.translatable("config.twitchchat.cosmetics.twitchWatchSuggestions"), ModConfig.getConfig().areTwitchWatchSuggestionsEnabled())
-              .setSaveConsumer((b -> ModConfig.getConfig().setTwitchWatchSuggestions(b)))
-              .setTooltip(Text.translatable("config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip"))
-              .setDefaultValue(ModConfig.DEFAULT_TWITCH_WATCH_SUGGESTIONS)
-              .build());
-
-      ConfigCategory broadcastCategory = builder.getOrCreateCategory(Text.translatable("config.twitchchat.category.broadcast"));
-      broadcastCategory.addEntry(entryBuilder
-              .startBooleanToggle(Text.translatable("config.twitchchat.broadcast.toggle"), ModConfig.getConfig().isBroadcastEnabled())
-              .setSaveConsumer((b -> ModConfig.getConfig().setBroadcastEnabled(b)))
-              .setTooltip(Text.translatable("config.twitchchat.broadcast.toggle.tooltip"))
-              .setDefaultValue(ModConfig.DEFAULT_BROADCAST)
-              .build());
-      broadcastCategory.addEntry(entryBuilder
-              .startStrField(Text.translatable("config.twitchchat.broadcast.prefix"), ModConfig.getConfig().getBroadcastPrefix())
-              .setSaveConsumer((s -> ModConfig.getConfig().setBroadcastPrefix(s)))
-              .setTooltip(Text.translatable("config.twitchchat.broadcast.prefix.tooltip"))
-              .setDefaultValue(ModConfig.DEFAULT_BROADCAST_PREFIX)
-              .build());
-
-      ConfigCategory credentialsCategory = builder.getOrCreateCategory(Text.translatable("config.twitchchat.category.credentials"));
-      credentialsCategory.addEntry(entryBuilder
-              .startStrField(Text.translatable("config.twitchchat.credentials.username"), ModConfig.getConfig().getUsername())
-              .setSaveConsumer((s -> ModConfig.getConfig().setUsername(s)))
-              .setTooltip(Text.translatable("config.twitchchat.credentials.username.tooltip"))
-              .setDefaultValue(ModConfig.DEFAULT_USERNAME)
-              .build());
-      credentialsCategory.addEntry(entryBuilder
-              .startStrField(Text.translatable("config.twitchchat.credentials.oauthKey"), ModConfig.getConfig().getOauthKey())
-              .setSaveConsumer((s -> ModConfig.getConfig().setOauthKey(s)))
-              .setTooltip(Text.translatable("config.twitchchat.credentials.oauthKey.tooltip"))
-              .setDefaultValue(ModConfig.DEFAULT_OAUTH_KEY)
-              .build());
-
-      return builder.build();
-    };
-  }
+    @Override
+    public ConfigScreenFactory<?> getModConfigScreenFactory() {
+        return parentScreen -> YetAnotherConfigLib.createBuilder()
+                .title(Text.translatable("config.twitchchat.titie"))
+                .category(
+                        ConfigCategory.createBuilder()
+                                .name(Text.translatable("config.twitchchat.category.cosmetics"))
+                                .option(
+                                        Option.<String>createBuilder()
+                                                .name(Text.translatable("config.twitchchat.cosmetics.prefix"))
+                                                .description(
+                                                        OptionDescription.createBuilder()
+                                                                .text(Text.translatable("config.twitchchat.cosmetics.prefix.tooltip"))
+                                                                .build())
+                                                .binding(
+                                                        ModConfig.DEFAULT_PREFIX,
+                                                        () -> ModConfig.getConfig().getPrefix(),
+                                                        newPrefix -> ModConfig.getConfig().setPrefix(newPrefix)
+                                                )
+                                                .controller(StringControllerBuilder::create)
+                                                .build()
+                                )
+                                .option(
+                                        Option.<String>createBuilder()
+                                                .name(Text.translatable("config.twitchchat.cosmetics.dateFormat"))
+                                                .description(
+                                                        OptionDescription.createBuilder()
+                                                                .text(Text.translatable("config.twitchchat.cosmetics.dateFormat.tooltip"))
+                                                                .build())
+                                                .binding(
+                                                        ModConfig.DEFAULT_DATE_FORMAT,
+                                                        () -> ModConfig.getConfig().getDateFormat(),
+                                                        newDateFormat -> ModConfig.getConfig().setDateFormat(newDateFormat)
+                                                )
+                                                .controller(StringControllerBuilder::create)
+                                                .build()
+                                )
+                                .option(
+                                        ListOption.<String>createBuilder()
+                                                .name(Text.translatable("config.twitchchat.cosmetics.ignorelist"))
+                                                .description(
+                                                        OptionDescription.createBuilder()
+                                                                .text(Text.translatable("config.twitchchat.cosmetics.ignorelist.tooltip"))
+                                                                .build())
+                                                .binding(
+                                                        ModConfig.DEFAULT_IGNORE_LIST,
+                                                        () -> ModConfig.getConfig().getIgnoreList(),
+                                                        newIgnoreList -> ModConfig.getConfig().setIgnoreList(newIgnoreList)
+                                                )
+                                                .initial("")
+                                                .controller(StringControllerBuilder::create)
+                                                .build()
+                                )
+                                .option(
+                                        Option.<Boolean>createBuilder()
+                                                .name(Text.translatable("config.twitchchat.cosmetics.twitchWatchSuggestions"))
+                                                .description(
+                                                        OptionDescription.createBuilder()
+                                                                .text(Text.translatable("config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip"))
+                                                                .build())
+                                                .binding(
+                                                        ModConfig.DEFAULT_TWITCH_WATCH_SUGGESTIONS,
+                                                        () -> ModConfig.getConfig().areTwitchWatchSuggestionsEnabled(),
+                                                        newWatchSuggestionsEnabled -> ModConfig.getConfig().setTwitchWatchSuggestions(newWatchSuggestionsEnabled)
+                                                )
+                                                .controller(TickBoxControllerBuilder::create)
+                                                .build()
+                                )
+                                .build()
+                )
+                .category(
+                        ConfigCategory.createBuilder()
+                                .name(Text.translatable("config.twitchchat.category.broadcast"))
+                                .option(
+                                        Option.<Boolean>createBuilder()
+                                                .name(Text.translatable("config.twitchchat.broadcast.toggle"))
+                                                .description(
+                                                        OptionDescription.createBuilder()
+                                                                .text(Text.translatable("config.twitchchat.broadcast.toggle.tooltip"))
+                                                                .build())
+                                                .binding(
+                                                        ModConfig.DEFAULT_BROADCAST,
+                                                        () -> ModConfig.getConfig().isBroadcastEnabled(),
+                                                        newBroadcastEnabled -> ModConfig.getConfig().setBroadcastEnabled(newBroadcastEnabled)
+                                                )
+                                                .controller(TickBoxControllerBuilder::create)
+                                                .build()
+                                )
+                                .option(
+                                        Option.<String>createBuilder()
+                                                .name(Text.translatable("config.twitchchat.broadcast.prefix"))
+                                                .description(
+                                                        OptionDescription.createBuilder()
+                                                                .text(Text.translatable("config.twitchchat.broadcast.prefix.tooltip"))
+                                                                .build())
+                                                .binding(
+                                                        ModConfig.DEFAULT_BROADCAST_PREFIX,
+                                                        () -> ModConfig.getConfig().getBroadcastPrefix(),
+                                                        newBroadcastPrefix -> ModConfig.getConfig().setBroadcastPrefix(newBroadcastPrefix)
+                                                )
+                                                .controller(StringControllerBuilder::create)
+                                                .build()
+                                )
+                                .build()
+                )
+                .category(
+                        ConfigCategory.createBuilder()
+                                .name(Text.translatable("config.twitchchat.category.credentials"))
+                                .option(
+                                        Option.<String>createBuilder()
+                                                .name(Text.translatable("config.twitchchat.credentials.username"))
+                                                .description(
+                                                        OptionDescription.createBuilder()
+                                                                .text(Text.translatable("config.twitchchat.credentials.username.tooltip"))
+                                                                .build()
+                                                )
+                                                .binding(
+                                                        ModConfig.DEFAULT_USERNAME,
+                                                        () -> ModConfig.getConfig().getUsername(),
+                                                        newUsername -> ModConfig.getConfig().setUsername(newUsername)
+                                                )
+                                                .controller(StringControllerBuilder::create)
+                                                .build()
+                                )
+                                .option(
+                                        Option.<String>createBuilder()
+                                                .name(Text.translatable("config.twitchchat.credentials.oauthKey"))
+                                                .description(
+                                                        OptionDescription.createBuilder()
+                                                                .text(Text.translatable("config.twitchchat.credentials.oauthKey.tooltip"))
+                                                                .build()
+                                                )
+                                                .binding(
+                                                        ModConfig.DEFAULT_OAUTH_KEY,
+                                                        () -> ModConfig.getConfig().getOauthKey(),
+                                                        newOauthKey -> ModConfig.getConfig().setOauthKey(newOauthKey)
+                                                )
+                                                .controller(StringControllerBuilder::create)
+                                                .build()
+                                )
+                                .build()
+                )
+                .save(() -> ModConfig.getConfig().save())
+                .build().generateScreen(parentScreen);
+    }
 }
 
