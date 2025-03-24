@@ -1,5 +1,7 @@
 package eu.pabl.twitchchat;
 
+import eu.pabl.twitchchat.badge.Badge;
+import eu.pabl.twitchchat.badge.BadgeSet;
 import eu.pabl.twitchchat.commands.TwitchBaseCommand;
 import eu.pabl.twitchchat.config.ModConfig;
 import eu.pabl.twitchchat.twitch_integration.Bot;
@@ -8,14 +10,20 @@ import java.util.Date;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.text.Text;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TwitchChatMod implements ModInitializer {
+  public final static Logger LOGGER = LoggerFactory.getLogger(TwitchChatMod.class);
   public static Bot bot;
+  public static final BadgeSet BADGES = new BadgeSet();
 
   @Override
   public void onInitialize() {
@@ -24,11 +32,26 @@ public class TwitchChatMod implements ModInitializer {
     // Register commands
     ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
         new TwitchBaseCommand().registerCommands(dispatcher));
+
+    // Register reload listener
+    ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES)
+        .registerReloadListener(new TwitchChatResourceReloadListener());
   }
 
-  public static void addTwitchMessage(String time, String username, String message, TextColor textColor, boolean isMeMessage) {
+  public static void addTwitchMessage(String time, String username, String message, TextColor textColor, String[] badges, boolean isMeMessage) {
     MutableText timestampText = Text.literal(time);
     MutableText usernameText = Text.literal(username).styled(style -> style.withColor(textColor));
+    MutableText badgesText = Text.literal("");
+    String channel = ModConfig.getConfig().getChannel();
+    for (String badgeName : badges) {
+      Badge badge;
+      try {
+        badge = BADGES.get(channel, badgeName);
+      } catch (IllegalArgumentException e) {
+        continue;
+      }
+      badgesText.append(badge.toText());
+    }
     MutableText messageBodyText;
 
     if (!isMeMessage) {
@@ -61,6 +84,7 @@ public class TwitchChatMod implements ModInitializer {
     } else {
       MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(
           timestampText
+          .append(badgesText)
           .append(usernameText)
           .append(messageBodyText));
     }
