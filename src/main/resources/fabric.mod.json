@@ -27,13 +27,11 @@
   ],
 
   "depends": {
-    "minecraft": ["1.21.5-rc.1", "1.21.5"],
+    "minecraft": "1.21.5",
     "fabricloader": ">=0.16.10",
-    "fabric": ">=0.119.2+1.21.5",
-    "java": ">=21"
-  },
-  "suggests": {
-    "modmenu": ">=14.0.0-beta.2",
-    "cloth-config": ">=17.0.142"
+    "fabric": ">=0.119.5+1.21.5",
+    "java": ">=21",
+    "modmenu": ">=14.0.0-rc.2",
+    "yet_another_config_lib_v3": ">=3.6.6+1.21.5-fabric"
   }
 }
