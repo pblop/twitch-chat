@@ -3,7 +3,7 @@ plugins {
 	id 'maven-publish'
 }
 
-version = project.mod_version
+version = "${project.mod_version}+${project.minecraft_version}"
 group = project.maven_group
 
 base {
@@ -12,11 +12,11 @@ base {
 
 repositories {
 	maven { url = 'https://maven.terraformersmc.com/'}
-	maven { url 'https://jitpack.io' }
 	maven {
 		name 'Xander Maven'
 		url 'https://maven.isxander.dev/releases'
 	}
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -27,15 +27,15 @@ dependencies {
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    // ModMenu integration
+	// ModMenu integration
 	modImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
 
 	// YACL
 	modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}"
 
-    // IRC Library
-    implementation "com.github.pircbotx:pircbotx:${project.pircbotx_version}"
-    include "com.github.pircbotx:pircbotx:${project.pircbotx_version}"
+	// IRC Library
+	implementation "com.github.pircbotx:pircbotx:${project.pircbotx_version}"
+	include "com.github.pircbotx:pircbotx:${project.pircbotx_version}"
 }
 
 processResources {
@@ -68,8 +68,10 @@ java {
 }
 
 jar {
+	inputs.property "archivesName", project.base.archivesName
+
 	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}"}
+		rename { "${it}_${inputs.properties.archivesName}"}
 	}
 }
 
