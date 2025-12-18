@@ -4,6 +4,7 @@ import eu.pabl.twitchchat.commands.TwitchBaseCommand;
 import eu.pabl.twitchchat.config.ModConfig;
 import eu.pabl.twitchchat.twitch_integration.Bot;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
 
 import net.fabricmc.api.ModInitializer;
@@ -53,17 +54,32 @@ public class TwitchChatMod implements ModInitializer {
         String plainTextMessage = ModConfig.getConfig().getBroadcastPrefix() + username + ": " + message;
         plainTextMessage = sanitiseMessage(plainTextMessage);
         if (MinecraftClient.getInstance().player != null) {
-          MinecraftClient.getInstance().player.sendMessage(Text.literal(plainTextMessage), false);
+          minecraftSendChatMessage(Text.literal(plainTextMessage), false);
         }
       } catch (NullPointerException e) {
         System.err.println("TWITCH BOT FAILED TO BROADCAST MESSAGE: " + e.getMessage());
       }
     } else {
-      MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(
+      minecraftChatAddMessage(
           timestampText
           .append(usernameText)
-          .append(messageBodyText));
+          .append(messageBodyText)
+      );
     }
+  }
+
+  // Wrapper methods to ensure sending/rendering chat messages happens on the main Minecraft thread.
+  private static void minecraftChatAddMessage(MutableText message) {
+    MinecraftClient instance = MinecraftClient.getInstance();
+    instance.execute(
+        () -> instance.inGameHud.getChatHud().addMessage(message)
+    );
+  }
+  private static void minecraftSendChatMessage(MutableText message, boolean overlay) {
+    MinecraftClient instance = MinecraftClient.getInstance();
+    instance.execute(
+      () -> instance.player.sendMessage(message, overlay)
+    );
   }
 
   private static String sanitiseMessage(String message) {
@@ -71,7 +87,7 @@ public class TwitchChatMod implements ModInitializer {
   }
 
   public static void addNotification(MutableText message) {
-    MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(message.formatted(Formatting.DARK_GRAY));
+    minecraftChatAddMessage(message.formatted(Formatting.DARK_AQUA));
   }
 
   public static String formatTMISentTimestamp(String tmiSentTS) {
@@ -79,6 +95,10 @@ public class TwitchChatMod implements ModInitializer {
   }
   public static String formatTMISentTimestamp(long tmiSentTS) {
     Date date = new Date(tmiSentTS);
+    return formatDateTwitch(date);
+  }
+  public static String formatTMISentTimestamp(Instant tmiSentTS) {
+    Date date = Date.from(tmiSentTS);
     return formatDateTwitch(date);
   }
   public static String formatDateTwitch(Date date) {

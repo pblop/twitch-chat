@@ -34,8 +34,8 @@ dependencies {
 	modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}"
 
     // IRC Library
-    implementation "com.github.pircbotx:pircbotx:${project.pircbotx_version}"
-    include "com.github.pircbotx:pircbotx:${project.pircbotx_version}"
+	implementation "com.github.twitch4j:twitch4j:${project.twitch4j_version}"
+	include "com.github.twitch4j:twitch4j:${project.twitch4j_version}"
 }
 
 processResources {
@@ -55,6 +55,7 @@ tasks.withType(JavaCompile).configureEach {
 
 	// Minecraft now uses Java 21.
 	it.options.release = 21
+	options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
 }
 
 java {

@@ -152,15 +152,11 @@ public class ModConfig {
   }
 
   public String getOauthKey() {
-    return oauthKey;
+    return oauthKey.replaceFirst("^oauth:", "");
   }
 
   public void setOauthKey(String oauthKey) {
-    if (oauthKey.isEmpty() || oauthKey.startsWith("oauth:")) {
-      this.oauthKey = oauthKey;
-    } else {
-      this.oauthKey = "oauth:" + oauthKey;
-    }
+    this.oauthKey = oauthKey.replaceFirst("^oauth:", "");
   }
 
   public String getPrefix() {
