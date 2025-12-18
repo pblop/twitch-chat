@@ -4,8 +4,9 @@ This light-weight mod links a Twitch channel's chat to your Minecraft chatbox!
 
 There are more mods that do this, but none are available for Fabric... so I made it!
 
-This mod requires [Mod Menu](https://github.com/TerraformersMC/ModMenu) and
-[Fabric API](https://github.com/FabricMC/fabric) to work.
+This mod requires [Mod Menu](https://github.com/TerraformersMC/ModMenu),
+[Fabric API](https://github.com/FabricMC/fabric), and
+[YetAnotherConfigLib](https://github.com/isXander/YetAnotherConfigLib) to work.
 
 **NOTE: Even though the mod is on beta, it's fully functional! It's on beta to symbolise I'm not finished adding features.
 If you encounter any bug or issue or have any suggestion, please add it as an issue
@@ -13,7 +14,7 @@ If you encounter any bug or issue or have any suggestion, please add it as an is
 
 ## Usage.
 
-1.  Get a Twitch oauth key here https://twitchapps.com/tmi/ and write it down somewhere.
+1.  Get a Twitch oauth key [here](https://twitchapps.com/tmi/) and write it down somewhere.
 2.  Open the mod menu.
 3.  Open this mod's configuration inside that menu.
 4.  Fill in your credentials in the credentials tab (your twitch username, oauth token).
