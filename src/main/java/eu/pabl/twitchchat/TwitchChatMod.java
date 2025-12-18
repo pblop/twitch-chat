@@ -2,6 +2,7 @@ package eu.pabl.twitchchat;
 
 import eu.pabl.twitchchat.commands.TwitchBaseCommand;
 import eu.pabl.twitchchat.config.ModConfig;
+import eu.pabl.twitchchat.gui.MessageIndicators;
 import eu.pabl.twitchchat.twitch_integration.Bot;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -10,6 +11,7 @@ import java.util.Date;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.MessageIndicator;
 import net.minecraft.text.Text;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.TextColor;
@@ -63,16 +65,17 @@ public class TwitchChatMod implements ModInitializer {
       minecraftChatAddMessage(
           timestampText
           .append(usernameText)
-          .append(messageBodyText)
+          .append(messageBodyText),
+          MessageIndicators.TWITCH_CHAT
       );
     }
   }
 
   // Wrapper methods to ensure sending/rendering chat messages happens on the main Minecraft thread.
-  private static void minecraftChatAddMessage(MutableText message) {
+  private static void minecraftChatAddMessage(MutableText message, MessageIndicator indicator) {
     MinecraftClient instance = MinecraftClient.getInstance();
     instance.execute(
-        () -> instance.inGameHud.getChatHud().addMessage(message)
+        () -> instance.inGameHud.getChatHud().addMessage(message, null, indicator)
     );
   }
   private static void minecraftSendChatMessage(MutableText message, boolean overlay) {
@@ -87,7 +90,7 @@ public class TwitchChatMod implements ModInitializer {
   }
 
   public static void addNotification(MutableText message) {
-    minecraftChatAddMessage(message.formatted(Formatting.DARK_AQUA));
+    minecraftChatAddMessage(message.formatted(Formatting.DARK_AQUA), MessageIndicators.TWITCH_SYSTEM);
   }
 
   public static String formatTMISentTimestamp(String tmiSentTS) {

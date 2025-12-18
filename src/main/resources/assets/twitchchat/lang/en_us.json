@@ -43,6 +43,9 @@
   "text.twitchchat.bot.leave": "Left channel '%s'",
 
   "text.twitchchat.bot.timeout": "User '%s' has been timed out for %s seconds. Reason: %s",
-  "text.twitchchat.bot.ban": "User '%s' has been banned"
+  "text.twitchchat.bot.ban": "User '%s' has been banned",
+
+  "text.twitchchat.indicator.message": "Twitch Chat",
+  "text.twitchchat.indicator.system": "Twitch System"
 
 }
