@@ -60,8 +60,3 @@ Just don't personally send me bugs, ideas or feature/help requests, those go in
 ### Also available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/twitch-chat) and [ModRinth](https://modrinth.com/mod/twitch-chat).
 
 ### [Here](https://github.com/pblop/twitch-chat/wiki/Screenshots) you can see in-game images.
-
----
-
-I've started school, so this project is going to be updated sparingly, but I'll try to answer every comment and resolve
-your issues.
