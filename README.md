@@ -14,7 +14,9 @@ If you encounter any bug or issue or have any suggestion, please add it as an is
 
 ## Usage.
 
-1.  Get a Twitch oauth key [here](https://twitchapps.com/tmi/) and write it down somewhere.
+1.  Get a Twitch access token and write it down somewhere. [This site is fine](https://twitchtokengenerator.com).
+    The permissions the oauth key needs to have are the ones automatically given by the generator
+    website when "Bot Chat Token" is clicked.
 2.  Open the mod menu.
 3.  Open this mod's configuration inside that menu.
 4.  Fill in your credentials in the credentials tab (your twitch username, oauth token).
