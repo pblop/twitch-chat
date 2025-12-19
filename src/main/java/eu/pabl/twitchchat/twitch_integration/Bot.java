@@ -54,6 +54,7 @@ public class Bot {
       evtMgr.onEvent(ChannelLeaveEvent.class, this::onLeave);
       evtMgr.onEvent(UserTimeoutEvent.class, this::onTimeout);
       evtMgr.onEvent(UserBanEvent.class, this::onBan);
+      evtMgr.onEvent(UserStateEvent.class, this::onUserState);
 
       if (!autoJoinChannel.isEmpty()) {
         twitchClient.getChat().joinChannel(autoJoinChannel);
@@ -73,6 +74,19 @@ public class Bot {
 
   public boolean isConnected() {
     return twitchClient != null;
+  }
+
+  public void onUserState(UserStateEvent event) {
+    // Info about our user. More at https://dev.twitch.tv/docs/chat/irc/#userstate-tags
+
+    // Set our own username color if we got it.
+    Optional<String> color = event.getColor();
+    if (color.isPresent() && !color.get().isEmpty()) {
+      Color userColor = Color.decode(color.get());
+      TextColor formattingColor = TextColor.fromRgb(userColor.getRGB());
+      putFormattingColor(username, formattingColor);
+    }
+
   }
 
   /**
