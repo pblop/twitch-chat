@@ -4,7 +4,7 @@ package eu.pabl.twitchchat.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 public class TwitchBaseCommand implements BaseCommand {
   public void registerCommands(CommandDispatcher<FabricClientCommandSource> dispatcher) {
@@ -16,8 +16,8 @@ public class TwitchBaseCommand implements BaseCommand {
           .then(new TwitchWatchCommand().getArgumentBuilder())
           .then(new TwitchBroadcastCommand().getArgumentBuilder())
           .executes(source -> {
-              source.getSource().sendFeedback(Text.translatable("text.twitchchat.command.base.noargs1"));
-              source.getSource().sendFeedback(Text.translatable("text.twitchchat.command.base.noargs2"));
+              source.getSource().sendFeedback(Component.translatable("text.twitchchat.command.base.noargs1"));
+              source.getSource().sendFeedback(Component.translatable("text.twitchchat.command.base.noargs2"));
               return 1;
           })
       );

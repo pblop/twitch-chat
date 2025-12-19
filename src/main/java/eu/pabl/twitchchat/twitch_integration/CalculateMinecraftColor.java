@@ -1,6 +1,6 @@
 package eu.pabl.twitchchat.twitch_integration;
 
-import net.minecraft.text.TextColor;
+import net.minecraft.network.chat.TextColor;
 
 public class CalculateMinecraftColor {
   public static final TextColor[] DEFAULT_COLORS = new TextColor[]{

@@ -5,10 +5,10 @@ import eu.pabl.twitchchat.config.ModConfig;
 import eu.pabl.twitchchat.gui.ChatMessages;
 import eu.pabl.twitchchat.twitch_integration.CalculateMinecraftColor;
 import java.util.Date;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,10 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ChatScreen.class)
 public class ChatMixin {
-	@Inject(at = @At("HEAD"), method = "sendMessage", cancellable = true)
+	@Inject(at = @At("HEAD"), method = "handleChatInput", cancellable = true)
 	private void sendMessage(String text, boolean addToHistory, CallbackInfo info) {
       ModConfig config = ModConfig.getConfig();
-
 
       String prefix = config.getPrefix();
 
@@ -50,10 +49,10 @@ public class ChatMixin {
 
           // Add the message to the Minecraft Chat
           ChatMessages.addTwitchMessage(formattedTime, username, isMeMessage ? textWithoutPrefix.substring(4) : textWithoutPrefix, userColor, isMeMessage);
-          MinecraftClient.getInstance().inGameHud.getChatHud().addToMessageHistory(text);
+          Minecraft.getInstance().gui.getChat().addRecentChat(text);
           info.cancel();
         } else {
-          ChatMessages.addNotification(Text.translatable("text.twitchchat.chat.integration_disabled"));
+          ChatMessages.addNotification(Component.translatable("text.twitchchat.chat.integration_disabled"));
         }
       }
 	}

@@ -1,19 +1,19 @@
 package eu.pabl.twitchchat.gui;
 
-import net.minecraft.client.gui.hud.MessageIndicator;
-import net.minecraft.text.Text;
+import net.minecraft.client.GuiMessageTag;
+import net.minecraft.network.chat.Component;
 
 public class MessageIndicators {
-  public static final MessageIndicator TWITCH_CHAT = new MessageIndicator(
+  public static final GuiMessageTag TWITCH_CHAT = new GuiMessageTag(
     0x9146FF, // Twitch purple color
     null,
-    Text.translatable("text.twitchchat.indicator.message"),
+    Component.translatable("text.twitchchat.indicator.message"),
   "Twitch Chat"
   );
-  public static final MessageIndicator TWITCH_SYSTEM = new MessageIndicator(
+  public static final GuiMessageTag TWITCH_SYSTEM = new GuiMessageTag(
     0x6a3fb3, // Darker purple color
     null,
-    Text.translatable("text.twitchchat.indicator.system"),
+    Component.translatable("text.twitchchat.indicator.system"),
     "Twitch System"
   );
 }

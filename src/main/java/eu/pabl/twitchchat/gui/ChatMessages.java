@@ -2,12 +2,12 @@ package eu.pabl.twitchchat.gui;
 
 import eu.pabl.twitchchat.TwitchChatMod;
 import eu.pabl.twitchchat.config.ModConfig;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.MessageIndicator;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
-import net.minecraft.util.Formatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.GuiMessageTag;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.ChatFormatting;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -15,17 +15,17 @@ import java.util.Date;
 
 public class ChatMessages {
   public static void addTwitchMessage(String time, String username, String message, TextColor textColor, boolean isMeMessage) {
-    MutableText timestampText = Text.literal(time);
-    MutableText usernameText = Text.literal(username).styled(style -> style.withColor(textColor));
-    MutableText messageBodyText;
+    MutableComponent timestampText = Component.literal(time);
+    MutableComponent usernameText = Component.literal(username).withStyle(style -> style.withColor(textColor));
+    MutableComponent messageBodyText;
 
     if (!isMeMessage) {
-      messageBodyText = Text.literal(": " + message);
+      messageBodyText = Component.literal(": " + message);
     } else {
       // '/me' messages have the same color as the username in the Twitch website.
       // And thus I set the color of the message to be the same as the username.
       // They also don't have a colon after the username.
-      messageBodyText = Text.literal(" " + message).styled(style -> style.withColor(textColor));
+      messageBodyText = Component.literal(" " + message).withStyle(style -> style.withColor(textColor));
 
       // In Minecraft, a '/me' message is marked with a star before the name, like so:
       //
@@ -33,15 +33,15 @@ public class ChatMessages {
       // * Player this is a '/me' message
       //
       // The star is always white (that's why I don't format it).
-      usernameText = Text.literal("* ").append(usernameText);
+      usernameText = Component.literal("* ").append(usernameText);
     }
 
     if (ModConfig.getConfig().isBroadcastEnabled()) {
       try {
         String plainTextMessage = ModConfig.getConfig().getBroadcastPrefix() + username + ": " + message;
         plainTextMessage = sanitiseMessage(plainTextMessage);
-        if (MinecraftClient.getInstance().player != null) {
-          minecraftSendChatMessage(Text.literal(plainTextMessage), false);
+        if (Minecraft.getInstance().player != null) {
+          minecraftSendChatMessage(Component.literal(plainTextMessage), false);
         }
       } catch (NullPointerException e) {
         TwitchChatMod.LOGGER.error("Failed to broadcast Twitch message to Minecraft chat", e);
@@ -57,17 +57,17 @@ public class ChatMessages {
   }
 
   // Wrapper methods to ensure sending/rendering chat messages happens on the main Minecraft thread.
-  private static void minecraftChatAddMessage(MutableText message, MessageIndicator indicator) {
-    MinecraftClient instance = MinecraftClient.getInstance();
+  private static void minecraftChatAddMessage(MutableComponent message, GuiMessageTag indicator) {
+    Minecraft instance = Minecraft.getInstance();
     instance.execute(
-        () -> instance.inGameHud.getChatHud().addMessage(message, null, indicator)
+        () -> instance.gui.getChat().addMessage(message, null, indicator)
     );
   }
 
-  private static void minecraftSendChatMessage(MutableText message, boolean overlay) {
-    MinecraftClient instance = MinecraftClient.getInstance();
+  private static void minecraftSendChatMessage(MutableComponent message, boolean overlay) {
+    Minecraft instance = Minecraft.getInstance();
     instance.execute(
-      () -> instance.player.sendMessage(message, overlay)
+      () -> instance.player.displayClientMessage(message, overlay)
     );
   }
 
@@ -75,8 +75,8 @@ public class ChatMessages {
     return message.replaceAll("§", "");
   }
 
-  public static void addNotification(MutableText message) {
-    minecraftChatAddMessage(message.formatted(Formatting.DARK_AQUA), MessageIndicators.TWITCH_SYSTEM);
+  public static void addNotification(MutableComponent message) {
+    minecraftChatAddMessage(message.withStyle(ChatFormatting.DARK_AQUA), MessageIndicators.TWITCH_SYSTEM);
   }
 
   public static String formatTMISentTimestamp(Instant tmiSentTS) {

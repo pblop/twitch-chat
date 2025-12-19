@@ -16,8 +16,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import eu.pabl.twitchchat.gui.ChatMessages;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import eu.pabl.twitchchat.TwitchChatMod;
 
 public class Bot {
@@ -113,7 +113,7 @@ public class Bot {
   }
 
   public void onNotice(ChannelNoticeEvent event) {
-    ChatMessages.addNotification(Text.literal(event.getMessage()));
+    ChatMessages.addNotification(Component.literal(event.getMessage()));
   }
 
   public void onLeave(ChannelLeaveEvent event) {
@@ -125,7 +125,7 @@ public class Bot {
     EventChannel channel = event.getChannel();
     String channelName = channel.getName();
 
-    ChatMessages.addNotification(Text.translatable("text.twitchchat.bot.disconnected", channelName));
+    ChatMessages.addNotification(Component.translatable("text.twitchchat.bot.disconnected", channelName));
 
     if (currentChannel != null && currentChannel.equals(channelName)) {
       currentChannel = null;
@@ -137,11 +137,11 @@ public class Bot {
     String reason = event.getReason();
     int duration = event.getDuration();
 
-    ChatMessages.addNotification(Text.translatable("text.twitchchat.bot.timeout", user, duration, reason));
+    ChatMessages.addNotification(Component.translatable("text.twitchchat.bot.timeout", user, duration, reason));
   }
   public void onBan(UserBanEvent event) {
     String user = event.getUser().getName();
-    ChatMessages.addNotification(Text.translatable("text.twitchchat.bot.ban", user));
+    ChatMessages.addNotification(Component.translatable("text.twitchchat.bot.ban", user));
   }
 
   String currentChannel;
@@ -154,7 +154,7 @@ public class Bot {
     String channelName = channel.getName();
 
     if (currentChannel == null || !currentChannel.equals(channelName)) {
-      ChatMessages.addNotification(Text.translatable("text.twitchchat.bot.connected", channelName));
+      ChatMessages.addNotification(Component.translatable("text.twitchchat.bot.connected", channelName));
       currentChannel = channelName;
     }
   }

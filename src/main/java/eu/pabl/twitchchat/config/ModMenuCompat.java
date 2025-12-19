@@ -7,23 +7,23 @@ import dev.isxander.yacl3.api.controller.StringControllerBuilder;
 import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 @Environment(EnvType.CLIENT)
 public class ModMenuCompat implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
         return parentScreen -> YetAnotherConfigLib.createBuilder()
-                .title(Text.translatable("config.twitchchat.titie"))
+                .title(Component.translatable("config.twitchchat.titie"))
                 .category(
                         ConfigCategory.createBuilder()
-                                .name(Text.translatable("config.twitchchat.category.cosmetics"))
+                                .name(Component.translatable("config.twitchchat.category.cosmetics"))
                                 .option(
                                         Option.<String>createBuilder()
-                                                .name(Text.translatable("config.twitchchat.cosmetics.prefix"))
+                                                .name(Component.translatable("config.twitchchat.cosmetics.prefix"))
                                                 .description(
                                                         OptionDescription.createBuilder()
-                                                                .text(Text.translatable("config.twitchchat.cosmetics.prefix.tooltip"))
+                                                                .text(Component.translatable("config.twitchchat.cosmetics.prefix.tooltip"))
                                                                 .build())
                                                 .binding(
                                                         ModConfig.DEFAULT_PREFIX,
@@ -35,10 +35,10 @@ public class ModMenuCompat implements ModMenuApi {
                                 )
                                 .option(
                                         Option.<String>createBuilder()
-                                                .name(Text.translatable("config.twitchchat.cosmetics.dateFormat"))
+                                                .name(Component.translatable("config.twitchchat.cosmetics.dateFormat"))
                                                 .description(
                                                         OptionDescription.createBuilder()
-                                                                .text(Text.translatable("config.twitchchat.cosmetics.dateFormat.tooltip"))
+                                                                .text(Component.translatable("config.twitchchat.cosmetics.dateFormat.tooltip"))
                                                                 .build())
                                                 .binding(
                                                         ModConfig.DEFAULT_DATE_FORMAT,
@@ -50,10 +50,10 @@ public class ModMenuCompat implements ModMenuApi {
                                 )
                                 .option(
                                         ListOption.<String>createBuilder()
-                                                .name(Text.translatable("config.twitchchat.cosmetics.ignorelist"))
+                                                .name(Component.translatable("config.twitchchat.cosmetics.ignorelist"))
                                                 .description(
                                                         OptionDescription.createBuilder()
-                                                                .text(Text.translatable("config.twitchchat.cosmetics.ignorelist.tooltip"))
+                                                                .text(Component.translatable("config.twitchchat.cosmetics.ignorelist.tooltip"))
                                                                 .build())
                                                 .binding(
                                                         ModConfig.DEFAULT_IGNORE_LIST,
@@ -66,10 +66,10 @@ public class ModMenuCompat implements ModMenuApi {
                                 )
                                 .option(
                                         Option.<Boolean>createBuilder()
-                                                .name(Text.translatable("config.twitchchat.cosmetics.twitchWatchSuggestions"))
+                                                .name(Component.translatable("config.twitchchat.cosmetics.twitchWatchSuggestions"))
                                                 .description(
                                                         OptionDescription.createBuilder()
-                                                                .text(Text.translatable("config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip"))
+                                                                .text(Component.translatable("config.twitchchat.cosmetics.twitchWatchSuggestions.tooltip"))
                                                                 .build())
                                                 .binding(
                                                         ModConfig.DEFAULT_TWITCH_WATCH_SUGGESTIONS,
@@ -83,13 +83,13 @@ public class ModMenuCompat implements ModMenuApi {
                 )
                 .category(
                         ConfigCategory.createBuilder()
-                                .name(Text.translatable("config.twitchchat.category.broadcast"))
+                                .name(Component.translatable("config.twitchchat.category.broadcast"))
                                 .option(
                                         Option.<Boolean>createBuilder()
-                                                .name(Text.translatable("config.twitchchat.broadcast.toggle"))
+                                                .name(Component.translatable("config.twitchchat.broadcast.toggle"))
                                                 .description(
                                                         OptionDescription.createBuilder()
-                                                                .text(Text.translatable("config.twitchchat.broadcast.toggle.tooltip"))
+                                                                .text(Component.translatable("config.twitchchat.broadcast.toggle.tooltip"))
                                                                 .build())
                                                 .binding(
                                                         ModConfig.DEFAULT_BROADCAST,
@@ -101,10 +101,10 @@ public class ModMenuCompat implements ModMenuApi {
                                 )
                                 .option(
                                         Option.<String>createBuilder()
-                                                .name(Text.translatable("config.twitchchat.broadcast.prefix"))
+                                                .name(Component.translatable("config.twitchchat.broadcast.prefix"))
                                                 .description(
                                                         OptionDescription.createBuilder()
-                                                                .text(Text.translatable("config.twitchchat.broadcast.prefix.tooltip"))
+                                                                .text(Component.translatable("config.twitchchat.broadcast.prefix.tooltip"))
                                                                 .build())
                                                 .binding(
                                                         ModConfig.DEFAULT_BROADCAST_PREFIX,
@@ -118,13 +118,13 @@ public class ModMenuCompat implements ModMenuApi {
                 )
                 .category(
                         ConfigCategory.createBuilder()
-                                .name(Text.translatable("config.twitchchat.category.credentials"))
+                                .name(Component.translatable("config.twitchchat.category.credentials"))
                                 .option(
                                         Option.<String>createBuilder()
-                                                .name(Text.translatable("config.twitchchat.credentials.username"))
+                                                .name(Component.translatable("config.twitchchat.credentials.username"))
                                                 .description(
                                                         OptionDescription.createBuilder()
-                                                                .text(Text.translatable("config.twitchchat.credentials.username.tooltip"))
+                                                                .text(Component.translatable("config.twitchchat.credentials.username.tooltip"))
                                                                 .build()
                                                 )
                                                 .binding(
@@ -137,10 +137,10 @@ public class ModMenuCompat implements ModMenuApi {
                                 )
                                 .option(
                                         Option.<String>createBuilder()
-                                                .name(Text.translatable("config.twitchchat.credentials.oauthKey"))
+                                                .name(Component.translatable("config.twitchchat.credentials.oauthKey"))
                                                 .description(
                                                         OptionDescription.createBuilder()
-                                                                .text(Text.translatable("config.twitchchat.credentials.oauthKey.tooltip"))
+                                                                .text(Component.translatable("config.twitchchat.credentials.oauthKey.tooltip"))
                                                                 .build()
                                                 )
                                                 .binding(

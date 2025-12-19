@@ -7,8 +7,8 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import eu.pabl.twitchchat.config.ModConfig;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.AbstractClientPlayer;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -17,10 +17,10 @@ public class TwitchWatchSuggestionProvider implements SuggestionProvider<FabricC
 
     @Override
     public CompletableFuture<Suggestions> getSuggestions(CommandContext<FabricClientCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
-        if (MinecraftClient.getInstance().world != null && ModConfig.getConfig().areTwitchWatchSuggestionsEnabled()) {
-            List<AbstractClientPlayerEntity> players = MinecraftClient.getInstance().world.getPlayers();
+        if (Minecraft.getInstance().level != null && ModConfig.getConfig().areTwitchWatchSuggestionsEnabled()) {
+            List<AbstractClientPlayer> players = Minecraft.getInstance().level.players();
 
-            for (AbstractClientPlayerEntity player : players) {
+            for (AbstractClientPlayer player : players) {
                 builder.suggest(player.getName().getString());
             }
         }
