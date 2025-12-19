@@ -42,7 +42,7 @@ public class Bot {
   }
 
   public void start() {
-    System.out.println("TWITCH BOT STARTED");
+    TwitchChatMod.LOGGER.info("Starting Twitch bot...");
     myExecutor.execute(() -> {
       twitchClient = builder.build();
       EventManager evtMgr = twitchClient.getEventManager();
@@ -62,7 +62,7 @@ public class Bot {
   }
 
   public void stop() {
-    System.out.println("TWITCH BOT STOPPED");
+    TwitchChatMod.LOGGER.info("Stopping Twitch bot...");
     if (twitchClient != null) {
       twitchClient.close();
       twitchClient = null;
@@ -103,7 +103,6 @@ public class Bot {
     boolean isActionMessage = event instanceof ChannelMessageActionEvent;
     String message = event.getMessage();
     IRCMessageEvent ircEvent = event.getMessageEvent();
-    System.out.println("TWITCH MESSAGE: " + message);
     TextColor formattingColor = calculateUserColor(ircEvent);
     String nick = event.getUser().getName();
 
@@ -113,7 +112,6 @@ public class Bot {
   }
 
   public void onNotice(ChannelNoticeEvent event) {
-    System.out.println("TWITCH NOTICE: " + event.toString());
     TwitchChatMod.addNotification(Text.literal(event.getMessage()));
   }
 

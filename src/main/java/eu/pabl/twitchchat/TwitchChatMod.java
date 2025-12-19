@@ -16,9 +16,12 @@ import net.minecraft.text.Text;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TwitchChatMod implements ModInitializer {
   public static Bot bot;
+  public static Logger LOGGER = LoggerFactory.getLogger("TwitchChat");
 
   @Override
   public void onInitialize() {
@@ -59,7 +62,7 @@ public class TwitchChatMod implements ModInitializer {
           minecraftSendChatMessage(Text.literal(plainTextMessage), false);
         }
       } catch (NullPointerException e) {
-        System.err.println("TWITCH BOT FAILED TO BROADCAST MESSAGE: " + e.getMessage());
+        LOGGER.error("Failed to broadcast Twitch message to Minecraft chat", e);
       }
     } else {
       minecraftChatAddMessage(
