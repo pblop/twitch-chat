@@ -2,6 +2,7 @@ package eu.pabl.twitchchat.mixin;
 
 import eu.pabl.twitchchat.TwitchChatMod;
 import eu.pabl.twitchchat.config.ModConfig;
+import eu.pabl.twitchchat.gui.ChatMessages;
 import eu.pabl.twitchchat.twitch_integration.CalculateMinecraftColor;
 import java.util.Date;
 import net.minecraft.client.MinecraftClient;
@@ -34,7 +35,7 @@ public class ChatMixin {
           TwitchChatMod.bot.sendMessage(textWithoutPrefix); // Send the message to the Twitch IRC Chat
 
           Date currentTime = new Date();
-          String formattedTime = TwitchChatMod.formatDateTwitch(currentTime);
+          String formattedTime = ChatMessages.formatDateTwitch(currentTime);
 
           String username = TwitchChatMod.bot.getUsername();
           TextColor userColor;
@@ -48,11 +49,11 @@ public class ChatMixin {
           boolean isMeMessage = textWithoutPrefix.startsWith("/me");
 
           // Add the message to the Minecraft Chat
-          TwitchChatMod.addTwitchMessage(formattedTime, username, isMeMessage ? textWithoutPrefix.substring(4) : textWithoutPrefix, userColor, isMeMessage);
+          ChatMessages.addTwitchMessage(formattedTime, username, isMeMessage ? textWithoutPrefix.substring(4) : textWithoutPrefix, userColor, isMeMessage);
           MinecraftClient.getInstance().inGameHud.getChatHud().addToMessageHistory(text);
           info.cancel();
         } else {
-          TwitchChatMod.addNotification(Text.translatable("text.twitchchat.chat.integration_disabled"));
+          ChatMessages.addNotification(Text.translatable("text.twitchchat.chat.integration_disabled"));
         }
       }
 	}
