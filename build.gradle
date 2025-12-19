@@ -16,6 +16,10 @@ repositories {
 		name 'Xander Maven'
 		url 'https://maven.isxander.dev/releases'
 	}
+	maven {
+		name = 'Twitch4J fork'
+		url = 'https://pblop.github.io/twitch4j/'
+	}
 	maven { url 'https://jitpack.io' }
 }
 
@@ -34,8 +38,8 @@ dependencies {
 	modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}"
 
     // IRC Library
-	implementation "com.github.twitch4j:twitch4j:${project.twitch4j_version}"
-	include "com.github.twitch4j:twitch4j:${project.twitch4j_version}"
+	implementation "com.github.pblop:twitch4j:${project.twitch4j_version}"
+	include "com.github.pblop:twitch4j:${project.twitch4j_version}"
 }
 
 processResources {

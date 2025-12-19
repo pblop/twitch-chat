@@ -7,10 +7,7 @@ import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.events.AbstractChannelMessageEvent;
 import com.github.twitch4j.chat.events.channel.*;
 import com.github.twitch4j.common.events.domain.EventChannel;
-import com.github.twitch4j.common.events.domain.EventUser;
-import com.github.twitch4j.helix.domain.User;
-import com.google.common.collect.ImmutableMap;
-import eu.pabl.twitchchat.config.ModConfig;
+
 import java.awt.Color;
 import java.time.Instant;
 import java.util.HashMap;
@@ -26,43 +23,21 @@ public class Bot {
   private TwitchClient twitchClient = null;
   private final TwitchClientBuilder builder;
   private final String username;
-  private String channel;
+  private String autoJoinChannel;
   private ExecutorService myExecutor;
   private HashMap<String, TextColor> formattingColorCache; // Map of usernames to colors to keep consistency with usernames and colors
 
-  public Bot(String username, String oauthKey, String channel) {
-    this.channel = channel.toLowerCase();
+  public Bot(String username, String oauthKey, String autoJoinChannel) {
+    this.autoJoinChannel = autoJoinChannel.toLowerCase();
     this.username = username.toLowerCase();
     formattingColorCache = new HashMap<>();
 
     OAuth2Credential credential = new OAuth2Credential("twitch", oauthKey);
     builder = TwitchClientBuilder.builder()
-        .withEnableChat(true)
-        .withChatAccount(credential);
-//
-//    Configuration.Builder builder = new Configuration.Builder()
-//        .setAutoNickChange(false) //Twitch doesn't support multiple users
-//        .setOnJoinWhoEnabled(false) //Twitch doesn't support WHO command
-//        .setEncoding(StandardCharsets.UTF_8) // Use UTF-8 on Windows.
-//        .setCapEnabled(true)
-//        .addCapHandler(new EnableCapHandler("twitch.tv/membership")) //Twitch by default doesn't send JOIN, PART, and NAMES unless you request it, see https://dev.twitch.tv/docs/irc/guide/#twitch-irc-capabilities
-//        .addCapHandler(new EnableCapHandler("twitch.tv/tags"))
-//        .addCapHandler(new EnableCapHandler("twitch.tv/commands"))
-//
-//        .addServer("irc.chat.twitch.tv", 6697)
-//        .setSocketFactory(SSLSocketFactory.getDefault())
-//        .setName(this.username)
-//        .setServerPassword(oauthKey);
+      .withEnableChat(true)
+      .withChatAutoJoinOwnChannel(false)
+      .withChatAccount(credential);
 
-//    if (!channel.equals("")) {
-//       builder.addAutoJoinChannel("#" + this.channel);
-//    }
-//
-//    Configuration config = builder.addListener(this)
-//        .setAutoSplitMessage(false)
-//        .buildConfiguration();
-
-//    this.ircBot = new PircBotX(config);
     this.myExecutor = Executors.newSingleThreadExecutor();
   }
 
@@ -79,10 +54,10 @@ public class Bot {
       evtMgr.onEvent(UserTimeoutEvent.class, this::onTimeout);
       evtMgr.onEvent(UserBanEvent.class, this::onBan);
 
-      // Auto-join the channel if specified
-      if (!channel.isEmpty()) {
-        twitchClient.getChat().joinChannel(channel);
+      if (!autoJoinChannel.isEmpty()) {
+        twitchClient.getChat().joinChannel(autoJoinChannel);
       }
+
     });
   }
 
@@ -91,6 +66,7 @@ public class Bot {
     if (twitchClient != null) {
       twitchClient.close();
       twitchClient = null;
+      currentChannel = null;
     }
   }
 
@@ -142,10 +118,17 @@ public class Bot {
   }
 
   public void onLeave(ChannelLeaveEvent event) {
+    if (!event.getUser().getName().equalsIgnoreCase(this.username)) {
+      // Ignore leave events for other users
+      return;
+    }
+
     EventChannel channel = event.getChannel();
     String channelName = channel.getName();
+
+    TwitchChatMod.addNotification(Text.translatable("text.twitchchat.bot.leave", channelName));
+
     if (currentChannel != null && currentChannel.equals(channelName)) {
-      TwitchChatMod.addNotification(Text.translatable("text.twitchchat.bot.leave", this.channel));
       currentChannel = null;
     }
   }
@@ -164,10 +147,15 @@ public class Bot {
 
   String currentChannel;
   public void onJoin(ChannelJoinEvent event)  {
+    if (!event.getUser().getName().equalsIgnoreCase(this.username)) {
+      // Ignore join events for other users
+      return;
+    }
     EventChannel channel = event.getChannel();
     String channelName = channel.getName();
-     if (currentChannel == null || !currentChannel.equals(channelName)) {
-      TwitchChatMod.addNotification(Text.translatable("text.twitchchat.bot.connected", this.channel));
+
+    if (currentChannel == null || !currentChannel.equals(channelName)) {
+      TwitchChatMod.addNotification(Text.translatable("text.twitchchat.bot.connected", channelName));
       currentChannel = channelName;
     }
   }
@@ -192,7 +180,7 @@ public class Bot {
   }
 
   public void joinChannel(String channel) {
-    this.channel = channel.toLowerCase();
+    this.autoJoinChannel = channel.toLowerCase();
     if (twitchClient != null) {
       myExecutor.execute(() -> {
         var chat = twitchClient.getChat();
@@ -200,7 +188,7 @@ public class Bot {
           chat.leaveChannel(currentChannel);
           currentChannel = null;
         }
-        chat.joinChannel(this.channel);
+        chat.joinChannel(this.autoJoinChannel);
       });
     }
   }
