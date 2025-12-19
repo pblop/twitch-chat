@@ -125,7 +125,7 @@ public class Bot {
     EventChannel channel = event.getChannel();
     String channelName = channel.getName();
 
-    ChatMessages.addNotification(Text.translatable("text.twitchchat.bot.leave", channelName));
+    ChatMessages.addNotification(Text.translatable("text.twitchchat.bot.disconnected", channelName));
 
     if (currentChannel != null && currentChannel.equals(channelName)) {
       currentChannel = null;

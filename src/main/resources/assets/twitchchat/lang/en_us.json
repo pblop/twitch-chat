@@ -40,7 +40,7 @@
 
   "text.twitchchat.chat.integration_disabled": "Twitch integration is not enabled, to enable it do /twitch enable.",
   "text.twitchchat.bot.connected": "Connected to channel '%s'",
-  "text.twitchchat.bot.leave": "Left channel '%s'",
+  "text.twitchchat.bot.disconnected": "Disconnected from channel '%s'",
 
   "text.twitchchat.bot.timeout": "User '%s' has been timed out for %s seconds. Reason: %s",
   "text.twitchchat.bot.ban": "User '%s' has been banned",

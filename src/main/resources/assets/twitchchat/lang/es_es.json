@@ -38,7 +38,12 @@
   "text.twitchchat.command.broadcast.enabled": "Retransmisión activada",
   "text.twitchchat.command.broadcast.disabled": "Retransmisión desactivada",
 
-  "text.twitchchat.chat.integration_disabled": "La integración de twitchj no está activada, para activarla escribe /twitch enable.",
+  "text.twitchchat.chat.integration_disabled": "La integración de Twitch no está activada, para activarla escribe /twitch enable.",
   "text.twitchchat.bot.connected": "Conectado al canal '%s'",
-  "text.twitchchat.bot.kicked": "Expulsado del canal actual por: '%s'"
+  "text.twitchchat.bot.disconnected": "Desconectado del canal '%s'",
+
+  "text.twitchchat.bot.timeout": "El usuario '%s' ha sido ... durante %s segundos. Razón: %s",
+  "text.twitchchat.bot.ban": "El usuario '%s' has sido expulsado permanentemente.",
+  "text.twitchchat.indicator.message": "Chat de Twitch",
+  "text.twitchchat.indicator.system": "Sistema de Twitch"
 }
