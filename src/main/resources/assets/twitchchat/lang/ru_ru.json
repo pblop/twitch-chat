@@ -40,5 +40,9 @@
 
   "text.twitchchat.chat.integration_disabled": "Twitch интеграция не включена, чтобы включить ее используйте /twitch enable.",
   "text.twitchchat.bot.connected": "Подключение к каналу '%s'",
-  "text.twitchchat.bot.kicked": "Отключение от текущего канала по причине: '%s'"
+  "text.twitchchat.bot.disconnected": "Отключение от канала '%s'",
+  "text.twitchchat.bot.timeout": "Пользователь '%s' отключен на %s сек. Причина: %s",
+  "text.twitchchat.bot.ban": "Пользователь '%s' забанен.",
+  "text.twitchchat.indicator.message": "Чат Twitch",
+  "text.twitchchat.indicator.system": "Система Twitch"
 }
