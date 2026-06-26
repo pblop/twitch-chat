@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version "${loom_version}"
+	id 'net.fabricmc.fabric-loom' version "${loom_version}"
 	id 'maven-publish'
 }
 
@@ -16,22 +16,22 @@ repositories {
 		name 'Xander Maven'
 		url 'https://maven.isxander.dev/releases'
 	}
+	maven { url 'https://api.modrinth.com/maven' }
 	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings loom.officialMojangMappings()
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
     // ModMenu integration
-	modImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
+	implementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
 
-	// YACL
-	modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}"
+	// YACL, served from Modrinth maven. isxander's maven does not publish 26.x builds as of now.
+	implementation "maven.modrinth:yacl:${project.yacl_version}"
 
     // IRC Library
 	implementation "com.github.twitch4j:twitch4j:${project.twitch4j_version}"
@@ -53,8 +53,8 @@ tasks.withType(JavaCompile).configureEach {
 	// If Javadoc is generated, this must be specified in that task too.
 	it.options.encoding = "UTF-8"
 
-	// Minecraft now uses Java 21.
-	it.options.release = 21
+	// Minecraft now uses Java 25.
+	it.options.release = 25
 	options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
 }
 
@@ -64,8 +64,8 @@ java {
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
 }
 
 jar {
