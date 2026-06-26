@@ -3,18 +3,18 @@ package eu.pabl.twitchchat.commands;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import eu.pabl.twitchchat.config.ModConfig;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.network.chat.Component;
 
 public class TwitchBroadcastCommand implements SubCommand {
   public ArgumentBuilder<FabricClientCommandSource, ?> getArgumentBuilder() {
-    return ClientCommandManager.literal("broadcast")
+    return ClientCommands.literal("broadcast")
         // The command to be executed if the command "twitch" is entered with the argument "broadcast"
         // It requires true/false as an argument.
         // It will toggle the broadcast flag in the config and
         // if enabled, will relay twitch messages as say-chat messages to the server.
-        .then(ClientCommandManager.argument("enabled", BoolArgumentType.bool())
+        .then(ClientCommands.argument("enabled", BoolArgumentType.bool())
             .executes(ctx -> {
               boolean enabled = BoolArgumentType.getBool(ctx, "enabled");
 

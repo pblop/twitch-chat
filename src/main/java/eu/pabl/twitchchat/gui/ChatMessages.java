@@ -3,7 +3,7 @@ package eu.pabl.twitchchat.gui;
 import eu.pabl.twitchchat.TwitchChatMod;
 import eu.pabl.twitchchat.config.ModConfig;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.GuiMessageTag;
+import net.minecraft.client.multiplayer.chat.GuiMessageTag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
@@ -41,7 +41,7 @@ public class ChatMessages {
         String plainTextMessage = ModConfig.getConfig().getBroadcastPrefix() + username + ": " + message;
         plainTextMessage = sanitiseMessage(plainTextMessage);
         if (Minecraft.getInstance().player != null) {
-          minecraftSendChatMessage(Component.literal(plainTextMessage), false);
+          minecraftSendChatMessage(Component.literal(plainTextMessage));
         }
       } catch (NullPointerException e) {
         TwitchChatMod.LOGGER.error("Failed to broadcast Twitch message to Minecraft chat", e);
@@ -60,14 +60,14 @@ public class ChatMessages {
   private static void minecraftChatAddMessage(MutableComponent message, GuiMessageTag indicator) {
     Minecraft instance = Minecraft.getInstance();
     instance.execute(
-        () -> instance.gui.getChat().addMessage(message, null, indicator)
+        () -> instance.gui.hud.getChat().addPlayerMessage(message, null, indicator)
     );
   }
 
-  private static void minecraftSendChatMessage(MutableComponent message, boolean overlay) {
+  private static void minecraftSendChatMessage(MutableComponent message) {
     Minecraft instance = Minecraft.getInstance();
     instance.execute(
-      () -> instance.player.displayClientMessage(message, overlay)
+      () -> instance.player.sendSystemMessage(message)
     );
   }
 

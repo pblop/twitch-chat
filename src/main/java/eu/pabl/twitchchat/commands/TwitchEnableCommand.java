@@ -4,14 +4,14 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import eu.pabl.twitchchat.TwitchChatMod;
 import eu.pabl.twitchchat.config.ModConfig;
 import eu.pabl.twitchchat.twitch_integration.Bot;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 
 public class TwitchEnableCommand implements SubCommand {
   public ArgumentBuilder<FabricClientCommandSource, ?> getArgumentBuilder() {
-    return ClientCommandManager.literal("enable")
+    return ClientCommands.literal("enable")
         // The command to be executed if the command "twitch" is entered with the argument "enable"
         // It starts up the irc bot.
         .executes(ctx -> {

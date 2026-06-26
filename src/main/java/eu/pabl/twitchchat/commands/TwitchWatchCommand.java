@@ -3,19 +3,19 @@ package eu.pabl.twitchchat.commands;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import eu.pabl.twitchchat.config.ModConfig;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.network.chat.Component;
 import eu.pabl.twitchchat.TwitchChatMod;
 
 public class TwitchWatchCommand implements SubCommand {
   public ArgumentBuilder<FabricClientCommandSource, ?> getArgumentBuilder() {
-    return ClientCommandManager.literal("watch")
+    return ClientCommands.literal("watch")
         // The command to be executed if the command "twitch" is entered with the argument "watch"
         // It requires channel_name as an argument.
         // It will switch channels in the config to the channel name provided and
         // if the bot is connected to some channel, it will switch channels on the fly.
-        .then(ClientCommandManager.argument("channel_name", StringArgumentType.string())
+        .then(ClientCommands.argument("channel_name", StringArgumentType.string())
             .suggests(new TwitchWatchSuggestionProvider())
             .executes(ctx -> {
               String channelName = StringArgumentType.getString(ctx, "channel_name");

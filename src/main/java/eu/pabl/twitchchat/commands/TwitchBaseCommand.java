@@ -2,13 +2,13 @@ package eu.pabl.twitchchat.commands;
 
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.network.chat.Component;
 
 public class TwitchBaseCommand implements BaseCommand {
   public void registerCommands(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-      dispatcher.register(ClientCommandManager.literal("twitch")
+      dispatcher.register(ClientCommands.literal("twitch")
           // The command to be executed if the command "twitch" is entered with the argument "enable"
           .then(new TwitchEnableCommand().getArgumentBuilder())
           // The command to be executed if the command "twitch" is entered with the argument "disable"

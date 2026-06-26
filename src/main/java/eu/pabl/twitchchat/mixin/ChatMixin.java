@@ -49,7 +49,7 @@ public class ChatMixin {
 
           // Add the message to the Minecraft Chat
           ChatMessages.addTwitchMessage(formattedTime, username, isMeMessage ? textWithoutPrefix.substring(4) : textWithoutPrefix, userColor, isMeMessage);
-          Minecraft.getInstance().gui.getChat().addRecentChat(text);
+          Minecraft.getInstance().gui.hud.getChat().addRecentChat(text);
           info.cancel();
         } else {
           ChatMessages.addNotification(Component.translatable("text.twitchchat.chat.integration_disabled"));
